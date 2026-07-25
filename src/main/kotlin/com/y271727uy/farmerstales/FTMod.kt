@@ -7,6 +7,7 @@ import com.y271727uy.farmerstales.all.ModItems
 import com.y271727uy.farmerstales.integration.IntegrationManager
 import com.y271727uy.farmerstales.config.Config
 import com.y271727uy.farmerstales.data.ModDataGen
+import com.y271727uy.farmerstales.gameplay.fish_group.item.FishGroupRegistry
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.ModLoadingContext
 import net.minecraftforge.fml.common.Mod
@@ -23,6 +24,7 @@ class FTMod {
         ModItems.init()
         ModBlocks.init()
         ModBlockEntities.init()
+        FishGroupRegistry.register(modEventBus)
         ModDataGen.init()
         IntegrationManager.initCreativeTabs(modEventBus)
         modEventBus.addListener(::commonSetup)
@@ -37,6 +39,8 @@ class FTMod {
 
     companion object {
         const val MODID = "farmerstales"
+
+        @JvmField
         val LOGGER: Logger = LogUtils.getLogger()
     }
 }

@@ -1,0 +1,14 @@
+{
+  "parent": "item/handheld_rod",
+  "textures": {
+    "layer0": "minecraft:item/fishing_rod"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "farmerstales:cast": 1
+      },
+      "model": "farmerstales:item/bamboo_fishing_rod_cast"
+    }
+  ]
+}

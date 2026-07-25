@@ -1,8 +1,8 @@
-// 1.20.1	2026-07-25T00:07:10.2050853	Registrate Provider for farmerstales [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.20.1	2026-07-25T20:54:07.8576169	Registrate Provider for farmerstales [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 706abd4e252efad6c88f074a802bf370fde04726 assets/farmerstales/blockstates/tree_compost.json
 f4b21f71f1758b69a8aa3e6c2de92459dc5c68da assets/farmerstales/blockstates/tree_stump.json
-a7458658ce5e4b0462f6ef3c853aab567c957d0c assets/farmerstales/lang/en_ud.json
-d8f01e4535246a162c0014cacbe41cb1127a83a5 assets/farmerstales/lang/en_us.json
+9dc5d24c84962e7f07e26f45243fb533a61e108a assets/farmerstales/lang/en_ud.json
+57589a94bfaf3aea2ea43c3eae806365e0396c6f assets/farmerstales/lang/en_us.json
 a163c9ce1e63e428f3fa804b66e491b455f18540 assets/farmerstales/models/item/template_item_generated.json
 9815b86e80abb8df39ab0ed39b9ab133289a714d assets/farmerstales/models/item/tree_compost.json
 bed24fbd195ab6dd23ef6e626254a0ca44895aa3 assets/farmerstales/models/item/tree_stump.json
