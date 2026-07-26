@@ -318,6 +318,7 @@ object FishPoolLootManager : SimpleJsonResourceReloadListener(
             biomes,
             weatherRequirement,
             timeRequirement,
+            definition.spawnSeasons,
             definition.outputs,
         )
     }

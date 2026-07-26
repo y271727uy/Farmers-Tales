@@ -1,5 +1,8 @@
 package com.y271727uy.farmerstales.gameplay.fish_group.pool
 
+import com.y271727uy.farmerstales.integration.IntegrationManager
+import com.y271727uy.farmerstales.integration.sereneseasons.SeasonSupport
+import com.y271727uy.farmerstales.integration.sereneseasons.SeasonSupport.SeasonWindow
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
@@ -15,6 +18,7 @@ class FishPoolDefinition(
     biomes: List<ResourceLocation>,
     weatherRequirement: WeatherRequirement?,
     timeRequirement: TimeRequirement?,
+    spawnSeasons: Set<SeasonWindow>,
     outputs: List<FishPoolLootEntryDefinition>,
 ) {
     val minFishCount = minFishCount.coerceAtLeast(1)
@@ -22,6 +26,7 @@ class FishPoolDefinition(
     val biomes = biomes.toList()
     val weatherRequirement = weatherRequirement ?: WeatherRequirement.ANY
     val timeRequirement = timeRequirement ?: TimeRequirement.ANY
+    val spawnSeasons = spawnSeasons.toSet()
     val outputs = outputs.toList()
 
     init {
@@ -35,12 +40,17 @@ class FishPoolDefinition(
         if (minFishCount == maxFishCount) maxFishCount else Mth.nextInt(random, minFishCount, maxFishCount)
 
     fun matchesSpawn(level: ServerLevel, pos: BlockPos): Boolean =
-        matchesCurrentConditions(level) && matchesBiome(level, pos)
+        matchesCurrentConditions(level) && matchesBiome(level, pos) && matchesSpawnSeason(level)
 
     fun matchesFishing(level: ServerLevel): Boolean = matchesCurrentConditions(level)
 
     private fun matchesBiome(level: ServerLevel, pos: BlockPos): Boolean =
         biomes.isEmpty() || level.getBiome(pos).unwrapKey().map { it.location() in biomes }.orElse(false)
+
+    private fun matchesSpawnSeason(level: ServerLevel): Boolean =
+        spawnSeasons.isEmpty() ||
+            !IntegrationManager.isSereneSeasonsLoaded() ||
+            SeasonSupport.currentSeasonWindow(level)?.let(spawnSeasons::contains) != false
 
     enum class Environment {
         OCEAN,

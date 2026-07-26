@@ -5,6 +5,7 @@ import com.y271727uy.farmerstales.gameplay.fish_group.pool.FishKingCooldownSaved
 import com.y271727uy.farmerstales.gameplay.fish_group.pool.FishPoolDefinition
 import com.y271727uy.farmerstales.gameplay.fish_group.pool.FishPoolFactory
 import com.y271727uy.farmerstales.gameplay.fish_group.pool.FishPoolLootManager
+import com.y271727uy.farmerstales.integration.sereneseasons.SeasonSupport.SeasonWindow
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.resources.ResourceLocation
@@ -68,6 +69,12 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
         tag.putString("fishKingKey", resolveFishKingTranslationKey(definition))
         tag.putString("weatherKey", resolveWeatherTranslationKey(definition))
         tag.putString("timeKey", resolveTimeTranslationKey(definition))
+        tag.putString(
+            "spawnSeasons",
+            SeasonWindow.entries
+                .filter(definition.spawnSeasons::contains)
+                .joinToString(",") { it.name },
+        )
         tag.putString("stateKey", resolveJadeStateTranslationKey(serverLevel, definition))
     }
 

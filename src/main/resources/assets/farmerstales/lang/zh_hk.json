@@ -91,6 +91,8 @@
   "tooltip.farmerstales.fish_pool.time.any": "任何",
   "tooltip.farmerstales.fish_pool.time.day": "日間",
   "tooltip.farmerstales.fish_pool.time.night": "夜晚",
+  "tooltip.farmerstales.fish_pool.season": "季節：%s",
+  "tooltip.farmerstales.fish_pool.season.none": "無",
   "tooltip.farmerstales.fish_pool.weather": "天氣：%s",
   "tooltip.farmerstales.fish_pool.weather.any": "任何",
   "tooltip.farmerstales.fish_pool.weather.clear": "晴天",

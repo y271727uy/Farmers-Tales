@@ -2,6 +2,8 @@ package com.y271727uy.farmerstales.integration.jade
 
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.gameplay.fish_group.entity.AbstractFishPoolEntity
+import com.y271727uy.farmerstales.integration.sereneseasons.SeasonSupport
+import com.y271727uy.farmerstales.integration.sereneseasons.SeasonSupport.SeasonWindow
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
@@ -49,9 +51,26 @@ object FishPoolEntityProvider : IEntityComponentProvider, IServerDataProvider<En
         )
         tooltip.add(
             Component.translatable(
+                "tooltip.${FTMod.MODID}.fish_pool.season",
+                formatSpawnSeasons(data.getString("spawnSeasons")),
+            ),
+        )
+        tooltip.add(
+            Component.translatable(
                 "tooltip.${FTMod.MODID}.fish_pool.state",
                 Component.translatable(data.getString("stateKey")),
             ),
         )
+    }
+
+    private fun formatSpawnSeasons(serializedSeasons: String): Component {
+        val seasons = serializedSeasons
+            .split(',')
+            .mapNotNull { name -> runCatching { SeasonWindow.valueOf(name) }.getOrNull() }
+        return if (seasons.isEmpty()) {
+            Component.translatable("tooltip.${FTMod.MODID}.fish_pool.season.none")
+        } else {
+            SeasonSupport.formatSeasonsInlineOrYearRound(seasons)
+        }
     }
 }

@@ -49,7 +49,7 @@ object SeasonSupport {
         val result: MutableComponent = Component.empty()
         orderedSeasons(seasons).forEachIndexed { index, season ->
             if (index > 0) {
-                result.append(Component.literal(", ").withStyle(ChatFormatting.GRAY))
+                result.append(Component.literal(" ").withStyle(ChatFormatting.GRAY))
             }
             result.append(season.displayName())
         }

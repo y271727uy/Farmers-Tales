@@ -1,6 +1,7 @@
 package com.y271727uy.farmerstales.gameplay.fish_group.pool
 
 import com.y271727uy.farmerstales.FTMod
+import com.y271727uy.farmerstales.integration.sereneseasons.SeasonSupport.SeasonWindow
 import net.minecraft.resources.ResourceLocation
 
 class FishPoolBuilder private constructor(
@@ -13,6 +14,7 @@ class FishPoolBuilder private constructor(
     private val biomes = mutableListOf<ResourceLocation>()
     private var weatherRequirement: FishPoolDefinition.WeatherRequirement? = null
     private var timeRequirement: FishPoolDefinition.TimeRequirement? = null
+    private var spawnSeasons: Set<SeasonWindow> = emptySet()
     private val outputs = mutableListOf<FishPoolLootEntryDefinition>()
 
     fun minFishCount(minFishCount: Int) = apply { this.minFishCount = minFishCount }
@@ -21,7 +23,7 @@ class FishPoolBuilder private constructor(
 
     fun fishKing(fishKing: String?) = apply { this.fishKing = parseNullable(fishKing, "fishKing") }
 
-    fun fishKing(fishKing: ResourceLocation?) = apply { this.fishKing = fishKing }
+    fun fishKingId(fishKing: ResourceLocation?) = apply { this.fishKing = fishKing }
 
     fun biome(biome: String?) = biomes(*if (biome == null) emptyArray() else arrayOf(biome))
 
@@ -42,6 +44,8 @@ class FishPoolBuilder private constructor(
 
     fun time(timeRequirement: FishPoolDefinition.TimeRequirement?) = apply { this.timeRequirement = timeRequirement }
 
+    fun spawnSeasons(vararg seasons: SeasonWindow) = apply { spawnSeasons = seasons.toSet() }
+
     fun output(output: FishPoolLootEntryDefinition) = apply { outputs += output }
 
     fun outputs(vararg outputs: FishPoolLootEntryDefinition) = apply { this.outputs += outputs }
@@ -55,6 +59,7 @@ class FishPoolBuilder private constructor(
         biomes.toList(),
         weatherRequirement,
         timeRequirement,
+        spawnSeasons,
         *outputs.toTypedArray(),
     )
 

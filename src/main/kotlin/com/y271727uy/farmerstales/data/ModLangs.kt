@@ -89,6 +89,8 @@ object ModLangs {
         provider.add("tooltip.${FTMod.MODID}.fish_pool.time.any", "Any")
         provider.add("tooltip.${FTMod.MODID}.fish_pool.time.day", "Day")
         provider.add("tooltip.${FTMod.MODID}.fish_pool.time.night", "Night")
+        provider.add("tooltip.${FTMod.MODID}.fish_pool.season", "Season: %s")
+        provider.add("tooltip.${FTMod.MODID}.fish_pool.season.none", "None")
         provider.add("tooltip.${FTMod.MODID}.fish_pool.state", "State: %s")
         provider.add("tooltip.${FTMod.MODID}.fish_pool.state.fishing", "Fishing in Progress (Fish Pool)")
         provider.add("tooltip.${FTMod.MODID}.fish_pool.state.available", "Fishable")

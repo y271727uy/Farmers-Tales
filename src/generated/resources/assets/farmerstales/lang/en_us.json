@@ -74,6 +74,8 @@
   "tooltip.farmerstales.fish_pool.fish_king.available": "Not obtained",
   "tooltip.farmerstales.fish_pool.fish_king.awarded": "Obtained",
   "tooltip.farmerstales.fish_pool.fish_king.none": "None",
+  "tooltip.farmerstales.fish_pool.season": "Season: %s",
+  "tooltip.farmerstales.fish_pool.season.none": "None",
   "tooltip.farmerstales.fish_pool.state": "State: %s",
   "tooltip.farmerstales.fish_pool.state.available": "Fishable",
   "tooltip.farmerstales.fish_pool.state.fishing": "Fishing in Progress (Fish Pool)",
