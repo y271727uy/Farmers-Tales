@@ -113,5 +113,14 @@
   "tooltip.farmerstales.jade.tree_stump.maintenance_score": "维护评分：%s/100",
   "tooltip.farmerstales.jade.tree_stump.title": "树桩信息",
   "tooltip.farmerstales.jade.tree_stump.water": "含水：%s/25",
-  "tooltip.farmerstales.tree_seed.cultivable": "可在树坑上进行培育!"
+  "tooltip.farmerstales.tree_seed.cultivable": "可在树坑上进行培育!",
+  "entity.farmerstales.bamboo_rat": "竹鼠",
+  "item.farmerstales.bamboo_rat_spawn_egg": "竹鼠刷怪蛋",
+  "entity.farmerstales.rat": "老鼠",
+  "item.farmerstales.rat_spawn_egg": "老鼠刷怪蛋",
+  "message.farmerstales.rat.command.stay": "老鼠将留在原地。",
+  "message.farmerstales.rat.command.follow": "老鼠会跟随你。",
+  "item.farmerstales.specialized_carnivorous_bait": "特制肉食饵料",
+  "item.farmerstales.specialized_herbivorous_bait": "特制素食饵料",
+  "item.farmerstales.shepherds_crook": "牧羊人手杖"
 }

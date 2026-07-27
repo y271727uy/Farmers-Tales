@@ -1,8 +1,13 @@
-// 1.20.1	2026-07-26T22:55:24.4893454	Registrate Provider for farmerstales [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+// 1.20.1	2026-07-27T18:38:32.8864188	Registrate Provider for farmerstales [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 706abd4e252efad6c88f074a802bf370fde04726 assets/farmerstales/blockstates/tree_compost.json
 f4b21f71f1758b69a8aa3e6c2de92459dc5c68da assets/farmerstales/blockstates/tree_stump.json
-f11482c26a848cc8506ea0d787255acfba031e0a assets/farmerstales/lang/en_ud.json
-0787d9f508a516c733822e3a5364a7afbd3ed8d2 assets/farmerstales/lang/en_us.json
+a333e12826fb728dd47ebc07226a57a2258a2950 assets/farmerstales/lang/en_ud.json
+b3f3c1d3684bb0d88535454b59f435cc62e1e4ab assets/farmerstales/lang/en_us.json
+63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets/farmerstales/models/item/bamboo_rat_spawn_egg.json
+63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets/farmerstales/models/item/rat_spawn_egg.json
+57999b60d835e0a179591a79b5cbcb4f913d4ec1 assets/farmerstales/models/item/shepherds_crook.json
+5dd043b00d1686ceb2d8da2e924c6560769d4134 assets/farmerstales/models/item/specialized_carnivorous_bait.json
+92c283e307f5a96b8ce9c06c5bffd8685773bd7d assets/farmerstales/models/item/specialized_herbivorous_bait.json
 a163c9ce1e63e428f3fa804b66e491b455f18540 assets/farmerstales/models/item/template_item_generated.json
 9815b86e80abb8df39ab0ed39b9ab133289a714d assets/farmerstales/models/item/tree_compost.json
 bed24fbd195ab6dd23ef6e626254a0ca44895aa3 assets/farmerstales/models/item/tree_stump.json

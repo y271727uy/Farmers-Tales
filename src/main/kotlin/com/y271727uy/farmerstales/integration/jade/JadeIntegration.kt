@@ -31,5 +31,6 @@ class FarmerTalesJadePlugin : IWailaPlugin {
         )
         registration.registerEntityComponent(FishPoolEntityProvider, RiverFishPoolEntity::class.java)
         registration.registerEntityComponent(FishPoolEntityProvider, OceanFishPoolEntity::class.java)
+        registration.addRayTraceCallback(FishPoolJadeRayTraceCallback(registration))
     }
 }

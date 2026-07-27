@@ -2,6 +2,7 @@ package com.y271727uy.farmerstales.data
 
 import com.tterrag.registrate.providers.RegistrateLangProvider
 import com.y271727uy.farmerstales.FTMod
+import com.y271727uy.farmerstales.entity.ModEntities
 
 object ModLangs {
     fun init(provider: RegistrateLangProvider) {
@@ -32,6 +33,8 @@ object ModLangs {
             "message.${FTMod.MODID}.breeding_blocked",
             "This animal cannot breed in the current season. Breeding seasons: %s"
         )
+        provider.add("message.${FTMod.MODID}.rat.command.stay", "Your rat will stay here.")
+        provider.add("message.${FTMod.MODID}.rat.command.follow", "Your rat will follow you.")
         provider.add("tooltip.${FTMod.MODID}.breeding_seasons", "Breeding seasons: %s")
         provider.add("season.${FTMod.MODID}.spring", "Spring")
         provider.add("season.${FTMod.MODID}.summer", "Summer")
@@ -42,6 +45,7 @@ object ModLangs {
         provider.add("tooltip.${FTMod.MODID}.fishing_seasons", "Catch seasons: %s")
 
         provider.add("item.${FTMod.MODID}.bamboo_fishing_rod", "Bamboo Fishing Rod")
+        ModEntities.generateLang(provider)
         linkedMapOf(
             "ocean_fish_pool" to "Mixed-Species Fish Pool (Ocean)",
             "river_fish_pool" to "Mixed-Species Fish Pool (River)",

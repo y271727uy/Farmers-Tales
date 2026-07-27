@@ -4,7 +4,9 @@
   "package": "com.y271727uy.farmerstales.mixin",
   "compatibilityLevel": "JAVA_17",
   "refmap": "farmerstales.refmap.json",
-  "mixins": [],
+  "mixins": [
+    "AnimalSeasonBreedingMixin"
+  ],
   "client": [
     "GuiGraphicsQualityOverlayMixin",
     "ItemRendererQualityOverlayMixin"

@@ -4,8 +4,7 @@ import com.y271727uy.farmerstales.FTMod
 
 /**
  * Kept free of CraftTweaker API types so normal mod initialization remains
- * safe when CraftTweaker is absent. Script-facing types are discovered by
- * CraftTweaker through their annotations.
+ * safe when CraftTweaker is absent.
  */
 object CraftTweakerIntegration {
     fun init() {

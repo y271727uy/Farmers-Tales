@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils
 import com.y271727uy.farmerstales.all.ModBlocks
 import com.y271727uy.farmerstales.all.ModBlockEntities
 import com.y271727uy.farmerstales.all.ModItems
+import com.y271727uy.farmerstales.entity.ModEntities
 import com.y271727uy.farmerstales.integration.IntegrationManager
 import com.y271727uy.farmerstales.config.Config
 import com.y271727uy.farmerstales.data.ModDataGen
@@ -24,6 +25,7 @@ class FTMod {
         ModItems.init()
         ModBlocks.init()
         ModBlockEntities.init()
+        ModEntities.register(modEventBus)
         FishGroupRegistry.register(modEventBus)
         ModDataGen.init()
         IntegrationManager.initCreativeTabs(modEventBus)
@@ -33,6 +35,7 @@ class FTMod {
     }
 
     private fun commonSetup(event: FMLCommonSetupEvent) {
+        event.enqueueWork(ModEntities::registerSpawnPlacements)
         IntegrationManager.init()
         LOGGER.info("Farmer's Tales common setup complete")
     }
