@@ -79,7 +79,10 @@ val libModFiles = listOf(
     file("lib/Jade-1.20.1-Forge-11.13.3.jar"),
     file("lib/jei-1.20.1-forge-15.20.0.129.jar"),
     file("lib/farmersdelight-1.20.1-1.2.9.jar"),
-    file("lib/list-3.0.7.jar")
+    file("lib/list-3.0.7.jar") ,
+    file("lib/kubejs-forge-2001.6.5-build.26.jar"),
+    file("lib/CraftTweaker-forge-1.20.1-14.0.60.jar")
+
 ).filter(File::exists)
 // Temporary test mods. Their coordinates are derived from each file name and
 // resolved from this local directory, so adding a JAR requires no Gradle edits.
@@ -182,6 +185,8 @@ dependencies {
     add("compileOnly", files("lib/Jade-1.20.1-Forge-11.13.3.jar"))
     add("compileOnly", files("lib/jei-1.20.1-forge-15.20.0.129.jar"))
     add("compileOnly", files("lib/SereneSeasons-forge-1.20.1-9.1.0.3.jar"))
+    add("compileOnly", files("lib/kubejs-forge-2001.6.5-build.26.jar"))
+    add("compileOnly", files("lib/CraftTweaker-forge-1.20.1-14.0.60.jar"))
 
 }
 

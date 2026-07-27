@@ -1,0 +1,1 @@
+com.y271727uy.farmerstales.integration.kubejs.FarmersTalesKubeJsPlugin

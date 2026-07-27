@@ -2,8 +2,10 @@ package com.y271727uy.farmerstales.integration
 
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.integration.farmersdelight.FarmersDelightIntegration
+import com.y271727uy.farmerstales.integration.crafttweaker.CraftTweakerIntegration
 import com.y271727uy.farmerstales.integration.jade.JadeIntegration
 import com.y271727uy.farmerstales.integration.jei.JeiIntegration
+import com.y271727uy.farmerstales.integration.kubejs.KubeJsIntegration
 import com.y271727uy.farmerstales.integration.list.ListIntegration
 import com.y271727uy.farmerstales.integration.sereneseasons.SereneSeasonsIntegration
 import net.minecraft.world.level.Level
@@ -16,6 +18,8 @@ object IntegrationManager {
     const val LIST = "list"
     const val FARMERS_DELIGHT = "farmersdelight"
     const val SERENE_SEASONS = "sereneseasons"
+    const val KUBEJS = "kubejs"
+    const val CRAFTTWEAKER = "crafttweaker"
 
     fun initCreativeTabs(modEventBus: IEventBus) {
         if (isLoaded(LIST)) {
@@ -34,6 +38,12 @@ object IntegrationManager {
         }
         if (isLoaded(SERENE_SEASONS)) {
             SereneSeasonsIntegration.init()
+        }
+        if (isLoaded(KUBEJS)) {
+            KubeJsIntegration.init()
+        }
+        if (isLoaded(CRAFTTWEAKER)) {
+            CraftTweakerIntegration.init()
         }
     }
 
