@@ -79,9 +79,14 @@ val libModFiles = listOf(
     file("lib/Jade-1.20.1-Forge-11.13.3.jar"),
     file("lib/jei-1.20.1-forge-15.20.0.129.jar"),
     file("lib/farmersdelight-1.20.1-1.2.9.jar"),
-    file("lib/list-3.0.7.jar") ,
+    file("lib/list-3.0.7.jar"),
     file("lib/kubejs-forge-2001.6.5-build.26.jar"),
-    file("lib/CraftTweaker-forge-1.20.1-14.0.60.jar")
+    file("lib/CraftTweaker-forge-1.20.1-14.0.60.jar"),
+    file("lib/forestry-1.20.1-2.11.1.jar"),
+    file("lib/alexsmobs-1.22.9.jar"),
+    file("lib/Patchouli-1.20.1-85-FORGE.jar"),
+    file("lib/StellarView-1.20.1-0.5.3-Forge.jar"),
+    file("lib/ldlib-forge-1.20.1-1.0.52.a.jar")
 
 ).filter(File::exists)
 // Temporary test mods. Their coordinates are derived from each file name and
@@ -182,6 +187,9 @@ dependencies {
         .forEach { add(testModRuntime.name, it) }
 
     // Optional API jars are compile-time only; the actual mods stay development-only.
+    // GlitchCore is a hard dependency of Serene Seasons: its SeasonChangedEvent
+    // extends glitchcore.event.Event and is dispatched through glitchcore.event.EventManager.
+    add("compileOnly", files("lib/GlitchCore-forge-1.20.1-0.0.1.1.jar"))
     add("compileOnly", files("lib/Jade-1.20.1-Forge-11.13.3.jar"))
     add("compileOnly", files("lib/jei-1.20.1-forge-15.20.0.129.jar"))
     add("compileOnly", files("lib/SereneSeasons-forge-1.20.1-9.1.0.3.jar"))
