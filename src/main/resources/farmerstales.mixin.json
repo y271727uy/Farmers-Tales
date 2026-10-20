@@ -4,12 +4,40 @@
   "package": "com.y271727uy.farmerstales.mixin",
   "compatibilityLevel": "JAVA_17",
   "refmap": "farmerstales.refmap.json",
+  "plugin": "com.y271727uy.farmerstales.mixin.FarmersTalesMixinPlugin",
   "mixins": [
-    "AnimalSeasonBreedingMixin"
+    "minecraft.MobAppearanceVariantMixin",
+    "minecraft.FriendlyByteBufFoodExpiryMixin",
+    "minecraft.AbstractContainerMenuFoodExpiryMixin",
+    "minecraft.AnimalSeasonBreedingMixin",
+    "minecraft.ChickenCrimsonMoonMixin",
+    "minecraft.IngredientRottenFoodMixin",
+    "minecraft.SheepDogFlockConstraintMixin",
+    "minecraft.PlayerCrimsonMoonSleepMixin",
+    "minecraft.WolfShepherdingMixin",
+    "alexmob.AlexsMobsFlyDungAttractionMixin",
+    "alexmob.AlexsMobsCrowMixin",
+    "alexmob.AlexsMobsCrowCropDamageMixin",
+    "farmandcharm.FeedingTroughBlockEntityMixin",
+    "farmandcharm.ApproachFeedingTroughGoalMixin",
+    "forestry.InventoryAnalyzerMixin",
+    "forestry.ItemInventoryAlyzerMixin",
+    "forestry.TileAnalyzerMixin",
+    "forestry.TreeSpeciesTooltipMixin"
   ],
   "client": [
-    "GuiGraphicsQualityOverlayMixin",
-    "ItemRendererQualityOverlayMixin"
+    "minecraft.client.ChickenAppearanceVariantRendererMixin",
+    "minecraft.client.CatAppearanceVariantRendererMixin",
+    "minecraft.client.CowAppearanceVariantRendererMixin",
+    "minecraft.GuiGraphicsQualityOverlayMixin",
+    "minecraft.ItemRendererQualityOverlayMixin",
+    "minecraft.client.PigAppearanceVariantRendererMixin",
+    "minecraft.client.LivingEntityRendererAppearanceVariantMixin",
+    "minecraft.client.WolfAppearanceVariantRendererMixin",
+    "stellarview.TextureLayerMoonTextureMixin",
+    "forestry.TreeAnalyzerPluginMixin",
+    "forestry.GuiAnalyzerMixin",
+    "forestry.PortableAnalyzerScreenMixin"
   ],
   "server": [],
   "injectors": {

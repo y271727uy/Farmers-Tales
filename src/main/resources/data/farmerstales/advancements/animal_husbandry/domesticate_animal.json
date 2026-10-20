@@ -1,0 +1,24 @@
+{
+  "parent": "farmerstales:root",
+  "display": {
+    "icon": { "item": "farmerstales:specialized_herbivorous_bait" },
+    "title": { "translate": "advancement.farmerstales.domesticate_animal.title" },
+    "description": { "translate": "advancement.farmerstales.domesticate_animal.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "cow": { "trigger": "minecraft:impossible" },
+    "mooshroom": { "trigger": "minecraft:impossible" },
+    "sheep": { "trigger": "minecraft:impossible" },
+    "rabbit": { "trigger": "minecraft:impossible" },
+    "camel": { "trigger": "minecraft:impossible" },
+    "llama": { "trigger": "minecraft:impossible" },
+    "horse": { "trigger": "minecraft:impossible" },
+    "donkey": { "trigger": "minecraft:impossible" },
+    "chicken": { "trigger": "minecraft:impossible" },
+    "pig": { "trigger": "minecraft:impossible" }
+  }
+}

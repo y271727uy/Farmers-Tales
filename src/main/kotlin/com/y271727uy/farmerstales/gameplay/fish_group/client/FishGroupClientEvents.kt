@@ -8,34 +8,22 @@ import com.y271727uy.farmerstales.gameplay.fish_group.entity.RiverFishPoolEntity
 import com.y271727uy.farmerstales.gameplay.fish_group.item.FishGroupRegistry
 import com.y271727uy.farmerstales.gameplay.fish_group.pool.FishPoolDefinition
 import net.minecraft.client.renderer.entity.EntityRendererProvider
-import net.minecraft.client.renderer.item.ItemProperties
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.EntityType
-import net.minecraft.world.entity.player.Player
-import net.minecraft.world.item.FishingRodItem
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.EntityRenderersEvent
+import net.minecraftforge.client.event.RegisterColorHandlersEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent
 
 @Mod.EventBusSubscriber(modid = FTMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
 object FishGroupClientEvents {
     @JvmStatic
     @SubscribeEvent
-    fun onClientSetup(event: FMLClientSetupEvent) {
-        event.enqueueWork {
-            ItemProperties.register(
-                FishGroupRegistry.BAMBOO_FISHING_ROD.get(),
-                ResourceLocation.fromNamespaceAndPath(FTMod.MODID, "cast"),
-            ) { stack, _, entity, _ ->
-                val player = entity as? Player ?: return@register 0.0F
-                val mainHand = player.mainHandItem === stack
-                var offHand = player.offhandItem === stack
-                if (player.mainHandItem.item is FishingRodItem) offHand = false
-                if ((mainHand || offHand) && player.fishing != null) 1.0F else 0.0F
-            }
-        }
+    fun onRegisterItemColors(event: RegisterColorHandlersEvent.Item) {
+        event.register(
+            { _, tintIndex -> if (tintIndex == 0) EGG_BASE_COLOR else EGG_SPOT_COLOR },
+            *FishGroupRegistry.getFishPoolRegistrations().map { it.item.get() }.toTypedArray(),
+        )
     }
 
     @JvmStatic
@@ -70,4 +58,7 @@ object FishGroupClientEvents {
         event.registerLayerDefinition(RiverFishPoolModel.LAYER_LOCATION) { RiverFishPoolModel.getTexturedModelData() }
         event.registerLayerDefinition(OceanFishPoolModel.LAYER_LOCATION) { OceanFishPoolModel.getTexturedModelData() }
     }
+
+    private const val EGG_BASE_COLOR = 0x1B6E8C
+    private const val EGG_SPOT_COLOR = 0x9CE7F7
 }

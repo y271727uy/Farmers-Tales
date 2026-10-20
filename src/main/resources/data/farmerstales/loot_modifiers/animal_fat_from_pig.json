@@ -1,0 +1,1 @@
+{"type":"farmerstales:add_item","conditions":[{"condition":"forge:loot_table_id","loot_table_id":"minecraft:entities/pig"},{"condition":"minecraft:random_chance","chance":0.25}],"item":"farmerstales:animal_fat"}

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>甄选作物粒子预览</title>
+<style>
+  :root { color-scheme: dark; }
+  body {
+    margin: 0;
+    background: #1b2418;
+    color: #efe8d4;
+    font: 15px/1.45 "Microsoft YaHei", sans-serif;
+  }
+  header {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    padding: 14px 18px 0;
+  }
+  h1 { margin: 0; font-size: 18px; font-weight: 600; }
+  p { margin: 4px 18px 12px; color: #b7c4a6; }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 0 18px 18px;
+  }
+  figure {
+    margin: 0;
+    background: #11170f;
+    border: 1px solid #31402a;
+  }
+  figcaption {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 10px 0;
+  }
+  canvas { display: block; width: 100%; height: auto; }
+  button {
+    background: #2d3b26;
+    color: inherit;
+    border: 1px solid #597049;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>甄选粒子 · HTML 确认稿</h1>
+  <button id="replay" type="button">重播</button>
+</header>
+<p>一块作物高 92 像素。确认轨迹和画法后，再按同一套运动写回 Photon。</p>
+<div class="grid">
+  <figure><figcaption><b>月光</b><span>底部缓转，轻微起伏</span></figcaption><canvas id="moon" width="460" height="280"></canvas></figure>
+  <figure><figcaption><b>彩虹</b><span>两端抬高，中间平缓上拱</span></figcaption><canvas id="rainbow" width="460" height="280"></canvas></figure>
+  <figure><figcaption><b>人气</b><span>中部转圈，带一点拍打</span></figcaption><canvas id="popular" width="460" height="280"></canvas></figure>
+  <figure><figcaption><b>夜星</b><span>上部闪烁，慢慢下沉</span></figcaption><canvas id="stars" width="460" height="280"></canvas></figure>
+</div>
+<script>
+const CROP = 92;
+const scenes = ["moon", "rainbow", "popular", "stars"].map(id => {
+  const canvas = document.getElementById(id);
+  return { id, canvas, ctx: canvas.getContext("2d"), particles: [], clock: 0 };
+});
+
+function spawn(scene) {
+  const count = scene.id === "stars" ? 8 : 18;
+  scene.particles = Array.from({ length: count }, () => ({
+    age: Math.random() * life(scene.id),
+    life: life(scene.id),
+    angle: Math.random() * Math.PI * 2,
+    along: Math.random(),
+    flap: Math.random() * Math.PI * 2,
+    radius: 34 + Math.random() * 8,
+    x: Math.random(),
+    y: Math.random(),
+    z: Math.random(),
+    drift: 0
+  }));
+}
+
+function life(id) {
+  return { moon: 240, rainbow: 160, popular: 200, stars: 50 }[id];
+}
+
+function place(id, p, dt) {
+  if (id === "moon") p.angle += dt * 0.35;
+  if (id === "rainbow") p.along = (p.along + dt * 0.07) % 1;
+  if (id === "popular") { p.angle += dt * 0.8; p.flap += dt * 9; }
+  if (id === "stars") p.drift += Math.sin(p.age / 20 * 6);
+  const seconds = p.age / 20;
+  if (id === "moon") {
+    return [Math.cos(p.angle) * p.radius, 4 + Math.sin(seconds * 1.4) * 2, Math.sin(p.angle) * p.radius];
+  }
+  if (id === "rainbow") {
+    const span = 62;
+    const hump = (1 - Math.cos(p.along * Math.PI * 2)) / 2;
+    return [-span / 2 + p.along * span, 54 + hump * 30, 0];
+  }
+  if (id === "popular") {
+    return [
+      Math.cos(p.angle) * 42 + Math.sin(p.flap) * 4,
+      46 + Math.sin(p.angle * 2) * 10,
+      Math.sin(p.angle) * 42
+    ];
+  }
+  return [
+    (p.x - 0.5) * 28 + p.drift * 4 * 0.05,
+    46 + (p.y - 0.5) * 36 - p.age * 0.12,
+    (p.z - 0.5) * 28
+  ];
+}
+
+function color(id, p, xyz) {
+  const t = p.age / p.life;
+  const fade = t < 0.5 ? 1 : 1 - (t - 0.5) * 2;
+  if (id === "rainbow") {
+    const hue = (xyz[0] + 31) / 62 * 300;
+    return `hsla(${hue}, 80%, ${62 + t * 12}%, ${fade})`;
+  }
+  if (id === "stars") {
+    const flash = Math.sin(p.age / 20 * 18) > 0 ? 1 : 0.35;
+    return `rgba(${lerp(185, 239, flash)}, ${lerp(160, 232, flash)}, 255, ${0.35 + flash * 0.65})`;
+  }
+  const from = id === "moon" ? [244, 241, 232] : [240, 193, 74];
+  const to = id === "moon" ? [158, 183, 216] : [255, 244, 194];
+  return `rgba(${lerp(from[0], to[0], t)}, ${lerp(from[1], to[1], t)}, ${lerp(from[2], to[2], t)}, ${fade})`;
+}
+
+function lerp(a, b, t) { return Math.round(a + (b - a) * t); }
+
+function crop(ctx, w, h) {
+  const ox = w / 2;
+  const oy = h - 46;
+  ctx.save();
+  ctx.translate(ox, oy);
+  ctx.strokeStyle = "rgba(214,196,132,0.35)";
+  ctx.strokeRect(-18, -CROP, 36, CROP);
+  ctx.fillStyle = "#6d8a3d";
+  for (let i = 0; i < 5; i++) {
+    ctx.fillRect(-7 + i * 3, -18 - i * 14, 8, 16);
+  }
+  ctx.fillStyle = "#8f5a32";
+  ctx.fillRect(-20, -4, 40, 6);
+  ctx.restore();
+  return { ox, oy };
+}
+
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(40, now - last);
+  last = now;
+  for (const scene of scenes) {
+    const { ctx, canvas } = scene;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#24301d";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const { ox, oy } = crop(ctx, canvas.width, canvas.height);
+    scene.clock += dt;
+    for (const p of scene.particles) {
+      p.age += dt / 50;
+      if (p.age >= p.life) {
+        p.age = 0;
+        p.drift = 0;
+      }
+      const xyz = place(scene.id, p, dt / 1000);
+      const depth = 0.72 + (xyz[2] + 46) / 140;
+      const x = ox + xyz[0] * depth;
+      const y = oy - xyz[1];
+      const size = (scene.id === "popular" ? 7 : 4.5) * (1 - p.age / p.life * 0.35);
+      ctx.fillStyle = color(scene.id, p, xyz);
+      ctx.beginPath();
+      ctx.arc(x, y, Math.max(1.2, size), 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+document.getElementById("replay").onclick = () => scenes.forEach(spawn);
+scenes.forEach(spawn);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

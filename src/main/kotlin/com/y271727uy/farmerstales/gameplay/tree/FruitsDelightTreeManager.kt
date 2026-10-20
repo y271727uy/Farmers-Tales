@@ -2,6 +2,7 @@ package com.y271727uy.farmerstales.gameplay.tree
 
 import com.y271727uy.farmerstales.gameplay.tree.block.entity.TreeStumpBlockEntity
 import com.y271727uy.farmerstales.gameplay.tree.event.EnvironmentVariables.SeasonVariables
+import com.y271727uy.farmerstales.gameplay.tropical_climate.TropicalClimateEffects
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
@@ -22,29 +23,32 @@ object FruitsDelightTreeManager {
 	private const val BRANCHES_MAX = 25
 
 	private val FRUITS_DELIGHT_TREE_DEFINITIONS: Map<String, TreeDefinition> = mapOf(
+		"fruitsdelight:apple_sapling" to standardDefinition("apple", "minecraft:oak_log", 1),
+		"fruitsdelight:bayberry_sapling" to standardDefinition("bayberry", "minecraft:spruce_log", 3),
+		"fruitsdelight:fig_sapling" to standardDefinition("fig", "minecraft:oak_log", 1),
 		"fruitsdelight:pear_sapling" to TreeDefinition(
 			"fruitsdelight:pear_leaves",
 			"minecraft:birch_log",
-			1,
+			3,
 			1,
 			3,
 			5,
-			exactLeafState = parseBlockStateSpec("fruitsdelight:pear_leaves:waterlogged=false,distance=2,persistent=false,type=LEAVES"),
-			floweringLeafState = parseBlockStateSpec("fruitsdelight:pear_leaves:waterlogged=false,distance=2,persistent=false,type=FLOWERS"),
-			fruitLeafState = parseBlockStateSpec("fruitsdelight:pear_leaves:waterlogged=false,distance=2,persistent=false,type=FRUITS"),
-			extraLeafPlacement = TreeExtraPlacement(parseBlockStateSpec("fruitsdelight:pear_leaves:waterlogged=false,distance=2,persistent=false,type=FLOWERS"), 4)
+			exactLeafState = parseBlockStateSpec("fruitsdelight:pear_leaves:waterlogged=false,distance=7,persistent=true,type=LEAVES"),
+			floweringLeafState = parseBlockStateSpec("fruitsdelight:pear_leaves:waterlogged=false,distance=7,persistent=true,type=FLOWERS"),
+			fruitLeafState = parseBlockStateSpec("fruitsdelight:pear_leaves:waterlogged=false,distance=7,persistent=true,type=FRUITS"),
+			extraLeafPlacement = TreeExtraPlacement(parseBlockStateSpec("fruitsdelight:pear_leaves:waterlogged=false,distance=7,persistent=true,type=FLOWERS"), 4)
 		),
 		"fruitsdelight:hawberry_sapling" to TreeDefinition(
 			"fruitsdelight:hawberry_leaves",
 			"minecraft:spruce_log",
-			1,
+			3,
 			1,
 			3,
 			5,
-			exactLeafState = parseBlockStateSpec("fruitsdelight:hawberry_leaves:waterlogged=false,distance=2,persistent=false,type=LEAVES"),
-			floweringLeafState = parseBlockStateSpec("fruitsdelight:hawberry_leaves:waterlogged=false,distance=2,persistent=false,type=FLOWERS"),
-			fruitLeafState = parseBlockStateSpec("fruitsdelight:hawberry_leaves:waterlogged=false,distance=2,persistent=false,type=FRUITS"),
-			extraLeafPlacement = TreeExtraPlacement(parseBlockStateSpec("fruitsdelight:hawberry_leaves:waterlogged=false,distance=2,persistent=false,type=FLOWERS"), 4)
+			exactLeafState = parseBlockStateSpec("fruitsdelight:hawberry_leaves:waterlogged=false,distance=7,persistent=true,type=LEAVES"),
+			floweringLeafState = parseBlockStateSpec("fruitsdelight:hawberry_leaves:waterlogged=false,distance=7,persistent=true,type=FLOWERS"),
+			fruitLeafState = parseBlockStateSpec("fruitsdelight:hawberry_leaves:waterlogged=false,distance=7,persistent=true,type=FRUITS"),
+			extraLeafPlacement = TreeExtraPlacement(parseBlockStateSpec("fruitsdelight:hawberry_leaves:waterlogged=false,distance=7,persistent=true,type=FLOWERS"), 4)
 		),
 		"fruitsdelight:lychee_sapling" to TreeDefinition(
 			"fruitsdelight:lychee_leaves",
@@ -53,11 +57,17 @@ object FruitsDelightTreeManager {
 			1,
 			3,
 			5,
-			exactLeafState = parseBlockStateSpec("fruitsdelight:lychee_leaves:waterlogged=false,distance=2,persistent=false,type=LEAVES"),
-			floweringLeafState = parseBlockStateSpec("fruitsdelight:lychee_leaves:waterlogged=false,distance=2,persistent=false,type=FLOWERS"),
-			fruitLeafState = parseBlockStateSpec("fruitsdelight:lychee_leaves:waterlogged=false,distance=2,persistent=false,type=FRUITS"),
-			extraLeafPlacement = TreeExtraPlacement(parseBlockStateSpec("fruitsdelight:lychee_leaves:waterlogged=false,distance=2,persistent=false,type=FLOWERS"), 4)
-		)
+			exactLeafState = parseBlockStateSpec("fruitsdelight:lychee_leaves:waterlogged=false,distance=7,persistent=true,type=LEAVES"),
+			floweringLeafState = parseBlockStateSpec("fruitsdelight:lychee_leaves:waterlogged=false,distance=7,persistent=true,type=FLOWERS"),
+			fruitLeafState = parseBlockStateSpec("fruitsdelight:lychee_leaves:waterlogged=false,distance=7,persistent=true,type=FRUITS"),
+			extraLeafPlacement = TreeExtraPlacement(parseBlockStateSpec("fruitsdelight:lychee_leaves:waterlogged=false,distance=7,persistent=true,type=FLOWERS"), 4)
+		),
+		"fruitsdelight:kiwi_sapling" to standardDefinition("kiwi", "minecraft:jungle_log", 1),
+		"fruitsdelight:mango_sapling" to standardDefinition("mango", "minecraft:jungle_log", 1),
+		"fruitsdelight:mangosteen_sapling" to standardDefinition("mangosteen", "minecraft:oak_log", 4),
+		"fruitsdelight:orange_sapling" to standardDefinition("orange", "minecraft:oak_log", 1),
+		"fruitsdelight:peach_sapling" to standardDefinition("peach", "minecraft:jungle_log", 1),
+		"fruitsdelight:persimmon_sapling" to standardDefinition("persimmon", "minecraft:spruce_log", 4)
 	).filterKeys { seedId ->
 		val key = ResourceLocation.tryParse(seedId)
 		key != null && ForgeRegistries.ITEMS.containsKey(key)
@@ -69,6 +79,32 @@ object FruitsDelightTreeManager {
 
 	fun treeDefinitions(): Map<String, TreeDefinition> {
 		return FRUITS_DELIGHT_TREE_DEFINITIONS
+	}
+
+	private fun standardDefinition(name: String, logId: String, shapeIndex: Int): TreeDefinition {
+		return TreeDefinition(
+			leafId = "fruitsdelight:${name}_leaves",
+			logId = logId,
+			shapeIndex = shapeIndex,
+			growingState = 1,
+			defaultState = 3,
+			ripeState = 5,
+			exactLeafState = parseBlockStateSpec(
+				"fruitsdelight:${name}_leaves:waterlogged=false,distance=7,persistent=true,type=LEAVES"
+			),
+			floweringLeafState = parseBlockStateSpec(
+				"fruitsdelight:${name}_leaves:waterlogged=false,distance=7,persistent=true,type=FLOWERS"
+			),
+			fruitLeafState = parseBlockStateSpec(
+				"fruitsdelight:${name}_leaves:waterlogged=false,distance=7,persistent=true,type=FRUITS"
+			),
+			extraLeafPlacement = TreeExtraPlacement(
+				parseBlockStateSpec(
+					"fruitsdelight:${name}_leaves:waterlogged=false,distance=7,persistent=true,type=FLOWERS"
+				),
+				4
+			)
+		)
 	}
 
 	fun baseLeafState(definition: TreeDefinition): BlockState? {
@@ -206,10 +242,10 @@ object FruitsDelightTreeManager {
 		}
 
 		if (changed) {
-			if (level.random.nextFloat() < 0.4f * RESOURCE_CONSUMPTION_SCALE) {
+			if (level.random.nextFloat() < TropicalClimateEffects.treeFertilizerConsumptionChance(level, stumpPos, 0.4f * RESOURCE_CONSUMPTION_SCALE)) {
 				entity.fertilize = (entity.fertilize - 1).coerceAtLeast(0)
 			}
-			if (level.random.nextFloat() < 0.4f * RESOURCE_CONSUMPTION_SCALE) {
+			if (level.random.nextFloat() < TropicalClimateEffects.treeWaterConsumptionChance(level, stumpPos, 0.4f * RESOURCE_CONSUMPTION_SCALE)) {
 				entity.water = (entity.water - 1).coerceAtLeast(0)
 			}
 			if (level.random.nextFloat() < 0.125f * RESOURCE_CONSUMPTION_SCALE) {

@@ -1,0 +1,10 @@
+{
+  "parent": "farmerstales:discovery/nautilus",
+  "display": {
+    "icon": { "item": "minecraft:rotten_flesh" },
+    "title": { "translate": "advancement.farmerstales.zombie_nautilus.title" },
+    "description": { "translate": "advancement.farmerstales.zombie_nautilus.description" },
+    "frame": "goal", "show_toast": true, "announce_to_chat": true, "hidden": true
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

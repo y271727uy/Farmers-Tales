@@ -1,8 +1,11 @@
 package com.y271727uy.farmerstales.gameplay.quality_crop.event.harvest
 
 import com.y271727uy.farmerstales.FTMod
-import com.y271727uy.farmerstales.gameplay.quality_crop.Quality
+import com.y271727uy.farmerstales.config.Config
+import com.y271727uy.farmerstales.gameplay.quality_crop.QualityHarvestRules
 import com.y271727uy.farmerstales.gameplay.quality_crop.QualityNbt
+import com.y271727uy.farmerstales.gameplay.quality_crop.QualityRoller
+import com.y271727uy.farmerstales.gameplay.advancements.FarmersTalesAdvancements
 import com.y271727uy.farmerstales.gameplay.quality_crop.util.MDWhiteList
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionHand
@@ -34,9 +37,13 @@ object MDHarvestEvents {
 		}
 
 		val state = level.getBlockState(event.pos)
+		if (isManorsBountyFruitLeaf(state)) {
+			return
+		}
 		if (!MDWhiteList.matches(state.block)) {
 			return
 		}
+		val shouldApplyQuality = QualityHarvestRules.canReceiveQuality(event.entity)
 
 		if (!isHarvestReady(state)) {
 			return
@@ -63,6 +70,7 @@ object MDHarvestEvents {
 		event.isCanceled = true
 
 		level.setBlockAndUpdate(event.pos, resetHarvestState(state))
+		FarmersTalesAdvancements.awardIfRaining(event.entity, level)
 
 		for (stack in finalDrops) {
 			if (stack.isEmpty) {
@@ -74,21 +82,24 @@ object MDHarvestEvents {
 				continue
 			}
 
-			rollQuality(level)?.let { quality ->
-				QualityNbt.write(stack, quality)
+			if (shouldApplyQuality) {
+				QualityRoller.roll(
+					level.random,
+					Config.mdIronCropQualityChance,
+					Config.mdGoldCropQualityChance,
+					Config.mdDiamondCropQualityChance,
+				)?.let { quality ->
+					QualityNbt.write(stack, quality, event.entity)
+				}
 			}
 
 			Block.popResource(level, event.pos, stack)
 		}
 	}
 
-	private fun rollQuality(level: ServerLevel): Quality? {
-		return when (level.random.nextInt(100)) {
-			in 0 until 35 -> Quality.IRON
-			in 35 until 45 -> Quality.GOLD
-			in 45 until 50 -> Quality.DIAMOND
-			else -> null
-		}
+	private fun isManorsBountyFruitLeaf(state: BlockState): Boolean {
+		val blockId = ForgeRegistries.BLOCKS.getKey(state.block) ?: return false
+		return blockId.namespace == "manors_bounty" && state.properties.any { it.name == "can_fruit" }
 	}
 
 	private fun isHarvestReady(state: BlockState): Boolean {

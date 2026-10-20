@@ -3,6 +3,8 @@ package com.y271727uy.farmerstales.gameplay.tree.block.entity
 import com.y271727uy.farmerstales.all.ModBlocks
 import com.y271727uy.farmerstales.gameplay.tree.FruitsDelightTreeManager
 import com.y271727uy.farmerstales.gameplay.tree.TREE_TICK_INTERVAL_TICKS
+import com.y271727uy.farmerstales.gameplay.tropical_climate.TropicalClimateEffects
+import com.y271727uy.farmerstales.gameplay.special_event.common.SpecialEventGrowth
 import com.y271727uy.farmerstales.gameplay.tree.TreeDefinitions
 import com.y271727uy.farmerstales.gameplay.tree.event.EnvironmentVariables.SeasonVariables
 import net.minecraft.core.BlockPos
@@ -119,10 +121,52 @@ class TreeStumpBlockEntity(type: BlockEntityType<*>, pos: BlockPos, state: Block
 
 			val maintenanceScore = entity.maintenanceScore()
 			val maintenanceBonus = entity.maintenanceBonus()
-			val growthAttempts = entity.growthAttemptCount()
+            val baseGrowthAttempts = entity.growthAttemptCount()
+            val growthAttempts = if (SpecialEventGrowth.isBonusGrowthActive(level, pos)) {
+                baseGrowthAttempts * 2
+            } else {
+                baseGrowthAttempts
+            }
 
 			if (FruitsDelightTreeManager.supports(entity.treeType)) {
 				FruitsDelightTreeManager.tickTree(level, pos, entity, maintenanceScore, maintenanceBonus, growthAttempts)
+				entity.syncToClient()
+				return
+			}
+
+			if (TreeDefinitions.isManorsBountyTree(treeDefinition)) {
+				repeat(growthAttempts) {
+					val eligibleLeaves = treeShape.leaveRelativePos.mapNotNull { relative ->
+						val targetPos = pos.offset(relative.x, relative.y + entity.dy, relative.z)
+						val currentState = level.getBlockState(targetPos)
+						val preparedState = TreeDefinitions.prepareManorsBountyLeafState(currentState)
+						if (preparedState != currentState) {
+							level.setBlockAndUpdate(targetPos, preparedState)
+						}
+						if (TreeDefinitions.isManorsBountyGrowthCandidate(preparedState, leafBlock)) targetPos else null
+					}
+					if (eligibleLeaves.isEmpty()) {
+						return@repeat
+					}
+
+					val targetPos = eligibleLeaves[level.random.nextInt(eligibleLeaves.size)]
+					val targetState = level.getBlockState(targetPos)
+					val chance = if (maintenanceScore < MAINTENANCE_LOW_THRESHOLD) 0 else (maintenanceScore + maintenanceBonus).coerceAtMost(GROWTH_ROLL_MAX)
+					if (level.random.nextInt(GROWTH_ROLL_MAX) < chance && TreeDefinitions.growManorsBountyLeaf(level, targetPos, targetState)) {
+						if (level.random.nextFloat() < TropicalClimateEffects.treeFertilizerConsumptionChance(level, pos, 0.4f)) {
+							fertilize = (fertilize - 1).coerceAtLeast(0)
+						}
+						if (level.random.nextFloat() < TropicalClimateEffects.treeWaterConsumptionChance(level, pos, 0.4f)) {
+							water = (water - 1).coerceAtLeast(0)
+						}
+						if (level.random.nextFloat() < BRANCHES_GAIN_CHANCE) {
+							branches = (branches + 1).coerceAtMost(BRANCHES_MAX)
+						}
+					}
+				}
+				entity.fertilize = fertilize
+				entity.water = water
+				entity.branches = branches
 				entity.syncToClient()
 				return
 			}
@@ -150,10 +194,10 @@ class TreeStumpBlockEntity(type: BlockEntityType<*>, pos: BlockPos, state: Block
 								}
 								if (level.random.nextInt(GROWTH_ROLL_MAX) < chance) {
 									level.setBlockAndUpdate(targetPos, fruitLeafState)
-									if (level.random.nextFloat() < 0.4f) {
+									if (level.random.nextFloat() < TropicalClimateEffects.treeFertilizerConsumptionChance(level, pos, 0.4f)) {
 										fertilize = (fertilize - 1).coerceAtLeast(0)
 									}
-									if (level.random.nextFloat() < 0.4f) {
+									if (level.random.nextFloat() < TropicalClimateEffects.treeWaterConsumptionChance(level, pos, 0.4f)) {
 										water = (water - 1).coerceAtLeast(0)
 									}
 									if (level.random.nextFloat() < BRANCHES_GAIN_CHANCE) {
@@ -175,10 +219,10 @@ class TreeStumpBlockEntity(type: BlockEntityType<*>, pos: BlockPos, state: Block
 									TreeDefinitions.promoteLeafState(targetState, treeDefinition)
 								}
 								level.setBlockAndUpdate(targetPos, nextState)
-								if (level.random.nextFloat() < 0.4f) {
+								if (level.random.nextFloat() < TropicalClimateEffects.treeFertilizerConsumptionChance(level, pos, 0.4f)) {
 									fertilize = (fertilize - 1).coerceAtLeast(0)
 								}
-								if (level.random.nextFloat() < 0.4f) {
+								if (level.random.nextFloat() < TropicalClimateEffects.treeWaterConsumptionChance(level, pos, 0.4f)) {
 									water = (water - 1).coerceAtLeast(0)
 								}
 								if (level.random.nextFloat() < BRANCHES_GAIN_CHANCE) {

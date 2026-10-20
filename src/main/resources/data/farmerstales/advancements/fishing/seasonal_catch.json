@@ -1,0 +1,18 @@
+{
+  "parent": "farmerstales:root",
+  "display": {
+    "icon": { "item": "minecraft:fishing_rod" },
+    "title": { "translate": "advancement.farmerstales.seasonal_catch.title" },
+    "description": { "translate": "advancement.farmerstales.seasonal_catch.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "spring": { "trigger": "minecraft:impossible" },
+    "summer": { "trigger": "minecraft:impossible" },
+    "autumn": { "trigger": "minecraft:impossible" },
+    "winter": { "trigger": "minecraft:impossible" }
+  }
+}

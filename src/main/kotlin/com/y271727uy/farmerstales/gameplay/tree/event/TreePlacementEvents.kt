@@ -3,6 +3,7 @@ package com.y271727uy.farmerstales.gameplay.tree.event
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.all.ModBlocks
 import com.y271727uy.farmerstales.gameplay.tree.TreeDefinitions
+import com.y271727uy.farmerstales.gameplay.advancements.FarmersTalesAdvancements
 import com.y271727uy.farmerstales.gameplay.tree.block.entity.TreeCompostBlockEntity
 import net.minecraft.core.Direction
 import net.minecraft.sounds.SoundEvents
@@ -70,5 +71,8 @@ object TreePlacementEvents {
 		blockEntity.pendingGrowthTicks = -1
 		TreeCompostBlockEntity.scheduleInitialGrowth(blockEntity, level.random)
 		blockEntity.setChanged()
+		(event.entity as? net.minecraft.server.level.ServerPlayer)?.let {
+			FarmersTalesAdvancements.award(it, "orchard/plant_tree")
+		}
 	}
 }

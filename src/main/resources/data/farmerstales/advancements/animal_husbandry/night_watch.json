@@ -1,0 +1,13 @@
+{
+  "parent": "farmerstales:animal_husbandry/shepherd_dog",
+  "display": {
+    "icon": { "item": "minecraft:bone" },
+    "title": { "translate": "advancement.farmerstales.night_watch.title" },
+    "description": { "translate": "advancement.farmerstales.night_watch.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

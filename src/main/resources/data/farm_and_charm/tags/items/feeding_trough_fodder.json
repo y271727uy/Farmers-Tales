@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "#forge:crops",
+    "#forge:fruits",
+    "#forge:vegetables",
+    "#c:crops",
+    "#c:fruits",
+    "#c:vegetables"
+  ]
+}

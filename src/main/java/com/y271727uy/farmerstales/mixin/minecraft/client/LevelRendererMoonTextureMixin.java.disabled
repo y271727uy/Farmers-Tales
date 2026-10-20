@@ -1,0 +1,38 @@
+package com.y271727uy.farmerstales.mixin.minecraft.client;
+
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.y271727uy.farmerstales.gameplay.special_event.common.MoonPhaseClientVisuals;
+import net.minecraft.client.Camera;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.resources.ResourceLocation;
+import org.joml.Matrix4f;
+import org.objectweb.asm.Opcodes;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+
+@Mixin(LevelRenderer.class)
+public class LevelRendererMoonTextureMixin {
+    @WrapOperation(
+            method = "renderSky",
+            at = @At(
+                    value = "FIELD",
+                    target = "Lnet/minecraft/client/renderer/LevelRenderer;MOON_LOCATION:Lnet/minecraft/resources/ResourceLocation;",
+                    opcode = Opcodes.GETSTATIC
+            )
+    )
+    private ResourceLocation farmerstales$swapMoonTexture(
+            Operation<ResourceLocation> original,
+            PoseStack poseStack,
+            Matrix4f projectionMatrix,
+            float partialTick,
+            Camera camera,
+            boolean isFoggy,
+            Runnable setupFog
+    ) {
+        MoonPhaseClientVisuals.drawMoonHalo(poseStack);
+        ResourceLocation replacement = MoonPhaseClientVisuals.activeMoonTexture();
+        return replacement != null ? replacement : original.call();
+    }
+}

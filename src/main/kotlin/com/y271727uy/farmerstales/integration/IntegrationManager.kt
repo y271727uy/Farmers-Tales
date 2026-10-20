@@ -1,33 +1,32 @@
 package com.y271727uy.farmerstales.integration
 
 import com.y271727uy.farmerstales.FTMod
-import com.y271727uy.farmerstales.integration.farmersdelight.FarmersDelightIntegration
 import com.y271727uy.farmerstales.integration.crafttweaker.CraftTweakerIntegration
 import com.y271727uy.farmerstales.integration.jade.JadeIntegration
+import com.y271727uy.farmerstales.integration.forestry.ForestryIntegration
 import com.y271727uy.farmerstales.integration.jei.JeiIntegration
 import com.y271727uy.farmerstales.integration.kubejs.KubeJsIntegration
-import com.y271727uy.farmerstales.integration.list.ListIntegration
 import com.y271727uy.farmerstales.integration.sereneseasons.SereneSeasonsIntegration
 import net.minecraft.world.level.Level
 import net.minecraftforge.fml.ModList
-import net.minecraftforge.eventbus.api.IEventBus
+
+data class SeasonCalendarDate(
+    val hour: Int,
+    val minute: Int,
+    val monthIndex: Int,
+    val dayOfMonth: Int,
+    val year: Long,
+    val daysInMonth: Int,
+    val dayDuration: Int,
+)
 
 object IntegrationManager {
     const val JADE = "jade"
     const val JEI = "jei"
-    const val LIST = "list"
-    const val FARMERS_DELIGHT = "farmersdelight"
     const val SERENE_SEASONS = "sereneseasons"
     const val KUBEJS = "kubejs"
     const val CRAFTTWEAKER = "crafttweaker"
-
-    fun initCreativeTabs(modEventBus: IEventBus) {
-        if (isLoaded(LIST)) {
-            ListIntegration.init(modEventBus)
-        } else if (isLoaded(FARMERS_DELIGHT)) {
-            FarmersDelightIntegration.init(modEventBus)
-        }
-    }
+    const val FORESTRY = "forestry"
 
     fun init() {
         if (isLoaded(JADE)) {
@@ -45,6 +44,9 @@ object IntegrationManager {
         if (isLoaded(CRAFTTWEAKER)) {
             CraftTweakerIntegration.init()
         }
+        if (isLoaded(FORESTRY)) {
+            ForestryIntegration.init()
+        }
     }
 
     fun currentSeasonName(level: Level): String? {
@@ -60,6 +62,13 @@ object IntegrationManager {
 
     fun isSereneSeasonsLoaded(): Boolean {
         return ModList.get().isLoaded(SERENE_SEASONS)
+    }
+
+    fun calendarAt(level: Level, gameTimeOffset: Long): SeasonCalendarDate? {
+        if (!isSereneSeasonsLoaded()) {
+            return null
+        }
+        return SereneSeasonsIntegration.calendarAt(level, gameTimeOffset)
     }
 
     private fun isLoaded(modId: String): Boolean {

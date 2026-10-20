@@ -1,0 +1,24 @@
+{
+  "parent": "farmerstales:animal_husbandry/domesticate_animal",
+  "display": {
+    "icon": { "item": "minecraft:egg" },
+    "title": { "translate": "advancement.farmerstales.breed_domesticated_animals.title" },
+    "description": { "translate": "advancement.farmerstales.breed_domesticated_animals.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "cow": { "trigger": "minecraft:impossible" },
+    "mooshroom": { "trigger": "minecraft:impossible" },
+    "sheep": { "trigger": "minecraft:impossible" },
+    "rabbit": { "trigger": "minecraft:impossible" },
+    "camel": { "trigger": "minecraft:impossible" },
+    "llama": { "trigger": "minecraft:impossible" },
+    "horse": { "trigger": "minecraft:impossible" },
+    "donkey": { "trigger": "minecraft:impossible" },
+    "chicken": { "trigger": "minecraft:impossible" },
+    "pig": { "trigger": "minecraft:impossible" }
+  }
+}

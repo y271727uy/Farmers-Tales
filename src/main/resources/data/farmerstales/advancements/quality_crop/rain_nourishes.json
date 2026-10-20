@@ -1,0 +1,10 @@
+{
+  "parent": "farmerstales:quality_crop/first_quality_crop",
+  "display": {
+    "icon": { "item": "minecraft:water_bucket" },
+    "title": { "translate": "advancement.farmerstales.rain_nourishes.title" },
+    "description": { "translate": "advancement.farmerstales.rain_nourishes.description" },
+    "frame": "task", "show_toast": true, "announce_to_chat": true, "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

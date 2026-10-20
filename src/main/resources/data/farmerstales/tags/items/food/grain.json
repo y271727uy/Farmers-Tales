@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:wheat",
+    "minecraft:wheat_seeds",
+    "minecraft:bread",
+    "minecraft:cookie",
+    "minecraft:cake"
+  ]
+}

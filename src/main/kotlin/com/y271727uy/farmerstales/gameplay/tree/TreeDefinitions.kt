@@ -10,6 +10,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.BonemealableBlock
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BooleanProperty
 import net.minecraft.world.level.block.state.properties.IntegerProperty
@@ -158,6 +159,8 @@ object TreeDefinitions {
 		return state == extraLeafState
 	}
 
+	fun isManorsBountyTree(definition: TreeDefinition): Boolean = definition.leafId.startsWith("manors_bounty:")
+
 	fun createTree(level: Level, stumpPos: BlockPos, seedId: String, dy: Int): Boolean {
 		val definition = treeDefinitions[seedId] ?: return false
 		if (FruitsDelightTreeManager.supports(seedId)) {
@@ -171,8 +174,13 @@ object TreeDefinitions {
 		for (relative in shape.leaveRelativePos) {
 			val targetPos = stumpPos.offset(relative.x, relative.y + dy, relative.z)
 			if (level.getBlockState(targetPos).isAir) {
-				val leafState = withBlockstateProperty(leafBlock.defaultBlockState(), baseLeafState)
-				level.setBlockAndUpdate(targetPos, withBooleanProperty(leafState, "persistent", true))
+				val leafState = if (isManorsBountyTree(definition)) {
+					createManorsBountyLeafState(leafBlock.defaultBlockState())
+				} else {
+					val genericLeafState = withBlockstateProperty(leafBlock.defaultBlockState(), baseLeafState)
+					withBooleanProperty(genericLeafState, "persistent", true)
+				}
+				level.setBlockAndUpdate(targetPos, leafState)
 			}
 		}
 
@@ -363,10 +371,64 @@ object TreeDefinitions {
 		}
 	}
 
+	private fun createManorsBountyLeafState(state: BlockState): BlockState {
+		var prepared = withPropertyValue(state, "age", "0")
+		prepared = withPropertyValue(prepared, "can_fruit", "TRUE")
+		prepared = withPropertyValue(prepared, "rare", "false")
+		return prepareManorsBountyLeafState(prepared)
+	}
+
+	fun prepareManorsBountyLeafState(state: BlockState): BlockState {
+		var prepared = state
+		prepared = withPropertyValue(prepared, "can_fruit", "TRUE")
+		prepared = withPropertyValue(prepared, "persistent", "false")
+		return withPropertyValue(prepared, "distance", "1")
+	}
+
+	fun isManorsBountyGrowthCandidate(state: BlockState, leafBlock: Block): Boolean {
+		if (state.block != leafBlock) {
+			return false
+		}
+		val age = integerPropertyValue(state, "age") ?: return false
+		return age < 2 && propertyValue(state, "can_fruit").equals("TRUE", ignoreCase = true)
+	}
+
+	fun growManorsBountyLeaf(level: ServerLevel, pos: BlockPos, state: BlockState): Boolean {
+		val growable = state.block as? BonemealableBlock ?: return false
+		if (!growable.isValidBonemealTarget(level, pos, state, false)) {
+			return false
+		}
+		growable.performBonemeal(level, level.random, pos, state)
+		return true
+	}
+
 	private fun withBooleanProperty(state: BlockState, propertyName: String, value: Boolean): BlockState {
 		val property = state.properties.firstOrNull { it is BooleanProperty && it.name == propertyName } as? BooleanProperty ?: return state
 		return try {
 			state.setValue(property, value)
+		} catch (_: IllegalArgumentException) {
+			state
+		}
+	}
+
+	private fun integerPropertyValue(state: BlockState, propertyName: String): Int? {
+		val property = state.properties.firstOrNull { it is IntegerProperty && it.name == propertyName } as? IntegerProperty ?: return null
+		return state.getValue(property)
+	}
+
+	@Suppress("UNCHECKED_CAST")
+	private fun propertyValue(state: BlockState, propertyName: String): String? {
+		val property = state.properties.firstOrNull { it.name == propertyName } ?: return null
+		val typedProperty = property as Property<Comparable<Any>>
+		return state.getValue(typedProperty).toString()
+	}
+
+	@Suppress("UNCHECKED_CAST")
+	private fun withPropertyValue(state: BlockState, propertyName: String, rawValue: String): BlockState {
+		val property = state.properties.firstOrNull { it.name == propertyName } ?: return state
+		val matchedValue = property.possibleValues.firstOrNull { it.toString().equals(rawValue, ignoreCase = true) } ?: return state
+		return try {
+			state.setValue(property as Property<Comparable<Any>>, matchedValue as Comparable<Any>)
 		} catch (_: IllegalArgumentException) {
 			state
 		}
@@ -384,7 +446,6 @@ object TreeDefinitions {
 			"manors_bounty:mango_seed" to TreeDefinition("manors_bounty:mango_tree_leaves", "manors_bounty:mango_tree_log", 3, 1, 3, 5),
 			"manors_bounty:starfruit_seed" to TreeDefinition("manors_bounty:starfruit_tree_leaves", "manors_bounty:starfruit_tree_log", 2, 1, 3, 5),
 			"manors_bounty:cherries_seed" to TreeDefinition("manors_bounty:cherries_tree_leaves", "manors_bounty:cherries_tree_log", 1, 1, 3, 5),
-			"manors_bounty:durian_seed" to TreeDefinition("manors_bounty:durian_tree_leaves", "manors_bounty:durian_tree_log", 2, 4, 3, 7),
 			"manors_bounty:kiwifruit_seed" to TreeDefinition("manors_bounty:kiwifruit_tree_leaves", "manors_bounty:kiwifruit_tree_log", 2, 1, 3, 5),
 			"manors_bounty:hawthorn_seed" to TreeDefinition("manors_bounty:hawthorn_tree_leaves", "manors_bounty:hawthorn_tree_log", 2, 1, 3, 5),
 			"manors_bounty:pomegranate_sapling" to TreeDefinition("manors_bounty:pomegranate_tree_leaves", "manors_bounty:pomegranate_tree_log", 1, 1, 3, 5),

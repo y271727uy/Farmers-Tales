@@ -2,8 +2,11 @@
 
 package com.y271727uy.farmerstales.gameplay.quality_crop
 
+import com.y271727uy.farmerstales.gameplay.advancements.FarmersTalesAdvancements
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.entity.player.Player
 import net.minecraft.util.RandomSource
 
 /**
@@ -69,6 +72,15 @@ object QualityNbt {
     @JvmStatic
     fun write(stack: ItemStack, quality: Quality): ItemStack {
         write(stack.orCreateTag, quality)
+        return stack
+    }
+
+    @JvmStatic
+    fun write(stack: ItemStack, quality: Quality, harvester: Player?): ItemStack {
+        write(stack, quality)
+        (harvester as? ServerPlayer)?.let {
+            FarmersTalesAdvancements.award(it, "quality_crop/first_quality_crop", quality.name.lowercase(java.util.Locale.ROOT))
+        }
         return stack
     }
 

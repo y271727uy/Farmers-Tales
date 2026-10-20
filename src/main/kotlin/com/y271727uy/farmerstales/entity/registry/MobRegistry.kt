@@ -161,6 +161,14 @@ open class MobRegistry(private val modId: String) {
             spawnPlacement = SpawnPlacementDefinition(SpawnPlacements.Type.ON_GROUND, heightmapType, predicate)
         }
 
+        /** Registers a fully submerged spawn placement for aquatic mobs. */
+        fun spawnInWater(
+            predicate: SpawnPlacements.SpawnPredicate<T>,
+            heightmapType: Heightmap.Types = Heightmap.Types.OCEAN_FLOOR,
+        ) {
+            spawnPlacement = SpawnPlacementDefinition(SpawnPlacements.Type.IN_WATER, heightmapType, predicate)
+        }
+
         fun naturalSpawn(biomeTag: String, weight: Int, minCount: Int, maxCount: Int) {
             require(weight > 0 && minCount > 0 && maxCount >= minCount) { "Invalid natural spawn settings" }
             naturalSpawn = NaturalSpawnDefinition(ResourceLocation.parse(biomeTag), weight, minCount, maxCount)

@@ -3,6 +3,7 @@ package com.y271727uy.farmerstales.gameplay.tree.event
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.all.ModBlocks
 import com.y271727uy.farmerstales.gameplay.tree.block.entity.TreeStumpBlockEntity
+import com.y271727uy.farmerstales.gameplay.advancements.FarmersTalesAdvancements
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
@@ -52,8 +53,11 @@ object TreeInteractionEvents {
 			return
 		}
 
+		if (blockEntity.maintenanceScore() >= 100) {
+			FarmersTalesAdvancements.award(event.entity as net.minecraft.server.level.ServerPlayer, "orchard/lush_branches")
+		}
+
 		event.setCancellationResult(InteractionResult.SUCCESS)
 		event.setCanceled(true)
 	}
 }
-

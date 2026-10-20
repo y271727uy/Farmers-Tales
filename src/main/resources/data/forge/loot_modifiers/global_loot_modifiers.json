@@ -1,0 +1,25 @@
+{
+  "replace": false,
+  "entries": [
+    "farmerstales:animal_fat_from_chicken",
+    "farmerstales:animal_fat_from_cow",
+    "farmerstales:animal_fat_from_sheep",
+    "farmerstales:animal_fat_from_pig",
+    "farmerstales:animal_fat_from_rabbit",
+    "farmerstales:animal_fat_from_mooshroom",
+    "farmerstales:animal_fat_from_camel",
+    "farmerstales:animal_fat_from_llama",
+    "farmerstales:animal_fat_from_horse",
+    "farmerstales:animal_fat_from_donkey",
+    "farmerstales:bone_from_chicken",
+    "farmerstales:bone_from_cow",
+    "farmerstales:bone_from_sheep",
+    "farmerstales:bone_from_pig",
+    "farmerstales:bone_from_rabbit",
+    "farmerstales:bone_from_mooshroom",
+    "farmerstales:bone_from_camel",
+    "farmerstales:bone_from_llama",
+    "farmerstales:bone_from_horse",
+    "farmerstales:bone_from_donkey"
+  ]
+}

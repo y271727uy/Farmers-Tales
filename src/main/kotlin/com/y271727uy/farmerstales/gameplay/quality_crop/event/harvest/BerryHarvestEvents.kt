@@ -1,8 +1,10 @@
 package com.y271727uy.farmerstales.gameplay.quality_crop.event.harvest
 
 import com.y271727uy.farmerstales.FTMod
-import com.y271727uy.farmerstales.gameplay.quality_crop.Quality
+import com.y271727uy.farmerstales.gameplay.quality_crop.QualityHarvestRules
 import com.y271727uy.farmerstales.gameplay.quality_crop.QualityNbt
+import com.y271727uy.farmerstales.gameplay.quality_crop.QualityRoller
+import com.y271727uy.farmerstales.gameplay.advancements.FarmersTalesAdvancements
 import com.y271727uy.farmerstales.gameplay.quality_crop.util.BerryFruitHarvestWhitelist
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionHand
@@ -36,6 +38,7 @@ object BerryHarvestEvents {
 		if (!BerryFruitHarvestWhitelist.matches(state.block)) {
 			return
 		}
+		val shouldApplyQuality = QualityHarvestRules.canReceiveQuality(event.entity)
 
 		if (!isHarvestReady(state)) {
 			return
@@ -50,6 +53,7 @@ object BerryHarvestEvents {
 		event.isCanceled = true
 
 		level.setBlockAndUpdate(event.pos, resetHarvestState(state))
+		FarmersTalesAdvancements.awardIfRaining(event.entity, level)
 
 		for (stack in drops) {
 			if (stack.isEmpty) {
@@ -61,20 +65,13 @@ object BerryHarvestEvents {
 				continue
 			}
 
-			rollQuality(level)?.let { quality ->
-				QualityNbt.write(stack, quality)
+			if (shouldApplyQuality) {
+				QualityRoller.roll(level.random)?.let { quality ->
+					QualityNbt.write(stack, quality, event.entity)
+				}
 			}
 
 			Block.popResource(level, event.pos, stack)
-		}
-	}
-
-	private fun rollQuality(level: ServerLevel): Quality? {
-		return when (level.random.nextInt(100)) {
-			in 0 until 25 -> Quality.IRON
-			in 25 until 40 -> Quality.GOLD
-			in 40 until 45 -> Quality.DIAMOND
-			else -> null
 		}
 	}
 

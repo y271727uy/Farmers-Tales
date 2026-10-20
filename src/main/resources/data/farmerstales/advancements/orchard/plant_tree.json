@@ -1,0 +1,13 @@
+{
+  "parent": "farmerstales:root",
+  "display": {
+    "icon": { "item": "farmerstales:tree_compost" },
+    "title": { "translate": "advancement.farmerstales.plant_tree.title" },
+    "description": { "translate": "advancement.farmerstales.plant_tree.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

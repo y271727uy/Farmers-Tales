@@ -1,0 +1,13 @@
+{
+  "parent": "farmerstales:fishing/seasonal_catch",
+  "display": {
+    "icon": { "item": "minecraft:heart_of_the_sea" },
+    "title": { "translate": "advancement.farmerstales.fish_king.title" },
+    "description": { "translate": "advancement.farmerstales.fish_king.description" },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

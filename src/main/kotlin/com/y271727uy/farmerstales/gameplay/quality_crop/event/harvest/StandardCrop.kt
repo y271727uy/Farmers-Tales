@@ -1,8 +1,10 @@
 package com.y271727uy.farmerstales.gameplay.quality_crop.event.harvest
 
 import com.y271727uy.farmerstales.FTMod
-import com.y271727uy.farmerstales.gameplay.quality_crop.Quality
+import com.y271727uy.farmerstales.gameplay.quality_crop.QualityHarvestRules
 import com.y271727uy.farmerstales.gameplay.quality_crop.QualityNbt
+import com.y271727uy.farmerstales.gameplay.quality_crop.QualityRoller
+import com.y271727uy.farmerstales.gameplay.advancements.FarmersTalesAdvancements
 import com.y271727uy.farmerstales.gameplay.quality_crop.util.StandardCropWhitelist
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.Block
@@ -30,34 +32,29 @@ object StandardCrop {
 		}
 
 		event.isCanceled = true
-
-		val drops = Block.getDrops(state, level, event.pos, level.getBlockEntity(event.pos))
+		val drops = getHarvestDrops(level, event.pos, state, QualityHarvestRules.canReceiveQuality(event.player), event.player)
 		level.removeBlock(event.pos, false)
 
 		for (stack in drops) {
 			if (stack.isEmpty) {
 				continue
 			}
-
-			if (QualityNbt.hasValidQuality(stack) || !StandardCropWhitelist.matches(stack)) {
-				Block.popResource(level, event.pos, stack)
-				continue
-			}
-
-			rollQuality(level)?.let { quality ->
-				QualityNbt.write(stack, quality)
-			}
-
 			Block.popResource(level, event.pos, stack)
 		}
 	}
 
-	private fun rollQuality(level: ServerLevel): Quality? {
-		return when (level.random.nextInt(100)) {
-			in 0 until 25 -> Quality.IRON
-			in 25 until 40 -> Quality.GOLD
-			in 40 until 45 -> Quality.DIAMOND
-			else -> null
+	/** Returns mature-crop loot after applying this mod's crop quality rules. */
+	fun getHarvestDrops(
+		level: ServerLevel,
+		pos: net.minecraft.core.BlockPos,
+		state: net.minecraft.world.level.block.state.BlockState,
+		shouldApplyQuality: Boolean,
+		harvester: net.minecraft.world.entity.player.Player? = null,
+	) =
+		Block.getDrops(state, level, pos, level.getBlockEntity(pos)).onEach { stack ->
+			FarmersTalesAdvancements.awardIfRaining(harvester, level)
+			if (shouldApplyQuality && !stack.isEmpty && !QualityNbt.hasValidQuality(stack) && StandardCropWhitelist.matches(stack)) {
+				QualityRoller.roll(level.random)?.let { quality -> QualityNbt.write(stack, quality, harvester) }
+			}
 		}
-	}
 }

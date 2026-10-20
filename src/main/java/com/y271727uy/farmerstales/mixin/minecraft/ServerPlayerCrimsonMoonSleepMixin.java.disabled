@@ -1,0 +1,35 @@
+package com.y271727uy.farmerstales.mixin.minecraft;
+
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.datafixers.util.Either;
+import com.y271727uy.farmerstales.gameplay.special_event.crimson_moon.CrimsonMoonSleep;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Unit;
+import net.minecraft.world.entity.player.Player;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+
+/** Warns on the first valid bed use during a crimson moon; the second click sleeps. */
+@Mixin(ServerPlayer.class)
+public abstract class ServerPlayerCrimsonMoonSleepMixin {
+    @WrapOperation(
+            method = "startSleepInBed",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/entity/player/Player;startSleepInBed(Lnet/minecraft/core/BlockPos;)Lcom/mojang/datafixers/util/Either;"
+            )
+    )
+    private Either<Player.BedSleepingProblem, Unit> farmerstales$confirmCrimsonMoonSleep(
+            ServerPlayer instance,
+            BlockPos at,
+            Operation<Either<Player.BedSleepingProblem, Unit>> original
+    ) {
+        Either<Player.BedSleepingProblem, Unit> blocked = CrimsonMoonSleep.tryWarnFirstAttempt(instance);
+        if (blocked != null) {
+            return blocked;
+        }
+        return original.call(instance, at);
+    }
+}

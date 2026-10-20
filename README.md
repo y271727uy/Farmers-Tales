@@ -1,29 +1,49 @@
+类似于星露谷的社区献祭
+幼苗移栽与育苗培养
 
-Installation information
-=======
+播种工具 催熟工具 防冻剂 除草剂 除藻剂 消毒剂 保湿剂 营养液 病虫害管理 杀虫剂 防冻液 融雪剂 诱鱼器 水肥一体机 时间、气候HUD 天气HUD 臻选作物 基因作物 肥料 种子提取器
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+铲子
+铲子可清除杂草、翻耕土壤，且可以右键收获作物,回收种子。
+强化铲子
+强化铲子除了铲子的功能外，如种子回收所述，在高抗性时产出显著更多种子。
+洒水壶
+洒水壶为作物架洒水增加储水，而水源方块对作物架储水没有任何影响，初次使用时需要右键水源方块进行补充。
+植物透镜
+植物透镜是早期的关键工具之一。右键点击作物架可查看作物的多项信息。
+这些信息包括种类、属性、等级、是否可生长（部分作物有特殊要求）、是否可收获以及生长进度。
+人工授粉
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+星级作物更多兼容
+兔子洞 对应的捕获玩意 
+萤火虫和捕虫网
+牧羊犬目标，可以设置点位然后牧羊犬把羊赶过去 （任务模式：集合）
+反季节培育箱
+温室
+秋天大雁
+堆肥农业（似乎是？耕地下面去放粪便块然后上面的农作物提升品值？要和树木肥料的这个公式相似）
+坍毁化合的那个甜菜根的铜啥的有点意思——植物炼金
+正在膨大 jade
+巨大化作物
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+春天：春日颂
+夏天：浆果季节
+秋天：丰收相关吧 我也没想到
+冬天：根茎季节？还是啥？根茎作物的甜蜜？
+或者要和献祭有关的文案？
 
-Mapping Names:
-============
-The MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+啊，魔法相关 自然崇拜？
+例如：箱子里面放入对应季节的作物然后献祭获得一些增益
+我觉得我得去看看神秘时代、新生魔艺、植物魔法啥的
 
-MDG Legacy:
-==========
-This template uses [ModDevGradle Legacy](https://github.com/neoforged/ModDevGradle). Documentation can be found [here](https://github.com/neoforged/ModDevGradle/blob/main/LEGACY.md).
+古凯尔特的献祭？把酸奶、燕麦、黄油丢入沼泽祈祷风调雨顺
 
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+林业牢模组附属移植
+
+狩猎玩法
+野兽的头制作成标本？
+更多简易的火枪
+捕兽夹
+虫灾：秋天有概率触发蝗灾，遮天蔽日的蝗虫。生成的蝗虫团会啃食农作物，你需要制作喷火器去烧他们！
+
+不应该这的：草莓食谱扩展 哈密瓜 柚子

@@ -1,0 +1,13 @@
+{
+  "display": {
+    "icon": { "item": "farmerstales:tree_compost" },
+    "title": { "translate": "advancement.farmerstales.root.title" },
+    "description": { "translate": "advancement.farmerstales.root.description" },
+    "background": "minecraft:textures/block/dirt.png",
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": { "started": { "trigger": "minecraft:tick" } }
+}

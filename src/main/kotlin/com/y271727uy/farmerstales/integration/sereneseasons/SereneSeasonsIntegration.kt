@@ -2,6 +2,9 @@ package com.y271727uy.farmerstales.integration.sereneseasons
 
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.config.Config
+import com.y271727uy.farmerstales.gameplay.season_announcement.SeasonAnnouncementEvents
+import com.y271727uy.farmerstales.gameplay.tropical_climate.TropicalClimateEvents
+import com.y271727uy.farmerstales.integration.SeasonCalendarDate
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
@@ -13,12 +16,54 @@ import java.util.EnumSet
 import java.util.Locale
 
 object SereneSeasonsIntegration {
+    private const val START_YEAR = 1000L
+    private const val MONTHS_IN_YEAR = 12
+
     fun init() {
         FTMod.LOGGER.debug("Serene Seasons compatibility enabled")
+        SeasonAnnouncementEvents.register()
+        TropicalClimateEvents.register()
     }
 
     fun currentSeasonName(level: Level): String {
         return SeasonHelper.getSeasonState(level).season.name.lowercase(Locale.ROOT)
+    }
+
+    /**
+     * Calendar at a future (or past) game-time offset from now.
+     * Season ticks wrap per cycle, so the offset is applied to the unwrapped
+     * season clock rather than treating [net.minecraft.world.level.Level.getGameTime]
+     * as season time.
+     *
+     * Twelve sub-seasons map onto January–December, starting at Early Spring.
+     */
+    fun calendarAt(level: Level, gameTimeOffset: Long): SeasonCalendarDate? {
+        val state = SeasonHelper.getSeasonState(level) ?: return null
+        val dayDuration = state.dayDuration.coerceAtLeast(1)
+        val subSeasonDuration = state.subSeasonDuration.toLong().coerceAtLeast(1L)
+        val cycleDuration = state.cycleDuration.toLong().coerceAtLeast(1L)
+        val unwrapped = state.seasonCycleTicks.toLong() + gameTimeOffset
+
+        val year = START_YEAR + Math.floorDiv(unwrapped, cycleDuration)
+        val ticksInCycle = Math.floorMod(unwrapped, cycleDuration)
+        val monthIndex = (ticksInCycle / subSeasonDuration).toInt().coerceIn(0, MONTHS_IN_YEAR - 1)
+        val ticksInMonth = ticksInCycle % subSeasonDuration
+        val dayOfMonth = 1 + (ticksInMonth / dayDuration).toInt()
+        val ticksInDay = ticksInMonth % dayDuration
+        val ticksPerHour = (dayDuration / 24).coerceAtLeast(1)
+        val hour = ((ticksInDay / ticksPerHour) % 24).toInt()
+        val minute = ((ticksInDay % ticksPerHour) / (ticksPerHour / 60f)).toInt()
+        val daysInMonth = (subSeasonDuration / dayDuration).toInt().coerceAtLeast(1)
+
+        return SeasonCalendarDate(
+            hour = hour,
+            minute = minute,
+            monthIndex = monthIndex,
+            dayOfMonth = dayOfMonth,
+            year = year,
+            daysInMonth = daysInMonth,
+            dayDuration = dayDuration,
+        )
     }
 }
 
@@ -101,13 +146,13 @@ object SeasonSupport {
         WINTER;
 
         fun displayName(): Component = Component.translatable("season.${FTMod.MODID}.${name.lowercase(Locale.ROOT)}")
-            .withStyle(
-                when (this) {
-                    SPRING -> ChatFormatting.GREEN
-                    SUMMER -> ChatFormatting.YELLOW
-                    AUTUMN -> ChatFormatting.GOLD
-                    WINTER -> ChatFormatting.AQUA
-                }
-            )
+            .withStyle(chatFormatting())
+
+        fun chatFormatting(): ChatFormatting = when (this) {
+            SPRING -> ChatFormatting.GREEN
+            SUMMER -> ChatFormatting.YELLOW
+            AUTUMN -> ChatFormatting.GOLD
+            WINTER -> ChatFormatting.AQUA
+        }
     }
 }

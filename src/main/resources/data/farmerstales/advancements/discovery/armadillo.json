@@ -1,0 +1,10 @@
+{
+  "parent": "farmerstales:root",
+  "display": {
+    "icon": { "item": "farmerstales:armadillo_scute" },
+    "title": { "translate": "advancement.farmerstales.armadillo.title" },
+    "description": { "translate": "advancement.farmerstales.armadillo.description" },
+    "frame": "task", "show_toast": true, "announce_to_chat": true, "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

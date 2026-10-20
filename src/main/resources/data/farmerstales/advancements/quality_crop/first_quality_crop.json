@@ -1,0 +1,17 @@
+{
+  "parent": "farmerstales:root",
+  "display": {
+    "icon": { "item": "minecraft:wheat" },
+    "title": { "translate": "advancement.farmerstales.first_quality_crop.title" },
+    "description": { "translate": "advancement.farmerstales.first_quality_crop.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "iron": { "trigger": "minecraft:impossible" },
+    "gold": { "trigger": "minecraft:impossible" },
+    "diamond": { "trigger": "minecraft:impossible" }
+  }
+}

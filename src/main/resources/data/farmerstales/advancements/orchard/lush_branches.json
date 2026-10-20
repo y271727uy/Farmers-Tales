@@ -1,0 +1,10 @@
+{
+  "parent": "farmerstales:orchard/plant_tree",
+  "display": {
+    "icon": { "item": "minecraft:oak_leaves" },
+    "title": { "translate": "advancement.farmerstales.lush_branches.title" },
+    "description": { "translate": "advancement.farmerstales.lush_branches.description" },
+    "frame": "goal", "show_toast": true, "announce_to_chat": true, "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

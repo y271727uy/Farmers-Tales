@@ -1,0 +1,21 @@
+package com.y271727uy.farmerstales.mixin.minecraft.client;
+
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.y271727uy.farmerstales.gameplay.dark_cumulonimbus.DarkCumulonimbusClientVisuals;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.phys.Vec3;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+
+@Mixin(ClientLevel.class)
+public class ClientLevelDarkCumulonimbusMixin {
+    @ModifyReturnValue(method = "getSkyColor", at = @At("RETURN"))
+    private Vec3 farmerstales$tintDarkCumulonimbusSky(Vec3 original) {
+        return DarkCumulonimbusClientVisuals.tintSky(original);
+    }
+
+    @ModifyReturnValue(method = "getCloudColor", at = @At("RETURN"))
+    private Vec3 farmerstales$tintDarkCumulonimbusClouds(Vec3 original) {
+        return DarkCumulonimbusClientVisuals.tintClouds(original);
+    }
+}

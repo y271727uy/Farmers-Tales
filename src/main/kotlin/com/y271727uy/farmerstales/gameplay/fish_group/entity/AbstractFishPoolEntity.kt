@@ -2,9 +2,12 @@ package com.y271727uy.farmerstales.gameplay.fish_group.entity
 
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.gameplay.fish_group.pool.FishKingCooldownSavedData
+import com.y271727uy.farmerstales.gameplay.advancements.FarmersTalesAdvancements
+import com.y271727uy.farmerstales.gameplay.special_event.crimson_moon.CrimsonMoonEvents
 import com.y271727uy.farmerstales.gameplay.fish_group.pool.FishPoolDefinition
 import com.y271727uy.farmerstales.gameplay.fish_group.pool.FishPoolFactory
 import com.y271727uy.farmerstales.gameplay.fish_group.pool.FishPoolLootManager
+import com.y271727uy.farmerstales.integration.sereneseasons.SeasonSupport
 import com.y271727uy.farmerstales.integration.sereneseasons.SeasonSupport.SeasonWindow
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
@@ -128,10 +131,20 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
             return
         }
         giveReward(player, reward)
+        (player as? net.minecraft.server.level.ServerPlayer)?.let { serverPlayer ->
+            SeasonSupport.currentSeasonWindow(serverLevel)?.let { season ->
+                FarmersTalesAdvancements.award(serverPlayer, "fishing/seasonal_catch", season.name.lowercase(java.util.Locale.ROOT))
+            }
+        }
         tryAwardFishKing(serverLevel, player, definition)
         triggerHurt()
         currentFishCount++
-        if (currentFishCount >= maxFishCount) removeWithEffects(serverLevel)
+        if (currentFishCount >= maxFishCount) {
+            (player as? net.minecraft.server.level.ServerPlayer)?.let {
+                FarmersTalesAdvancements.award(it, "fishing/empty_fish_pool")
+            }
+            removeWithEffects(serverLevel)
+        }
     }
 
     private fun ensureFishPoolDefinition() {
@@ -176,7 +189,8 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
         val fishKingId = definition.fishKing ?: return
         if (fishKingAwarded) return
         val cooldownData = FishKingCooldownSavedData.get(serverLevel)
-        if (!cooldownData.canAward(player, serverLevel.gameTime) || serverLevel.random.nextInt(100) != 0) return
+        val kingRoll = if (CrimsonMoonEvents.isActive(serverLevel)) CRIMSON_FISH_KING_ROLL else FISH_KING_ROLL
+        if (!cooldownData.canAward(player, serverLevel.gameTime) || serverLevel.random.nextInt(kingRoll) != 0) return
 
         val fishKingItem = ForgeRegistries.ITEMS.getValue(fishKingId)
         if (fishKingItem == null || fishKingItem == Items.AIR) {
@@ -184,6 +198,9 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
             return
         }
         giveReward(player, ItemStack(fishKingItem))
+        (player as? net.minecraft.server.level.ServerPlayer)?.let {
+            FarmersTalesAdvancements.award(it, "fishing/fish_king")
+        }
         fishKingAwarded = true
         cooldownData.markAwarded(player, serverLevel.gameTime)
     }
@@ -199,5 +216,7 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
         private const val FISH_COUNT_TAG = "FishCount"
         private const val MAX_FISH_COUNT_TAG = "MaxFishCount"
         private const val FISH_KING_AWARDED_TAG = "FishKingAwarded"
+        private const val FISH_KING_ROLL = 100
+        private const val CRIMSON_FISH_KING_ROLL = 40
     }
 }

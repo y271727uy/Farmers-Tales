@@ -5,6 +5,7 @@ import com.y271727uy.farmerstales.gameplay.season_breeding.AnimalBreedingTooltip
 import com.y271727uy.farmerstales.gameplay.fish_group.entity.OceanFishPoolEntity
 import com.y271727uy.farmerstales.gameplay.fish_group.entity.RiverFishPoolEntity
 import com.y271727uy.farmerstales.gameplay.tree.block.TreeStumpBlock
+import net.minecraft.world.entity.animal.Wolf
 import snownee.jade.api.IWailaCommonRegistration
 import snownee.jade.api.IWailaPlugin
 import snownee.jade.api.IWailaClientRegistration
@@ -21,6 +22,8 @@ class FarmerTalesJadePlugin : IWailaPlugin {
     override fun register(registration: IWailaCommonRegistration) {
         registration.registerEntityDataProvider(FishPoolEntityProvider, RiverFishPoolEntity::class.java)
         registration.registerEntityDataProvider(FishPoolEntityProvider, OceanFishPoolEntity::class.java)
+        registration.registerEntityDataProvider(AnimalHusbandryTooltipProvider, net.minecraft.world.entity.animal.Animal::class.java)
+        registration.registerEntityDataProvider(ShepherdDogTooltipProvider, Wolf::class.java)
     }
 
     override fun registerClient(registration: IWailaClientRegistration) {
@@ -29,6 +32,11 @@ class FarmerTalesJadePlugin : IWailaPlugin {
             AnimalBreedingTooltipProvider,
             net.minecraft.world.entity.animal.Animal::class.java
         )
+        registration.registerEntityComponent(
+            AnimalHusbandryTooltipProvider,
+            net.minecraft.world.entity.animal.Animal::class.java
+        )
+        registration.registerEntityComponent(ShepherdDogTooltipProvider, Wolf::class.java)
         registration.registerEntityComponent(FishPoolEntityProvider, RiverFishPoolEntity::class.java)
         registration.registerEntityComponent(FishPoolEntityProvider, OceanFishPoolEntity::class.java)
         registration.addRayTraceCallback(FishPoolJadeRayTraceCallback(registration))

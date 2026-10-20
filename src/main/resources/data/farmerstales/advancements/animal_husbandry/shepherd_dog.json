@@ -1,0 +1,13 @@
+{
+  "parent": "farmerstales:animal_husbandry/breed_domesticated_animals",
+  "display": {
+    "icon": { "item": "farmerstales:shepherds_crook" },
+    "title": { "translate": "advancement.farmerstales.shepherd_dog.title" },
+    "description": { "translate": "advancement.farmerstales.shepherd_dog.description" },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

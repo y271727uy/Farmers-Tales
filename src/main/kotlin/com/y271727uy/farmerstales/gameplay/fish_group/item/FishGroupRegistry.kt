@@ -9,7 +9,6 @@ import com.y271727uy.farmerstales.gameplay.fish_group.pool.FishPoolFactory
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.MobCategory
-import net.minecraft.world.item.FishingRodItem
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
 import net.minecraftforge.eventbus.api.IEventBus
@@ -22,11 +21,6 @@ object FishGroupRegistry {
     private val entityTypes: DeferredRegister<EntityType<*>> =
         DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, FTMod.MODID)
     private val fishPoolRegistrations = linkedMapOf<ResourceLocation, FishPoolRegistration>()
-
-    @JvmField
-    val BAMBOO_FISHING_ROD: RegistryObject<Item> = items.register("bamboo_fishing_rod") {
-        FishingRodItem(Item.Properties().stacksTo(1).durability(32))
-    }
 
     init {
         FishPoolFactory.getAll().forEach(::registerFishPool)

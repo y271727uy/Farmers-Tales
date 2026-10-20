@@ -29,6 +29,7 @@ object RatSpawnRules {
 
         val serverLevel = level.level
         if (serverLevel.dimension() != Level.OVERWORLD) return false
+        if (!serverLevel.isNight) return false
         if (!hasSafeSurface(level, pos)) return false
         if (!isRatHabitat(serverLevel, pos)) return false
         if (hasNearbyRat(serverLevel, pos)) return false

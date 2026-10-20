@@ -1,0 +1,16 @@
+{
+  "ambient.rooster.crow": {
+    "category": "neutral",
+    "subtitle": "subtitles.farmerstales.ambient.rooster.crow",
+    "sounds": [
+      "farmerstales:rooster"
+    ]
+  },
+  "ambient.wolf.howl": {
+    "category": "neutral",
+    "subtitle": "subtitles.farmerstales.ambient.wolf.howl",
+    "sounds": [
+      "farmerstales:wolf"
+    ]
+  }
+}

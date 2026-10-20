@@ -7,7 +7,6 @@ import net.minecraft.world.phys.AABB
 import net.minecraftforge.event.level.BlockEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.registries.ForgeRegistries
 
 /** Lets nearby wild rats occasionally eat a stage of a crop as it grows. */
 @Mod.EventBusSubscriber(modid = FTMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -28,15 +27,6 @@ object RatCropDamageEvents {
         if (rat == null) return
 
         level.setBlock(event.pos, crop.getStateForAge(age - 1), 3)
-        FTMod.LOGGER.debug(
-            "Wild rat {} at {} regressed {} at {} from age {} to {}",
-            rat.uuid,
-            rat.blockPosition(),
-            ForgeRegistries.BLOCKS.getKey(crop),
-            event.pos,
-            age,
-            age - 1,
-        )
     }
 
     private fun findWildRatNearby(level: ServerLevel, pos: net.minecraft.core.BlockPos): RatEntity? =

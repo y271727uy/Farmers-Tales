@@ -1,0 +1,10 @@
+{
+  "parent": "farmerstales:fishing/seasonal_catch",
+  "display": {
+    "icon": { "item": "minecraft:bucket" },
+    "title": { "translate": "advancement.farmerstales.empty_fish_pool.title" },
+    "description": { "translate": "advancement.farmerstales.empty_fish_pool.description" },
+    "frame": "goal", "show_toast": true, "announce_to_chat": true, "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

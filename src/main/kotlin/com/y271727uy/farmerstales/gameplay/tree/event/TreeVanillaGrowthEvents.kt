@@ -3,6 +3,7 @@ package com.y271727uy.farmerstales.gameplay.tree.event
 import com.y271727uy.farmerstales.FTMod
 import net.minecraft.world.level.Level
 import net.minecraftforge.event.level.SaplingGrowTreeEvent
+import net.minecraftforge.eventbus.api.Event
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 
@@ -22,6 +23,6 @@ object TreeVanillaGrowthEvents {
 			return
 		}
 
-		event.isCanceled = true
+		event.result = Event.Result.DENY
 	}
 }

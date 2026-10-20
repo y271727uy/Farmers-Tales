@@ -2,10 +2,15 @@ package com.y271727uy.farmerstales.entity
 
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.entity.mobs.BambooRatEntity
+import com.y271727uy.farmerstales.entity.mobs.ArmadilloEntity
+import com.y271727uy.farmerstales.entity.mobs.NautilusEntity
 import com.y271727uy.farmerstales.entity.mobs.RatEntity
+import com.y271727uy.farmerstales.entity.mobs.ZombieNautilusEntity
 import com.y271727uy.farmerstales.entity.registry.MobRegistry
 import net.minecraft.world.entity.MobCategory
 import net.minecraft.world.entity.animal.Cat
+import net.minecraft.world.entity.animal.IronGolem
+import net.minecraft.world.entity.npc.Villager
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
@@ -13,6 +18,57 @@ import net.minecraftforge.fml.common.Mod
 /** The single declaration point for Farmer's Tales mobs. */
 @Mod.EventBusSubscriber(modid = FTMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 object ModEntities : MobRegistry(FTMod.MODID) {
+    @JvmField
+    val ARMADILLO = mob("armadillo", ::ArmadilloEntity) {
+        category = MobCategory.CREATURE
+        size(0.8F, 0.65F)
+        attributes(ArmadilloEntity::createAttributes)
+        spawnOnGround(ArmadilloEntity::checkSpawnRules)
+        naturalSpawn("minecraft:is_savanna", weight = 8, minCount = 2, maxCount = 3)
+        breedingFood("minecraft:spider_eye")
+        ai {
+            passiveAnimal {
+                panicSpeed = 1.25
+            }
+        }
+        loot {
+            drop("farmerstales:armadillo_scute", count = 1..1, chance = 0.15F)
+        }
+        lang("Armadillo")
+        spawnEgg(primaryColor = 0x7A6756, secondaryColor = 0xB7A58D)
+    }
+
+    @JvmField
+    val NAUTILUS = mob("nautilus", ::NautilusEntity) {
+        category = MobCategory.WATER_CREATURE
+        size(1.15F, 0.9F)
+        attributes(NautilusEntity::createAttributes)
+        spawnInWater(NautilusEntity::checkSpawnRules)
+        naturalSpawn("minecraft:is_ocean", weight = 4, minCount = 1, maxCount = 2)
+        breedingFood("minecraft:pufferfish")
+        loot {
+            drop("minecraft:nautilus_shell", count = 1..2)
+        }
+        lang("Nautilus")
+        spawnEgg(primaryColor = 0xD2B189, secondaryColor = 0x5C8C72)
+    }
+
+    @JvmField
+    val ZOMBIE_NAUTILUS = mob("zombie_nautilus", ::ZombieNautilusEntity) {
+        category = MobCategory.MONSTER
+        size(1.15F, 0.9F)
+        attributes(NautilusEntity::createAttributes)
+        spawnInWater(predicate = { _, level, _, pos, _ ->
+            NautilusEntity.canSpawnInWater(level, pos)
+        })
+        loot {
+            drop("minecraft:rotten_flesh", count = 1..2)
+            drop("minecraft:nautilus_shell", count = 1..1, chance = 0.25F)
+        }
+        lang("Zombie Nautilus")
+        spawnEgg(primaryColor = 0x3E776B, secondaryColor = 0x9CB69B)
+    }
+
     @JvmField
     val BAMBOO_RAT = mob("bamboo_rat", ::BambooRatEntity) {
         category = MobCategory.CREATURE
@@ -48,6 +104,18 @@ object ModEntities : MobRegistry(FTMod.MODID) {
                     range = 12.0F
                     walkSpeed = 1.1
                     sprintSpeed = 1.15
+                    untamedOnly()
+                }
+                avoid(Villager::class.java) {
+                    range = 8.0F
+                    walkSpeed = 1.1
+                    sprintSpeed = 1.25
+                    untamedOnly()
+                }
+                avoid(IronGolem::class.java) {
+                    range = 12.0F
+                    walkSpeed = 1.1
+                    sprintSpeed = 1.35
                     untamedOnly()
                 }
                 avoidMovingPlayers {

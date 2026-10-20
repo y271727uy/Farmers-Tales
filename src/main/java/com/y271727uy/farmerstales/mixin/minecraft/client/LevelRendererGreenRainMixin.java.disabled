@@ -1,0 +1,34 @@
+package com.y271727uy.farmerstales.mixin.minecraft.client;
+
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.y271727uy.farmerstales.gameplay.green_rain.GreenRainClientVisuals;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.resources.ResourceLocation;
+import org.objectweb.asm.Opcodes;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+
+@Mixin(LevelRenderer.class)
+public class LevelRendererGreenRainMixin {
+    @WrapOperation(
+            method = "renderSnowAndRain",
+            at = @At(
+                    value = "FIELD",
+                    target = "Lnet/minecraft/client/renderer/LevelRenderer;RAIN_LOCATION:Lnet/minecraft/resources/ResourceLocation;",
+                    opcode = Opcodes.GETSTATIC
+            )
+    )
+    private ResourceLocation farmerstales$swapRainTexture(
+            Operation<ResourceLocation> original,
+            LightTexture lightTexture,
+            float partialTick,
+            double camX,
+            double camY,
+            double camZ
+    ) {
+        ResourceLocation replacement = GreenRainClientVisuals.activeRainTexture();
+        return replacement != null ? replacement : original.call();
+    }
+}

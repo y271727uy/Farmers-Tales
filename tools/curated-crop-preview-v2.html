@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>甄选作物粒子 · 立体确认台</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #07090a;
+    --line: #1d2829;
+    --line-2: #2a3738;
+    --ink: #e6efe8;
+    --dim: #82958d;
+    --accent: #f0c26a;
+    --card: #0f1618;
+    --stage: #050808;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 14px/1.5 "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+  button, input { font: inherit; color: inherit; }
+  code { font: 11.5px ui-monospace, Consolas, monospace; color: #a9c0b6; background: #0c1314; padding: 1px 4px; border-radius: 4px; }
+
+  .app { display: grid; grid-template-rows: auto minmax(0, 1fr); height: 100%; }
+
+  /* ── 顶栏 ── */
+  header.top {
+    display: flex; flex-wrap: wrap; gap: 18px; align-items: center; justify-content: space-between;
+    padding: 11px 18px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, #0c1314, #080c0d);
+  }
+  .brand { display: flex; gap: 12px; align-items: center; min-width: 280px; }
+  .mark {
+    width: 28px; height: 28px; border-radius: 50%; flex: none;
+    background: radial-gradient(circle at 35% 30%, #f6dca6, #c98a3c 55%, #4d3115);
+    box-shadow: 0 0 20px rgba(240, 194, 106, .35);
+  }
+  h1 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: .03em; }
+  .brand p { margin: 2px 0 0; font-size: 12px; color: var(--dim); }
+  .transport { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .btn {
+    background: #121b1d; border: 1px solid var(--line-2); border-radius: 7px;
+    padding: 6px 11px; font-size: 12.5px; cursor: pointer; transition: .15s;
+  }
+  .btn:hover { background: #182528; border-color: #3a5050; }
+  .btn:active { transform: translateY(1px); }
+  .btn.primary { background: #20342a; border-color: #40644a; color: #d8f0d2; }
+  .btn.wide { width: 100%; padding: 9px; }
+  .ctrl { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--dim); }
+  .ctrl input[type=range] { width: 104px; }
+  .ctrl output { font: 12px ui-monospace, monospace; color: var(--ink); min-width: 46px; text-align: right; }
+
+  input[type=range] {
+    -webkit-appearance: none; appearance: none; height: 3px; border-radius: 3px;
+    background: #243335; outline: none; margin: 0;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%;
+    background: var(--accent); border: 2px solid #0b1111;
+    box-shadow: 0 0 8px rgba(240, 194, 106, .45); cursor: pointer;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent); border: 2px solid #0b1111; cursor: pointer;
+  }
+  .chip, .toggle { position: relative; user-select: none; cursor: pointer; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--dim); }
+  .chip input, .toggle input { position: absolute; opacity: 0; pointer-events: none; }
+  .chip i {
+    width: 14px; height: 14px; border-radius: 4px; position: relative;
+    border: 1px solid #3a4d4e; background: #121b1d; transition: .15s;
+  }
+  .chip input:checked + i { background: var(--accent); border-color: var(--accent); }
+  .chip input:checked + i::after {
+    content: ""; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px;
+    border: solid #121a14; border-width: 0 2px 2px 0; transform: rotate(40deg);
+  }
+
+  /* ── 主区 ── */
+  main { display: grid; grid-template-columns: minmax(0, 1fr) 382px; min-height: 0; }
+  .stage { position: relative; min-height: 0; overflow: hidden; background: var(--stage); border-right: 1px solid var(--line); }
+  #view { display: block; width: 100%; height: 100%; cursor: grab; }
+  #view:active { cursor: grabbing; }
+  .hud {
+    position: absolute; right: 16px; top: 12px; text-align: right;
+    font: 11.5px/1.75 ui-monospace, Consolas, monospace;
+    color: #7f938b; pointer-events: none; text-shadow: 0 1px 3px #000;
+  }
+  .hud b { color: #cfdcd6; font-weight: 500; }
+  .stage.grid .hud { display: none; }
+  .hint {
+    position: absolute; left: 14px; bottom: 14px; font-size: 11px; color: #5f716b;
+    pointer-events: none; text-shadow: 0 1px 2px #000;
+  }
+  .timeline {
+    position: absolute; left: 50%; transform: translateX(-50%); bottom: 12px;
+    width: min(520px, 62%); display: flex; align-items: center; gap: 10px;
+    background: rgba(5, 9, 9, .62); border: 1px solid var(--line); border-radius: 9px;
+    padding: 6px 12px; backdrop-filter: blur(6px);
+  }
+  .timeline input { flex: 1; }
+  .timeline span { font: 11.5px ui-monospace, monospace; color: var(--dim); min-width: 62px; text-align: right; }
+  .err {
+    position: absolute; left: 12px; right: 12px; bottom: 62px; display: none;
+    background: #350f0f; border: 1px solid #7a2a2a; color: #ffd3d3;
+    padding: 8px 10px; border-radius: 8px; font-size: 12px; z-index: 5;
+  }
+
+  /* ── 侧栏 ── */
+  .panel {
+    min-height: 0; overflow-y: auto; padding: 14px 14px 28px;
+    display: flex; flex-direction: column; gap: 9px;
+    background: linear-gradient(180deg, #0a1011, #070a0b);
+  }
+  .panel::-webkit-scrollbar { width: 8px; }
+  .panel::-webkit-scrollbar-thumb { background: #1e2a2b; border-radius: 8px; }
+  .panel::-webkit-scrollbar-track { background: transparent; }
+  .sec-title { font-size: 10.5px; letter-spacing: .18em; color: #5a6c66; text-transform: uppercase; margin: 6px 2px 0; }
+  #cards { display: flex; flex-direction: column; gap: 9px; }
+  .card {
+    position: relative; background: var(--card); border: 1px solid var(--line);
+    border-radius: 11px; padding: 10px 12px 11px; overflow: hidden;
+  }
+  .card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--c, #666); opacity: .85; }
+  .card.off { opacity: .52; }
+  .card.mini { padding: 12px; display: flex; flex-direction: column; gap: 7px; }
+  .card-head { display: flex; align-items: center; gap: 8px; }
+  .swatch { width: 9px; height: 9px; border-radius: 3px; background: var(--c); box-shadow: 0 0 9px var(--c); flex: none; }
+  .card-title { display: flex; align-items: baseline; gap: 6px; flex: 1; min-width: 0; }
+  .card-title h2 { margin: 0; font-size: 13.5px; font-weight: 600; }
+  .card-title .en { font: 10.5px ui-monospace, monospace; color: #5f716b; }
+  .card-desc { margin: 5px 0 8px; font-size: 11.5px; color: #7d8f88; }
+  .toggle { width: 30px; height: 17px; border-radius: 9px; background: #22302f; border: 1px solid #33443f; flex: none; }
+  .toggle i {
+    position: absolute; top: 2px; left: 2px; width: 11px; height: 11px; border-radius: 50%;
+    background: #6d8078; transition: .16s;
+  }
+  .toggle input:checked + i { left: 15px; background: var(--c, var(--accent)); box-shadow: 0 0 8px var(--c, var(--accent)); }
+  .ghost {
+    background: transparent; border: 1px solid #2a3738; border-radius: 6px;
+    padding: 2px 8px; font-size: 11px; color: #8fa39b; cursor: pointer; flex: none;
+  }
+  .ghost:hover { color: #dbe6e0; border-color: #4a605e; }
+  .sliders { display: flex; flex-direction: column; gap: 6px; }
+  .row { display: grid; grid-template-columns: 70px minmax(0, 1fr) 78px; align-items: center; gap: 8px; font-size: 11.5px; color: #8fa39b; }
+  .row output { font: 11.5px ui-monospace, monospace; color: #cfdcd6; text-align: right; white-space: nowrap; }
+  .foot { margin: 6px 2px 0; font-size: 11px; color: #55665f; line-height: 1.7; }
+
+  /* ── 导出弹窗 ── */
+  .modal { position: fixed; inset: 0; background: rgba(3, 6, 6, .74); display: none; place-items: center; padding: 28px; z-index: 20; }
+  .modal.open { display: grid; }
+  .modal-card {
+    width: min(880px, 100%); max-height: 86vh; display: flex; flex-direction: column; gap: 10px;
+    background: #0d1415; border: 1px solid var(--line-2); border-radius: 14px; padding: 16px 18px;
+  }
+  .modal-card header { display: flex; justify-content: space-between; align-items: center; }
+  .modal-card h2 { margin: 0; font-size: 14px; }
+  .modal-note { margin: 0; font-size: 12px; color: var(--dim); }
+  .modal-card pre {
+    margin: 0; flex: 1; min-height: 180px; overflow: auto;
+    background: #070b0c; border: 1px solid var(--line); border-radius: 9px; padding: 12px;
+    font: 11.5px/1.65 ui-monospace, Consolas, monospace; color: #b9ccc4;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .modal-actions { display: flex; gap: 10px; align-items: center; font-size: 12px; color: #7d8f88; }
+
+  @media (max-width: 1020px) {
+    body { overflow: auto; }
+    .app { height: auto; min-height: 100%; }
+    main { grid-template-columns: 1fr; grid-template-rows: minmax(340px, 56vh) auto; }
+    .stage { border-right: none; border-bottom: 1px solid var(--line); }
+    .panel { overflow: visible; }
+  }
+  @media (max-width: 780px) {
+    .hint { display: none; }
+    .timeline { width: 84%; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <span class="mark"></span>
+      <div>
+        <h1>甄选作物粒子 · 立体确认台</h1>
+        <p>四类粒子的轨迹和节奏，先在浏览器里转着看定稿，再写回 Photon。</p>
+      </div>
+    </div>
+    <div class="transport">
+      <button id="btnPlay" class="btn primary" type="button">暂停</button>
+      <button id="btnBack" class="btn" type="button">−1 tick</button>
+      <button id="btnFwd" class="btn" type="button">+1 tick</button>
+      <button id="btnReset" class="btn" type="button">归零</button>
+      <div class="ctrl"><label for="speed">速度</label><input id="speed" type="range" min="0.1" max="2" step="0.05" value="1"><output id="speedOut">1.00×</output></div>
+      <label class="chip" title="镜头自己慢慢转"><input id="tSpin" type="checkbox" checked><i></i>转台</label>
+    </div>
+  </header>
+
+  <main>
+    <section class="stage" id="stage">
+      <canvas id="view"></canvas>
+      <div class="hud" id="hud"></div>
+      <div class="hint">拖动旋转 · 滚轮缩放 · 双击复位 · 空格暂停 · 1–4 单独看 · 0 全开</div>
+      <div class="timeline"><input id="scrub" type="range" min="0" max="40" step="0.05" value="0"><span id="scrubOut">0.00 s</span></div>
+      <div class="err" id="err"></div>
+    </section>
+
+    <aside class="panel">
+      <div class="sec-title">四类粒子</div>
+      <div id="cards"></div>
+
+      <div class="sec-title">显示</div>
+      <div class="card mini">
+        <div class="row" style="grid-template-columns:70px minmax(0,1fr) 78px">
+          <label for="sizeMul">整体尺寸</label>
+          <input id="sizeMul" type="range" min="0.5" max="2" step="0.05" value="1">
+          <output id="sizeMulOut">1.00×</output>
+        </div>
+        <div class="row" style="grid-template-columns:70px minmax(0,1fr) 78px">
+          <label for="glow">光晕</label>
+          <input id="glow" type="range" min="0.4" max="1.8" step="0.05" value="1">
+          <output id="glowOut">1.00×</output>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px 14px;margin-top:4px">
+          <label class="chip"><input id="tPaths" type="checkbox"><i></i>轨迹线</label>
+          <label class="chip"><input id="tRuler" type="checkbox" checked><i></i>高度标尺</label>
+          <label class="chip"><input id="tPool" type="checkbox" checked><i></i>地面光池</label>
+          <label class="chip"><input id="tCheer" type="checkbox" checked><i></i>鼓动碎光</label>
+          <label class="chip"><input id="tShoot" type="checkbox"><i></i>落星划痕</label>
+          <label class="chip"><input id="tGrid" type="checkbox"><i></i>四宫格</label>
+        </div>
+      </div>
+
+      <button id="btnExport" class="btn wide" type="button">导出参数（JSON）</button>
+      <p class="foot">
+        新稿：<code>tools/curated-crop-preview-v2.html</code><br>
+        旧稿 <code>tools/curated-crop-preview.html</code> 原样保留，没有改动。<br>
+        单位：1 格 = 92 px，和 <code>CuratedCropParticle.SCALE</code> 对齐。这里只做预览，不回写任何代码。
+      </p>
+    </aside>
+  </main>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-card">
+    <header>
+      <h2>参数导出</h2>
+      <button id="btnClose" class="btn" type="button">关闭</button>
+    </header>
+    <p class="modal-note">单位是方块 / tick，可直接对照改 <code>CuratedCropParticle.Kind</code> 与 <code>place()</code>。</p>
+    <pre id="exportText"></pre>
+    <div class="modal-actions">
+      <button id="btnCopy" class="btn primary" type="button">复制</button>
+      <span id="copyHint"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ═══════════════ 单位与小工具 ═══════════════ */
+  const TAU = Math.PI * 2;
+  const TICKS = 20;          // 1 秒 = 20 tick
+  const BLOCK_PX = 92;       // 与 CuratedCropParticle.SCALE 对齐：一格高 92 px
+
+  const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+  const mix3 = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+  const smooth = (e0, e1, x) => { const t = clamp((x - e0) / (e1 - e0), 0, 1); return t * t * (3 - 2 * t); };
+  const lifeFade = (p, fi, fo, fe) => smooth(0, fi, p) * (1 - smooth(fo, fe, p));
+  const r2 = v => Math.round(v * 100) / 100;
+  const r3 = v => Math.round(v * 1000) / 1000;
+  const pt = v => Math.round(v / TICKS * 100000) / 100000;
+  const ui = (c, a) => `rgba(${Math.round(clamp(c[0], 0, 1) * 255)},${Math.round(clamp(c[1], 0, 1) * 255)},${Math.round(clamp(c[2], 0, 1) * 255)},${a})`;
+
+  function hexA(hex, a) {
+    const n = parseInt(hex.slice(1), 16);
+    return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+  }
+
+  // 便宜、可控的整数哈希：同一个 (种子, 下标, 周期) 永远得到同一个数
+  function h01(n) {
+    n = (n ^ 0x9e3779b9) | 0;
+    n = Math.imul(n ^ (n >>> 16), 0x21f0aaad);
+    n = Math.imul(n ^ (n >>> 15), 0x735a2d97);
+    n ^= n >>> 15;
+    return (n >>> 0) / 4294967296;
+  }
+  function mulberry32(a) {
+    return function () {
+      a = (a + 0x6d2b79f5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function hashStr(s) {
+    let h = 2166136261;
+    for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+    return h >>> 0;
+  }
+  function hslToRgb(h, s, l) {
+    h = (((h % 360) + 360) % 360) / 360;
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    const f = t => {
+      t = ((t % 1) + 1) % 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t;
+      if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+      return p;
+    };
+    return [f(h + 1 / 3), f(h), f(h - 1 / 3)];
+  }
+
+  // 「人气」的心跳包络：一拍双跳，周期 1.15 s ≈ 23 tick
+  const HEART_PERIOD = 1.15;
+  function heartbeat(t) {
+    const ph = (((t % HEART_PERIOD) + HEART_PERIOD) % HEART_PERIOD) / HEART_PERIOD;
+    const a = Math.exp(-Math.pow((ph - 0.05) / 0.055, 2));
+    const b = 0.62 * Math.exp(-Math.pow((ph - 0.21) / 0.075, 2));
+    return Math.min(1.2, a + b);
+  }
+
+  /* ═══════════════ 四类粒子：名字、配色、可调参数 ═══════════════ */
+  const KINDS = [
+    {
+      id: 'moon', label: '月光', en: 'moon', color: '#cfd8ff',
+      desc: '贴着根脚的冷光尘环。远侧抬高一截，镜头一转才看得出它是斜着的一圈。',
+      params: [
+        { k: 'count', label: '数量', min: 6, max: 40, step: 1, dp: 0, unit: '' },
+        { k: 'lifeT', label: '寿命', min: 80, max: 400, step: 10, dp: 0, unit: 'tick' },
+        { k: 'radius', label: '轨道半径', min: 0.2, max: 0.6, step: 0.01, dp: 2, unit: '格' },
+        { k: 'spin', label: '转速', min: 0.05, max: 0.9, step: 0.05, dp: 2, unit: 'rad/s' },
+        { k: 'bob', label: '起伏', min: 0, max: 0.08, step: 0.005, dp: 3, unit: '格' }
+      ]
+    },
+    {
+      id: 'rainbow', label: '彩虹', en: 'rainbow', color: '#8fe3b4',
+      desc: '几道一模一样的虹并排平行着走，等高、同形，只横向平移；越往两边越淡。',
+      params: [
+        { k: 'count', label: '数量', min: 16, max: 120, step: 1, dp: 0, unit: '' },
+        { k: 'bows', label: '虹数', min: 1, max: 3, step: 1, dp: 0, unit: '' },
+        { k: 'gap', label: '平行间距', min: 0.05, max: 0.6, step: 0.01, dp: 2, unit: '格' },
+        { k: 'lifeT', label: '寿命', min: 80, max: 400, step: 10, dp: 0, unit: 'tick' },
+        { k: 'span', label: '跨度', min: 0.6, max: 1.8, step: 0.05, dp: 2, unit: '格' },
+        { k: 'arch', label: '拱高', min: 0.1, max: 0.55, step: 0.01, dp: 2, unit: '格' },
+        { k: 'feet', label: '落脚高度', min: 0.3, max: 0.9, step: 0.01, dp: 2, unit: '格' },
+        { k: 'band', label: '带子宽度', min: 0, max: 0.12, step: 0.01, dp: 2, unit: '格' }
+      ]
+    },
+    {
+      id: 'popular', label: '人气', en: 'popular', color: '#f5c95f',
+      desc: '作物腰上一圈金色掌声。每 1.15 秒鼓一下，整圈跟着胀缩，鼓得越重越亮。',
+      params: [
+        { k: 'count', label: '数量', min: 10, max: 48, step: 1, dp: 0, unit: '' },
+        { k: 'lifeT', label: '寿命', min: 100, max: 400, step: 10, dp: 0, unit: 'tick' },
+        { k: 'radius', label: '轨道半径', min: 0.25, max: 0.75, step: 0.01, dp: 2, unit: '格' },
+        { k: 'spin', label: '转速', min: 0.2, max: 1.8, step: 0.05, dp: 2, unit: 'rad/s' },
+        { k: 'pulse', label: '鼓动幅度', min: 0, max: 0.3, step: 0.01, dp: 2, unit: '格' },
+        { k: 'height', label: '高度', min: 0.25, max: 0.85, step: 0.01, dp: 2, unit: '格' }
+      ]
+    },
+    {
+      id: 'stars', label: '夜星', en: 'stars', color: '#b9a8ff',
+      desc: '作物上方的稀疏星点。各闪各的，尖亮时带一点十字星芒，一路慢慢往下沉。',
+      params: [
+        { k: 'count', label: '数量', min: 4, max: 30, step: 1, dp: 0, unit: '' },
+        { k: 'lifeT', label: '寿命', min: 20, max: 120, step: 5, dp: 0, unit: 'tick' },
+        { k: 'spread', label: '散布范围', min: 0.25, max: 1.0, step: 0.05, dp: 2, unit: '格' },
+        { k: 'sink', label: '下沉速度', min: 0, max: 0.25, step: 0.01, dp: 2, unit: '格/s' },
+        { k: 'twinkle', label: '闪烁频率', min: 4, max: 30, step: 1, dp: 0, unit: 'rad/s' },
+        { k: 'top', label: '起始高度', min: 0.7, max: 1.3, step: 0.05, dp: 2, unit: '格' }
+      ]
+    }
+  ];
+
+  const DEFAULTS = {
+    moon: { count: 18, lifeT: 240, radius: 0.36, spin: 0.35, bob: 0.03 },
+    rainbow: { count: 84, lifeT: 160, span: 1.0, arch: 0.4, feet: 0.58, band: 0.05, bows: 2, gap: 0.32 },
+    popular: { count: 22, lifeT: 200, radius: 0.5, spin: 0.8, pulse: 0.12, height: 0.5 },
+    stars: { count: 12, lifeT: 50, spread: 0.62, sink: 0.11, twinkle: 18, top: 1.05 }
+  };
+
+  // 每类粒子的核心半径（格）。人气故意做大一档，和 Java 里 0.11 / 0.07 的比例一致。
+  const SIZES = { moon: 0.052, rainbow: 0.04, popular: 0.082, stars: 0.038 };
+
+  // 彩虹的三道弧：形状完全一样，只沿 X 平移 —— 平行、等高，不是同心叠上下。
+  // 主虹居中，第二、第三道分别往左右各让开一个「平行间距」。
+  const BOWS = [
+    { step: 0, alpha: 1.0, size: 1.0, weight: 0.5 },
+    { step: 1, alpha: 0.6, size: 1.0, weight: 0.3 },
+    { step: -1, alpha: 0.32, size: 0.94, weight: 0.2 }
+  ];
+
+  const S = {
+    T: 0,
+    paused: false,
+    speed: 1,
+    seed: 20240517,
+    spin: true,
+    paths: false,
+    ruler: true,
+    pool: true,
+    cheer: true,
+    shoot: false,
+    grid: false,
+    sizeMul: 1,
+    glow: 1,
+    visible: {},
+    p: {},
+    dragging: false,
+    cam: { yaw: 0.62, pitch: 0.32, dist: 3.05, target: [0, 0.5, 0], fov: 50 * Math.PI / 180 }
+  };
+  for (const k of KINDS) {
+    S.visible[k.id] = true;
+    S.p[k.id] = Object.assign({}, DEFAULTS[k.id]);
+  }
+
+  /* ═══════════════ URL 参数（方便截图对照） ═══════════════ */
+  const Q = new URLSearchParams(location.search);
+  if (Q.has('t')) {
+    const tq = parseFloat(Q.get('t'));
+    if (isFinite(tq)) S.T = Math.max(0, tq);
+  }
+  if (Q.get('paused') === '1') S.paused = true;
+  if (Q.get('spin') === '0') S.spin = false;
+  if (Q.get('paths') === '1') S.paths = true;
+  if (Q.get('grid') === '1') S.grid = true;
+  if (Q.get('ruler') === '0') S.ruler = false;
+  if (Q.get('pool') === '0') S.pool = false;
+  if (Q.get('cheer') === '0') S.cheer = false;
+  if (Q.get('shoot') === '1') S.shoot = true;
+  if (Q.get('seed')) S.seed = parseInt(Q.get('seed'), 10) || S.seed;
+  const soloQ = Q.get('solo');
+  if (soloQ && S.visible.hasOwnProperty(soloQ)) {
+    for (const k of KINDS) S.visible[k.id] = (k.id === soloQ);
+    S.grid = false;
+  }
+  if (Q.has('cam')) {
+    const c = Q.get('cam').split(',').map(Number);
+    if (c.length >= 3 && c.every(v => isFinite(v))) {
+      S.cam.yaw = c[0]; S.cam.pitch = clamp(c[1], 0.02, 1.35); S.cam.dist = clamp(c[2], 1.6, 9);
+    }
+  }
+
+  /* ═══════════════ 画布 ═══════════════ */
+  const stage = document.getElementById('stage');
+  const canvas = document.getElementById('view');
+  const ctx = canvas.getContext('2d');
+  let W = 1, H = 1, DPR = 1;
+  let ready = false;
+
+  function resize() {
+    const r = stage.getBoundingClientRect();
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    W = Math.max(1, Math.round(r.width));
+    H = Math.max(1, Math.round(r.height));
+    canvas.width = Math.round(W * DPR);
+    canvas.height = Math.round(H * DPR);
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    // 改尺寸会把画布清空，立刻补画一帧，别等下一次 rAF
+    if (ready) render();
+  }
+  resize();
+  if (window.ResizeObserver) new ResizeObserver(resize).observe(stage);
+  window.addEventListener('resize', resize);
+
+  /* ═══════════════ 粒子池 / 随机属性缓存 / 光晕贴图 ═══════════════ */
+  const pool = [];
+  let nP = 0;
+  const order = [];
+  let lastCount = 0;
+
+  const cache = {};
+  function ensureCache() {
+    for (const kind of KINDS) {
+      const id = kind.id;
+      const n = S.p[id].count;
+      const c = cache[id];
+      if (c && c.n === n && c.seed === S.seed) continue;
+      const rng = mulberry32((S.seed ^ hashStr(id)) >>> 0);
+      const arr = [];
+      for (let i = 0; i < n; i++) {
+        arr.push({
+          a0: rng() * TAU,
+          ph: rng() * TAU,
+          rMul: 1 + (rng() - 0.5) * 0.14,
+          sJit: 0.72 + rng() * 0.56,
+          off: rng(),
+          sx: rng() * 2 - 1,
+          sz: rng() * 2 - 1,
+          cyc: (rng() * 997) | 0
+        });
+      }
+      cache[id] = { n, seed: S.seed, arr };
+    }
+  }
+
+  function emit(x, y, z, size, r, g, b, a, glint) {
+    let p = pool[nP];
+    if (!p) p = pool[nP] = {};
+    p.x = x; p.y = y; p.z = z; p.size = size;
+    p.r = r; p.g = g; p.b = b; p.a = a; p.glint = glint || 0;
+    nP++;
+  }
+
+  const spriteCache = new Map();
+  function sprite(r, g, b) {
+    const qr = Math.round(clamp(r, 0, 1) * 16) / 16;
+    const qg = Math.round(clamp(g, 0, 1) * 16) / 16;
+    const qb = Math.round(clamp(b, 0, 1) * 16) / 16;
+    const key = qr + ',' + qg + ',' + qb;
+    let s = spriteCache.get(key);
+    if (s) return s;
+    const SZ = 64;
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = SZ;
+    const c2 = cv.getContext('2d');
+    const rgba = a => `rgba(${Math.round(qr * 255)},${Math.round(qg * 255)},${Math.round(qb * 255)},${a})`;
+    const grd = c2.createRadialGradient(SZ / 2, SZ / 2, 0, SZ / 2, SZ / 2, SZ / 2);
+    grd.addColorStop(0, rgba(0.95));
+    grd.addColorStop(0.16, rgba(0.52));
+    grd.addColorStop(0.4, rgba(0.15));
+    grd.addColorStop(0.72, rgba(0.03));
+    grd.addColorStop(1, rgba(0));
+    c2.fillStyle = grd;
+    c2.fillRect(0, 0, SZ, SZ);
+    spriteCache.set(key, cv);
+    return cv;
+  }
+
+  /* ═══════════════ 四类粒子的运动 ═══════════════ */
+
+  // 月光：低空斜圆环，半径做很轻的呼吸，远侧抬高
+  function emitMoon() {
+    const P = S.p.moon, A = cache.moon.arr, life = P.lifeT / TICKS;
+    const from = [0.97, 0.96, 0.92], to = [0.62, 0.74, 0.90];
+    for (let i = 0; i < A.length; i++) {
+      const q = A[i];
+      const raw = S.T + q.off * life;
+      const age = raw % life;
+      const prog = age / life;
+      const ang = q.a0 + P.spin * age;
+      const r = P.radius * q.rMul * (1 + 0.055 * Math.sin(1.1 * age + q.ph));
+      const x = Math.cos(ang) * r;
+      const z = Math.sin(ang) * r;
+      const y = 0.055 + P.bob * Math.sin(1.4 * age + q.ph * 1.7) + 0.05 * Math.sin(ang);
+      const c = mix3(from, to, prog * 0.9);
+      // 不是硬闪，而是慢速的明暗呼吸
+      const breath = 0.6 + 0.4 * Math.sin(2.2 * age + q.ph * 3);
+      const a = lifeFade(prog, 0.12, 0.55, 1) * breath;
+      emit(x, y, z, SIZES.moon * q.sJit * (1 - prog * 0.35), c[0], c[1], c[2], a, 0);
+    }
+  }
+
+  // 彩虹：几道一模一样的光谱拱并行，只做横向平移，等高不同心
+  function emitRainbow() {
+    const P = S.p.rainbow, A = cache.rainbow.arr, life = P.lifeT / TICKS;
+    const nBows = clamp(Math.round(P.bows), 1, BOWS.length);
+    // 按权重把粒子分给各道：主虹最密，旁边两道依次变淡
+    const cum = [];
+    let total = 0;
+    for (let b = 0; b < nBows; b++) { total += BOWS[b].weight; cum.push(total); }
+    for (let i = 0; i < A.length; i++) {
+      const q = A[i];
+      const raw = S.T + q.off * life;
+      const age = raw % life;
+      const u = age / life;
+      const at = ((i + 0.5) / A.length) * total;
+      let b = 0;
+      while (b < nBows - 1 && at > cum[b]) b++;
+      const f = BOWS[b];
+      const crest = Math.pow(Math.sin(Math.PI * u), 0.85);
+      const breath = 1 + 0.05 * Math.sin(0.9 * age + q.ph + b * 1.7);
+      // 形状完全一样，只有 X 上的平移：互相平行，没有谁高谁低
+      const x = (u - 0.5) * P.span + f.step * P.gap + (q.sJit - 1) * 0.012;
+      const y = P.feet + P.arch * crest * breath;
+      const z = P.band * Math.sin(u * TAU) + q.sx * 0.008;
+      const c = hslToRgb(10 + 300 * u + q.ph * 1.2, 0.82, (0.5 + 0.16 * crest) * (b === 0 ? 1 : 0.96));
+      // 两端直接淡没，粒子像是被拱吃掉
+      const a = smooth(0, 0.1, u) * (1 - smooth(0.86, 1, u)) * f.alpha * 0.92;
+      emit(x, y, z, SIZES.rainbow * f.size * (0.8 + 0.4 * q.sJit), c[0], c[1], c[2], a, 0);
+    }
+  }
+
+  // 人气：腰上一圈掌声，整圈跟着一次全局心跳胀缩
+  function emitPopular() {
+    const P = S.p.popular, A = cache.popular.arr, life = P.lifeT / TICKS;
+    const pulse = heartbeat(S.T);
+    const gold = [0.95, 0.77, 0.3], cream = [1.0, 0.96, 0.78];
+    for (let i = 0; i < A.length; i++) {
+      const q = A[i];
+      const raw = S.T + q.off * life;
+      const age = raw % life;
+      const prog = age / life;
+      const ang = q.a0 + P.spin * age;
+      const r = P.radius * q.rMul * (1 + P.pulse * pulse + 0.035 * Math.sin(0.7 * age + q.ph));
+      const x = Math.cos(ang) * r;
+      const z = Math.sin(ang) * r;
+      const y = P.height + 0.1 * Math.sin(ang * 2 + q.ph * 0.3) + 0.02 * Math.sin(9 * age + q.ph);
+      let c = mix3(gold, cream, prog);
+      c = mix3(c, [1, 1, 1], clamp(pulse, 0, 1) * 0.22);
+      const a = lifeFade(prog, 0.1, 0.6, 1) * (0.72 + 0.38 * Math.min(1, pulse));
+      const size = SIZES.popular * q.sJit * (1 + 0.25 * pulse) * (1 - prog * 0.3);
+      emit(x, y, z, size, c[0], c[1], c[2], a, 0);
+    }
+
+    // 鼓动碎光：每次心跳往上带几颗（要在 play 里额外补发粒子，可关）
+    if (S.cheer) {
+      const per = HEART_PERIOD;
+      const n0 = Math.floor(S.T / per);
+      for (let n = n0 - 1; n <= n0; n++) {
+        for (let j = 0; j < 3; j++) {
+          const ts = n * per + 0.06;
+          const dt = S.T - ts;
+          if (dt < 0 || dt > 1.0) continue;
+          const h1 = h01(n * 977 + j * 31 + 7);
+          const h2 = h01(n * 977 + j * 31 + 11);
+          const ang = h1 * TAU;
+          const rr = P.radius * (1 + P.pulse) * (0.85 + h2 * 0.3);
+          const a2 = smooth(0, 0.16, dt) * (1 - smooth(0.42, 1.0, dt));
+          const c2 = mix3(gold, [1, 0.98, 0.86], h2);
+          emit(
+            Math.cos(ang) * rr, P.height + dt * 0.5 - 0.02, Math.sin(ang) * rr,
+            SIZES.popular * 0.55 * (1 - dt * 0.45), c2[0], c2[1], c2[2], a2 * 0.85, 0
+          );
+        }
+      }
+    }
+  }
+
+  // 夜星：各自闪、慢慢沉，每个周期换一处位置
+  function emitStars() {
+    const P = S.p.stars, A = cache.stars.arr, life = P.lifeT / TICKS;
+    const cool = [0.72, 0.63, 1.0], white = [0.97, 0.94, 1.0];
+    for (let i = 0; i < A.length; i++) {
+      const q = A[i];
+      const raw = S.T + q.off * life;
+      const cyc = Math.floor(raw / life);
+      const age = raw % life;
+      const prog = age / life;
+      const n = (q.cyc * 7919 + cyc * 104729 + i * 31) | 0;
+      const top = P.top + (h01(n * 3 + 1) - 0.5) * 0.16;
+      const x = q.sx * P.spread * 0.5 + (h01(n * 3 + 2) - 0.5) * 0.1 + Math.sin(age * 1.7 + q.ph) * 0.02;
+      const z = q.sz * P.spread * 0.5 + (h01(n * 3 + 3) - 0.5) * 0.1 + Math.cos(age * 1.4 + q.ph) * 0.02;
+      const y = top - P.sink * age;
+      const tw = 0.5 + 0.5 * Math.sin(P.twinkle * age + q.ph * 3);
+      const br = Math.pow(tw, 2.4);
+      const c = mix3(cool, white, br);
+      const a = lifeFade(prog, 0.18, 0.55, 1) * (0.22 + 0.78 * br);
+      const glint = br > 0.8 ? (br - 0.8) / 0.2 : 0;
+      emit(x, y, z, SIZES.stars * (0.5 + 1.0 * br), c[0], c[1], c[2], a, glint);
+    }
+  }
+
+  // 装饰：偶尔一道划痕（默认关，不在粒子类里）
+  function emitShoot() {
+    const per = 7;
+    const n = Math.floor(S.T / per);
+    for (let k = n - 1; k <= n; k++) {
+      const dt = S.T - k * per;
+      if (dt < 0 || dt > 1.6) continue;
+      const h1 = h01(k * 13 + 1), h2 = h01(k * 13 + 2), h3 = h01(k * 13 + 3);
+      const y = 1.25 + h1 * 0.45;
+      const x0 = -1.7 + h2 * 0.6;
+      const z = -0.8 + h3 * 1.6;
+      const a = smooth(0, 0.15, dt) * (1 - smooth(0.85, 1.6, dt));
+      for (let j = 0; j < 6; j++) {
+        const t2 = Math.max(0, dt - j * 0.045);
+        emit(x0 + t2 * 2.2, y - j * 0.025, z, 0.045 * (1 - j / 8), 0.85, 0.88, 1, a * (1 - j / 6) * 0.8, 0);
+      }
+    }
+  }
+
+  function emitKind(id) {
+    if (id === 'moon') emitMoon();
+    else if (id === 'rainbow') emitRainbow();
+    else if (id === 'popular') emitPopular();
+    else if (id === 'stars') emitStars();
+    else if (id === 'shoot') emitShoot();
+  }
+
+  /* ═══════════════ 相机与投影 ═══════════════ */
+  function camFrame() {
+    const c = S.cam;
+    const cp = Math.cos(c.pitch), sp = Math.sin(c.pitch);
+    const px = c.target[0] + c.dist * cp * Math.sin(c.yaw);
+    const py = c.target[1] + c.dist * sp;
+    const pz = c.target[2] + c.dist * cp * Math.cos(c.yaw);
+    let fx = c.target[0] - px, fy = c.target[1] - py, fz = c.target[2] - pz;
+    const fl = Math.hypot(fx, fy, fz) || 1;
+    fx /= fl; fy /= fl; fz /= fl;
+    let rx = -fz, rz = fx;
+    const rl = Math.hypot(rx, rz) || 1;
+    rx /= rl; rz /= rl;
+    const ux = -rz * fy;
+    const uy = rz * fx - rx * fz;
+    const uz = rx * fy;
+    return { px, py, pz, fx, fy, fz, rx, ry: 0, rz, ux, uy, uz, fov: c.fov };
+  }
+
+  function project(vp, cam, x, y, z) {
+    const dx = x - cam.px, dy = y - cam.py, dz = z - cam.pz;
+    const zc = dx * cam.fx + dy * cam.fy + dz * cam.fz;
+    if (zc <= 0.05) return null;
+    const xc = dx * cam.rx + dy * cam.ry + dz * cam.rz;
+    const yc = dx * cam.ux + dy * cam.uy + dz * cam.uz;
+    const f = vp.f;
+    return { x: vp.x + vp.w * 0.5 + xc * f / zc, y: vp.y + vp.h * 0.5 - yc * f / zc, zc, s: f / zc };
+  }
+
+  /* ═══════════════ 地面 / 田块 / 光池 ═══════════════ */
+  function drawBackdrop(vp, cam) {
+    const g = ctx.createLinearGradient(0, vp.y, 0, vp.y + vp.h);
+    g.addColorStop(0, '#05080a');
+    g.addColorStop(0.58, '#08100f');
+    g.addColorStop(1, '#0a120e');
+    ctx.fillStyle = g;
+    ctx.fillRect(vp.x, vp.y, vp.w, vp.h);
+    const c = project(vp, cam, 0, 0.35, 0);
+    if (c) {
+      const rg = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, vp.h * 0.62);
+      rg.addColorStop(0, 'rgba(126,156,136,0.10)');
+      rg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = rg;
+      ctx.fillRect(vp.x, vp.y, vp.w, vp.h);
+    }
+  }
+
+  const GRID_N = 5;
+  function drawGround(vp, cam) {
+    for (let i = -GRID_N; i < GRID_N; i++) {
+      for (let j = -GRID_N; j < GRID_N; j++) {
+        const a = project(vp, cam, i, 0, j);
+        const b = project(vp, cam, i + 1, 0, j);
+        const c = project(vp, cam, i + 1, 0, j + 1);
+        const d = project(vp, cam, i, 0, j + 1);
+        if (!a || !b || !c || !d) continue;
+        const cxw = i + 0.5, czw = j + 0.5;
+        const dist = Math.hypot(cxw, czw);
+        let k = clamp(1.15 - dist / 6, 0.1, 1);
+        if (((i + j) & 1) !== 0) k *= 0.93;
+        const base = mix3([9, 12, 11], [42, 50, 39], k);
+        ctx.fillStyle = `rgb(${Math.round(base[0])},${Math.round(base[1])},${Math.round(base[2])})`;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.lineTo(c.x, c.y);
+        ctx.lineTo(d.x, d.y);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+    ctx.strokeStyle = 'rgba(150,175,150,0.075)';
+    ctx.lineWidth = 1;
+    for (let i = -GRID_N; i <= GRID_N; i++) {
+      const p1 = project(vp, cam, i, 0, -GRID_N), p2 = project(vp, cam, i, 0, GRID_N);
+      if (p1 && p2) { ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); }
+      const p3 = project(vp, cam, -GRID_N, 0, i), p4 = project(vp, cam, GRID_N, 0, i);
+      if (p3 && p4) { ctx.beginPath(); ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.stroke(); }
+    }
+  }
+
+  // 远处的田，给一个尺度感
+  const FIELD = (() => {
+    const rnd = mulberry32(777);
+    const out = [];
+    for (let i = -4; i <= 4; i++) {
+      for (let j = -4; j <= 4; j++) {
+        if (Math.abs(i) <= 1 && Math.abs(j) <= 1) continue;
+        if (rnd() > 0.5) continue;
+        out.push({
+          x: i + 0.25 + rnd() * 0.5,
+          z: j + 0.25 + rnd() * 0.5,
+          h: 0.24 + rnd() * 0.36,
+          lean: (rnd() - 0.5) * 0.12,
+          ph: rnd() * TAU,
+          d: Math.hypot(i + 0.5, j + 0.5)
+        });
+      }
+    }
+    return out;
+  })();
+
+  function drawField(vp, cam) {
+    ctx.lineCap = 'round';
+    for (const s of FIELD) {
+      const b = project(vp, cam, s.x, 0, s.z);
+      const t = project(vp, cam, s.x + s.lean, s.h, s.z + s.lean * 0.5);
+      if (!b || !t) continue;
+      const fog = clamp(1.15 - s.d / 6, 0.12, 1);
+      ctx.strokeStyle = `rgba(${Math.round(26 + 46 * fog)},${Math.round(34 + 58 * fog)},${Math.round(22 + 32 * fog)},${(0.55 * fog).toFixed(3)})`;
+      ctx.lineWidth = Math.max(1, 0.018 * b.s);
+      ctx.beginPath();
+      ctx.moveTo(b.x, b.y);
+      ctx.lineTo(t.x, t.y);
+      ctx.stroke();
+      const m = project(vp, cam, s.x, s.h * 0.5, s.z);
+      const leaf = project(vp, cam, s.x + Math.cos(s.ph) * 0.12, s.h * 0.62, s.z + Math.sin(s.ph) * 0.12);
+      if (m && leaf) {
+        ctx.beginPath();
+        ctx.moveTo(m.x, m.y);
+        ctx.lineTo(leaf.x, leaf.y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  function drawPool(vp, cam, ids) {
+    let col = [0, 0, 0], inten = 0;
+    const pulse = heartbeat(S.T);
+    for (const id of ids) {
+      if (id === 'moon') { col[0] += 0.55 * 0.6; col[1] += 0.65 * 0.6; col[2] += 1.0 * 0.6; inten += 0.5; }
+      if (id === 'popular') {
+        const k = 0.45 + 0.55 * Math.min(1, pulse);
+        col[0] += 1.0 * k; col[1] += 0.78 * k; col[2] += 0.35 * k; inten += 0.6 * k;
+      }
+      if (id === 'rainbow') { col[0] += 0.8 * 0.5; col[1] += 0.85 * 0.5; col[2] += 1.0 * 0.5; inten += 0.32; }
+      if (id === 'stars') { col[0] += 0.7 * 0.5; col[1] += 0.65 * 0.5; col[2] += 1.0 * 0.5; inten += 0.22; }
+    }
+    if (inten < 0.02) return;
+    const m = Math.max(col[0], col[1], col[2]) || 1;
+    col = [col[0] / m, col[1] / m, col[2] / m];
+    ctx.globalCompositeOperation = 'lighter';
+    for (let ring = 4; ring >= 1; ring--) {
+      const rad = 0.12 + 0.78 * ring / 4;
+      ctx.beginPath();
+      let started = false;
+      for (let a = 0; a <= 32; a++) {
+        const t = a / 32 * TAU;
+        const p = project(vp, cam, Math.cos(t) * rad, 0.004, Math.sin(t) * rad);
+        if (!p) { started = false; continue; }
+        if (!started) { ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y);
+      }
+      ctx.fillStyle = ui(col, 0.022 * inten);
+      ctx.fill();
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  /* ═══════════════ 标尺 / 轨迹线 ═══════════════ */
+  function drawRuler(vp, cam) {
+    ctx.save();
+    ctx.setLineDash([2, 4]);
+    ctx.lineWidth = 1;
+    ctx.font = '10px ui-monospace, Consolas, monospace';
+    for (const h of [0.25, 0.5, 0.75, 1.0]) {
+      ctx.strokeStyle = `rgba(190,210,180,${h === 1 ? 0.24 : 0.12})`;
+      ctx.beginPath();
+      let started = false;
+      for (let a = 0; a <= 48; a++) {
+        const t = a / 48 * TAU;
+        const p = project(vp, cam, Math.cos(t) * 0.62, h, Math.sin(t) * 0.62);
+        if (!p) { started = false; continue; }
+        if (!started) { ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y);
+      }
+      ctx.stroke();
+      const lab = project(vp, cam, 0.66, h, 0);
+      if (lab) {
+        ctx.setLineDash([]);
+        ctx.fillStyle = `rgba(200,220,190,${h === 1 ? 0.5 : 0.28})`;
+        ctx.fillText(h.toFixed(2) + ' 格', lab.x + 4, lab.y + 3);
+        ctx.setLineDash([2, 4]);
+      }
+    }
+    ctx.restore();
+  }
+
+  function drawPaths(vp, cam, ids) {
+    ctx.save();
+    ctx.setLineDash([3, 4]);
+    ctx.lineWidth = 1;
+    const N = 110;
+    for (const id of ids) {
+      const meta = KINDS.find(k => k.id === id);
+      // 彩虹有几道，就一道一道画，每道只是横向平移
+      if (id === 'rainbow') {
+        const P = S.p.rainbow;
+        const nBows = clamp(Math.round(P.bows), 1, BOWS.length);
+        for (let b = 0; b < nBows; b++) {
+          const f = BOWS[b];
+          ctx.strokeStyle = hexA(meta.color, 0.5 * f.alpha + 0.08);
+          ctx.beginPath();
+          let started = false;
+          for (let a = 0; a <= N; a++) {
+            const u = a / N;
+            const y = P.feet + P.arch * Math.pow(Math.sin(Math.PI * u), 0.85);
+            const p = project(vp, cam, (u - 0.5) * P.span + f.step * P.gap, y, P.band * Math.sin(u * TAU));
+            if (!p) { started = false; continue; }
+            if (!started) { ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y);
+          }
+          ctx.stroke();
+        }
+        continue;
+      }
+      ctx.strokeStyle = hexA(meta.color, 0.52);
+      let started = false;
+      ctx.beginPath();
+      if (id === 'moon' || id === 'popular') {
+        const P = S.p[id];
+        const h = id === 'moon' ? 0.055 : P.height;
+        for (let a = 0; a <= N; a++) {
+          const t = a / N * TAU;
+          const y = h + (id === 'moon' ? 0.05 * Math.sin(t) : 0.1 * Math.sin(t * 2));
+          const p = project(vp, cam, Math.cos(t) * P.radius, y, Math.sin(t) * P.radius);
+          if (!p) { started = false; continue; }
+          if (!started) { ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y);
+        }
+      } else if (id === 'stars') {
+        const A = cache.stars.arr;
+        for (let i = 0; i < A.length; i += 3) {
+          const q = A[i];
+          const x = q.sx * S.p.stars.spread * 0.5;
+          const z = q.sz * S.p.stars.spread * 0.5;
+          const p1 = project(vp, cam, x, S.p.stars.top, z);
+          const p2 = project(vp, cam, x, S.p.stars.top - S.p.stars.sink * (S.p.stars.lifeT / TICKS), z);
+          if (p1 && p2) { ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); }
+        }
+      }
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  /* ═══════════════ 作物：一格参考物 ═══════════════ */
+
+  // 把一串点按宽度展开成带状多边形，返回左右两排投影点
+  function ribbon(vp, cam, pts, widths, px, pz) {
+    const left = [], right = [];
+    for (let k = 0; k < pts.length; k++) {
+      const w = widths[k];
+      const L = project(vp, cam, pts[k].x + px * w, pts[k].y, pts[k].z + pz * w);
+      const R = project(vp, cam, pts[k].x - px * w, pts[k].y, pts[k].z - pz * w);
+      if (!L || !R) return null;
+      left.push(L);
+      right.push(R);
+    }
+    return { left, right };
+  }
+
+  function fillRibbon(r, col) {
+    ctx.beginPath();
+    ctx.moveTo(r.left[0].x, r.left[0].y);
+    for (let k = 1; k < r.left.length; k++) ctx.lineTo(r.left[k].x, r.left[k].y);
+    for (let k = r.right.length - 1; k >= 0; k--) ctx.lineTo(r.right[k].x, r.right[k].y);
+    ctx.closePath();
+    ctx.fillStyle = col;
+    ctx.fill();
+  }
+
+  const CROP = (() => {
+    const rnd = mulberry32(4211);
+    // 麦秆：一根细长带弯的线，顶上接一支穗
+    const stems = [];
+    for (let i = 0; i < 6; i++) {
+      const a = i / 6 * TAU + 0.4;
+      const base = 0.02 + rnd() * 0.09;
+      const bx = Math.cos(a) * base, bz = Math.sin(a) * base;
+      const h = 0.4 + rnd() * 0.26;
+      const bendA = a + (rnd() - 0.5) * 1.6;
+      const bend = 0.03 + rnd() * 0.09;
+      const pts = [];
+      for (let k = 0; k <= 4; k++) {
+        const s = k / 4;
+        pts.push({
+          x: bx + Math.cos(bendA) * bend * s * s,
+          y: h * s,
+          z: bz + Math.sin(bendA) * bend * s * s
+        });
+      }
+      const tip = pts[4];
+      const hx = Math.cos(bendA), hz = Math.sin(bendA);
+      const headLen = 0.07 + rnd() * 0.05;
+      const hw = 0.016;
+      const head = [
+        { x: tip.x, y: tip.y, z: tip.z },
+        { x: tip.x + hx * 0.006, y: tip.y + headLen * 0.32, z: tip.z + hz * 0.006 },
+        { x: tip.x + hx * 0.012, y: tip.y + headLen * 0.66, z: tip.z + hz * 0.012 },
+        { x: tip.x + hx * 0.016, y: tip.y + headLen, z: tip.z + hz * 0.016 }
+      ];
+      stems.push({
+        pts,
+        head: { pts: head, widths: [0.002, hw * 0.75, hw, 0.002], px: -hz, pz: hx },
+        tint: rnd()
+      });
+    }
+    // 叶：从基部向外拱的窄条
+    const leaves = [];
+    for (let i = 0; i < 8; i++) {
+      const a = i / 8 * TAU + 0.2 + (rnd() - 0.5) * 0.5;
+      const len = 0.12 + rnd() * 0.11;
+      const dx = Math.cos(a), dz = Math.sin(a);
+      const spine = [], widths = [];
+      for (let k = 0; k <= 4; k++) {
+        const s = k / 4;
+        const rr = len * (0.55 * s + 0.45 * s * s);
+        const yy = 0.03 + len * (s * 1.5 - 0.58 * s * s);
+        spine.push({ x: dx * rr, y: yy, z: dz * rr });
+        widths.push(0.015 * Math.sin(Math.PI * (0.2 + s * 0.75)) + 0.0012);
+      }
+      leaves.push({ spine, widths, px: -dz, pz: dx, tint: rnd() });
+    }
+    return { stems, leaves };
+  })();
+
+  function drawCrop(vp, cam) {
+    // 土堆
+    ctx.beginPath();
+    let started = false;
+    for (let a = 0; a <= 24; a++) {
+      const t = a / 24 * TAU;
+      const p = project(vp, cam, Math.cos(t) * 0.2, 0.012, Math.sin(t) * 0.2);
+      if (!p) { started = false; continue; }
+      if (!started) { ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(58,48,35,0.92)';
+    ctx.fill();
+
+    // 底叶
+    for (const b of CROP.leaves) {
+      const r = ribbon(vp, cam, b.spine, b.widths, b.px, b.pz);
+      if (!r) continue;
+      const c = mix3([0.10, 0.15, 0.06], [0.21, 0.29, 0.12], b.tint);
+      fillRibbon(r, `rgb(${Math.round(c[0] * 255)},${Math.round(c[1] * 255)},${Math.round(c[2] * 255)})`);
+    }
+
+    // 麦秆与穗
+    ctx.lineCap = 'round';
+    for (const st of CROP.stems) {
+      const mid = project(vp, cam, st.pts[2].x, st.pts[2].y, st.pts[2].z);
+      const sc = mid ? mid.s : 300;
+      const c = mix3([0.14, 0.20, 0.10], [0.25, 0.34, 0.16], st.tint);
+      ctx.strokeStyle = `rgb(${Math.round(c[0] * 255)},${Math.round(c[1] * 255)},${Math.round(c[2] * 255)})`;
+      ctx.lineWidth = Math.max(1, 0.012 * sc);
+      started = false;
+      ctx.beginPath();
+      for (const s of st.pts) {
+        const p = project(vp, cam, s.x, s.y, s.z);
+        if (!p) { started = false; continue; }
+        if (!started) { ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y);
+      }
+      ctx.stroke();
+
+      const r = ribbon(vp, cam, st.head.pts, st.head.widths, st.head.px, st.head.pz);
+      if (!r) continue;
+      const hc = mix3([0.27, 0.25, 0.12], [0.4, 0.36, 0.18], st.tint);
+      fillRibbon(r, `rgb(${Math.round(hc[0] * 255)},${Math.round(hc[1] * 255)},${Math.round(hc[2] * 255)})`);
+    }
+
+    // 一格的虚线边界（旧稿的 strokeRect 在这里是立方体）
+    const corners = [[-0.5, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.5, 0.5]];
+    const bot = corners.map(c => project(vp, cam, c[0], 0.002, c[1]));
+    const top = corners.map(c => project(vp, cam, c[0], 1, c[1]));
+    ctx.save();
+    ctx.setLineDash([3, 5]);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(214,196,132,0.22)';
+    ctx.beginPath();
+    for (let i = 0; i < 4; i++) {
+      const j = (i + 1) % 4;
+      if (bot[i] && bot[j]) { ctx.moveTo(bot[i].x, bot[i].y); ctx.lineTo(bot[j].x, bot[j].y); }
+      if (top[i] && top[j]) { ctx.moveTo(top[i].x, top[i].y); ctx.lineTo(top[j].x, top[j].y); }
+      if (bot[i] && top[i]) { ctx.moveTo(bot[i].x, bot[i].y); ctx.lineTo(top[i].x, top[i].y); }
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  /* ═══════════════ 粒子绘制 ═══════════════ */
+  function drawParticles(vp, cam, from, to) {
+    if (from >= to) return;
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = from; i < to; i++) {
+      const p = pool[order[i]];
+      const pr = project(vp, cam, p.x, p.y, p.z);
+      if (!pr) continue;
+      const fog = clamp(1.3 - (pr.zc - 2.4) * 0.12, 0.45, 1);
+      const a = p.a * S.glow * fog;
+      if (a <= 0.008) continue;
+      const size = p.size * pr.s * S.sizeMul;
+      if (size < 0.12) continue;
+      const spr = sprite(p.r, p.g, p.b);
+      const d = size * 4.6;
+      ctx.globalAlpha = clamp(a * 0.34, 0, 1);
+      ctx.drawImage(spr, pr.x - d * 0.5, pr.y - d * 0.5, d, d);
+      ctx.globalAlpha = clamp(a * 0.62, 0, 1);
+      ctx.fillStyle = `rgb(${Math.round(p.r * 255)},${Math.round(p.g * 255)},${Math.round(p.b * 255)})`;
+      ctx.beginPath();
+      ctx.arc(pr.x, pr.y, Math.max(0.4, size * 0.36), 0, TAU);
+      ctx.fill();
+      if (p.glint > 0) {
+        const L = size * 1.7 * p.glint;
+        ctx.globalAlpha = clamp(a * p.glint * 0.8, 0, 1);
+        ctx.strokeStyle = 'rgb(236,236,255)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(pr.x - L, pr.y); ctx.lineTo(pr.x + L, pr.y);
+        ctx.moveTo(pr.x, pr.y - L); ctx.lineTo(pr.x, pr.y + L);
+        ctx.stroke();
+      }
+    }
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  /* ═══════════════ 单格渲染 ═══════════════ */
+  function drawTag(vp, kind) {
+    ctx.save();
+    ctx.font = '600 12px "Segoe UI","Microsoft YaHei",sans-serif';
+    ctx.fillStyle = 'rgba(230,240,235,0.82)';
+    ctx.fillText(kind.label, vp.x + 12, vp.y + 22);
+    const w = ctx.measureText(kind.label).width;
+    ctx.font = '10.5px ui-monospace, Consolas, monospace';
+    ctx.fillStyle = 'rgba(150,170,160,0.55)';
+    ctx.fillText(kind.en, vp.x + 12 + w + 7, vp.y + 22);
+    ctx.restore();
+  }
+
+  function renderPane(vp, cam, ids, soloKind) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(vp.x, vp.y, vp.w, vp.h);
+    ctx.clip();
+
+    drawBackdrop(vp, cam);
+    drawGround(vp, cam);
+    drawField(vp, cam);
+    if (S.pool) drawPool(vp, cam, ids);
+    if (S.ruler) drawRuler(vp, cam);
+    if (S.paths) drawPaths(vp, cam, ids);
+
+    nP = 0;
+    for (const id of ids) emitKind(id);
+    if (S.shoot) emitShoot();
+    lastCount = nP;
+
+    for (let i = 0; i < nP; i++) {
+      const p = pool[i];
+      p.zc = (p.x - cam.px) * cam.fx + (p.y - cam.py) * cam.fy + (p.z - cam.pz) * cam.fz;
+    }
+    for (let i = 0; i < nP; i++) order[i] = i;
+    order.length = nP;
+    order.sort((a, b) => pool[b].zc - pool[a].zc);
+
+    const cropZ = (0 - cam.px) * cam.fx + (0.5 - cam.py) * cam.fy + (0 - cam.pz) * cam.fz;
+    let split = 0;
+    while (split < nP && pool[order[split]].zc > cropZ) split++;
+
+    drawParticles(vp, cam, 0, split);   // 作物后面的
+    drawCrop(vp, cam);
+    drawParticles(vp, cam, split, nP);  // 作物前面的
+
+    if (soloKind) drawTag(vp, soloKind);
+    ctx.restore();
+  }
+
+  /* ═══════════════ 主渲染 ═══════════════ */
+  function render() {
+    const cam = camFrame();
+    stage.classList.toggle('grid', !!S.grid);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = '#040607';
+    ctx.fillRect(0, 0, W, H);
+
+    if (S.grid) {
+      // 四宫格：顶部留信息栏、底部给时间轴留位置，避免互相压
+      const gap = 12, bar = 28, bottom = 46;
+      const pw = Math.max(40, (W - gap * 3) / 2);
+      const ph = Math.max(40, (H - bar - gap * 2 - bottom) / 2);
+      KINDS.forEach((kind, i) => {
+        const cx = i % 2, cy = (i / 2) | 0;
+        const vp = { x: gap + cx * (pw + gap), y: bar + gap + cy * (ph + gap), w: pw, h: ph, f: (ph * 0.5) / Math.tan(cam.fov * 0.5) };
+        renderPane(vp, cam, [kind.id], kind);
+        ctx.strokeStyle = '#1d2829';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(vp.x + 0.5, vp.y + 0.5, vp.w - 1, vp.h - 1);
+      });
+      ctx.font = '11px ui-monospace, Consolas, monospace';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = 'rgba(150,170,160,0.8)';
+      ctx.fillText(
+        '四宫格 · 时间 ' + S.T.toFixed(2) + ' s / ' + Math.round(S.T * TICKS) + ' tick · 相机 ' +
+        (S.cam.yaw * 180 / Math.PI).toFixed(0) + '° / ' + (S.cam.pitch * 180 / Math.PI).toFixed(0) + '° / ' + S.cam.dist.toFixed(2),
+        14, bar * 0.5
+      );
+      ctx.textBaseline = 'alphabetic';
+    } else {
+      const vp = { x: 0, y: 0, w: W, h: H, f: (H * 0.5) / Math.tan(cam.fov * 0.5) };
+      const ids = KINDS.filter(k => S.visible[k.id]).map(k => k.id);
+      renderPane(vp, cam, ids, null);
+      const vg = ctx.createRadialGradient(W * 0.5, H * 0.5, Math.min(W, H) * 0.25, W * 0.5, H * 0.5, Math.max(W, H) * 0.78);
+      vg.addColorStop(0, 'rgba(0,0,0,0)');
+      vg.addColorStop(1, 'rgba(0,0,0,0.55)');
+      ctx.fillStyle = vg;
+      ctx.fillRect(0, 0, W, H);
+    }
+  }
+
+  /* ═══════════════ HUD / 时间轴 ═══════════════ */
+  const hud = document.getElementById('hud');
+  const scrub = document.getElementById('scrub');
+  const scrubOut = document.getElementById('scrubOut');
+
+  function updateHud() {
+    const mode = S.grid ? '四宫格' : '同屏';
+    hud.innerHTML =
+      '时间 <b>' + S.T.toFixed(2) + ' s</b> · <b>' + Math.round(S.T * TICKS) + '</b> tick<br>' +
+      '粒子 <b>' + lastCount + '</b> · ' + mode + (S.paused ? ' · ⏸' : ' · ▶') + ' ' + S.speed.toFixed(2) + '×<br>' +
+      '相机 <b>' + (S.cam.yaw * 180 / Math.PI).toFixed(0) + '° / ' +
+      (S.cam.pitch * 180 / Math.PI).toFixed(0) + '° / ' + S.cam.dist.toFixed(2) + '</b>';
+  }
+
+  function syncTimeline() {
+    if (document.activeElement !== scrub) scrub.value = (S.T % 40).toFixed(2);
+    scrubOut.textContent = S.T.toFixed(2) + ' s';
+  }
+
+  /* ═══════════════ 主循环 ═══════════════ */
+  let lastT = performance.now();
+  let frameNo = 0;
+  function loop(now) {
+    const dt = clamp((now - lastT) / 1000, 0, 0.05);
+    lastT = now;
+    if (!S.paused) S.T += dt * S.speed;
+    if (S.spin && !S.dragging) S.cam.yaw += dt * 0.1;
+    ensureCache();
+    render();
+    if (frameNo++ % 8 === 0) updateHud();
+    syncTimeline();
+    requestAnimationFrame(loop);
+  }
+
+  /* ═══════════════ 界面：卡片 ═══════════════ */
+  function fmtParam(def, v) {
+    const s = def.dp === 0 ? String(Math.round(v)) : v.toFixed(def.dp);
+    return def.unit ? s + ' ' + def.unit : s;
+  }
+
+  function buildCards() {
+    const wrap = document.getElementById('cards');
+    wrap.innerHTML = KINDS.map(kind => `
+      <article class="card${S.visible[kind.id] ? '' : ' off'}" data-kind="${kind.id}" style="--c:${kind.color}">
+        <div class="card-head">
+          <span class="swatch"></span>
+          <div class="card-title"><h2>${kind.label}</h2><span class="en">${kind.en}</span></div>
+          <label class="toggle" title="显示"><input type="checkbox" data-role="vis"${S.visible[kind.id] ? ' checked' : ''}><i></i></label>
+          <button class="ghost" data-role="solo" type="button">只看</button>
+        </div>
+        <p class="card-desc">${kind.desc}</p>
+        <div class="sliders">
+          ${kind.params.map(pt => `
+            <div class="row">
+              <label for="${kind.id}-${pt.k}">${pt.label}</label>
+              <input id="${kind.id}-${pt.k}" data-kind="${kind.id}" data-key="${pt.k}" type="range"
+                     min="${pt.min}" max="${pt.max}" step="${pt.step}" value="${S.p[kind.id][pt.k]}">
+              <output data-out="${kind.id}-${pt.k}">${fmtParam(pt, S.p[kind.id][pt.k])}</output>
+            </div>`).join('')}
+        </div>
+      </article>`).join('');
+
+    wrap.querySelectorAll('input[type=range]').forEach(inp => {
+      inp.addEventListener('input', () => {
+        const kind = inp.dataset.kind, key = inp.dataset.key;
+        S.p[kind][key] = parseFloat(inp.value);
+        const def = KINDS.find(k => k.id === kind).params.find(p => p.k === key);
+        const out = wrap.querySelector(`[data-out="${kind}-${key}"]`);
+        if (out) out.textContent = fmtParam(def, S.p[kind][key]);
+      });
+    });
+
+    wrap.querySelectorAll('input[data-role=vis]').forEach(chk => {
+      chk.addEventListener('change', () => {
+        const card = chk.closest('.card');
+        const kind = card.dataset.kind;
+        S.visible[kind] = chk.checked;
+        card.classList.toggle('off', !chk.checked);
+      });
+    });
+
+    wrap.querySelectorAll('[data-role=solo]').forEach(btn => {
+      btn.addEventListener('click', () => solo(btn.closest('.card').dataset.kind));
+    });
+  }
+
+  function syncVisibilityUI() {
+    for (const kind of KINDS) {
+      const card = document.querySelector(`.card[data-kind="${kind.id}"]`);
+      if (!card) continue;
+      card.classList.toggle('off', !S.visible[kind.id]);
+      const chk = card.querySelector('input[data-role=vis]');
+      if (chk) chk.checked = S.visible[kind.id];
+    }
+  }
+
+  // 只看一类
+  function solo(id) {
+    for (const kind of KINDS) S.visible[kind.id] = (kind.id === id);
+    S.grid = false;
+    const g = document.getElementById('tGrid');
+    if (g) g.checked = false;
+    syncVisibilityUI();
+  }
+
+  /* ═══════════════ 界面：开关与播放控制 ═══════════════ */
+  function bindToggle(id, key) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.checked = !!S[key];
+    el.addEventListener('change', () => { S[key] = el.checked; });
+  }
+
+  function bindRange(id, outId, key, fmt) {
+    const el = document.getElementById(id);
+    const out = document.getElementById(outId);
+    if (!el) return;
+    el.value = S[key];
+    const paint = () => { if (out) out.textContent = fmt(S[key]); };
+    paint();
+    el.addEventListener('input', () => { S[key] = parseFloat(el.value); paint(); });
+  }
+
+  const btnPlay = document.getElementById('btnPlay');
+  function togglePlay() {
+    S.paused = !S.paused;
+    btnPlay.textContent = S.paused ? '播放' : '暂停';
+  }
+  btnPlay.addEventListener('click', togglePlay);
+  document.getElementById('btnReset').addEventListener('click', () => { S.T = 0; });
+  document.getElementById('btnBack').addEventListener('click', () => { S.T = Math.max(0, S.T - 1 / TICKS); });
+  document.getElementById('btnFwd').addEventListener('click', () => { S.T += 1 / TICKS; });
+
+  const speed = document.getElementById('speed');
+  const speedOut = document.getElementById('speedOut');
+  speed.value = S.speed;
+  speedOut.textContent = S.speed.toFixed(2) + '×';
+  speed.addEventListener('input', () => {
+    S.speed = parseFloat(speed.value);
+    speedOut.textContent = S.speed.toFixed(2) + '×';
+  });
+
+  scrub.addEventListener('input', () => {
+    S.T = parseFloat(scrub.value);
+    scrubOut.textContent = S.T.toFixed(2) + ' s';
+  });
+
+  /* ═══════════════ 相机交互 ═══════════════ */
+  let drag = null;
+  canvas.addEventListener('pointerdown', e => {
+    S.dragging = true;
+    drag = { x: e.clientX, y: e.clientY };
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* 忽略 */ }
+  });
+  canvas.addEventListener('pointermove', e => {
+    if (!S.dragging || !drag) return;
+    S.cam.yaw -= (e.clientX - drag.x) * 0.008;
+    S.cam.pitch = clamp(S.cam.pitch + (e.clientY - drag.y) * 0.006, 0.02, 1.35);
+    drag = { x: e.clientX, y: e.clientY };
+  });
+  const endDrag = () => { S.dragging = false; drag = null; };
+  canvas.addEventListener('pointerup', endDrag);
+  canvas.addEventListener('pointercancel', endDrag);
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    S.cam.dist = clamp(S.cam.dist * Math.exp(e.deltaY * 0.0012), 1.6, 9);
+  }, { passive: false });
+  canvas.addEventListener('dblclick', () => {
+    S.cam.yaw = 0.62; S.cam.pitch = 0.32; S.cam.dist = 3.05;
+  });
+
+  /* ═══════════════ 键盘 ═══════════════ */
+  window.addEventListener('keydown', e => {
+    if (e.target && e.target.tagName === 'INPUT') return;
+    if (e.code === 'Space') { e.preventDefault(); togglePlay(); return; }
+    if (e.key === 'r' || e.key === 'R') { S.T = 0; return; }
+    if (e.key === 'ArrowRight') { S.T += 1 / TICKS; return; }
+    if (e.key === 'ArrowLeft') { S.T = Math.max(0, S.T - 1 / TICKS); return; }
+    if (e.key >= '1' && e.key <= '4') { solo(KINDS[parseInt(e.key, 10) - 1].id); return; }
+    if (e.key === '0') {
+      for (const kind of KINDS) S.visible[kind.id] = true;
+      syncVisibilityUI();
+    }
+  });
+
+  /* ═══════════════ 参数导出 ═══════════════ */
+  // 虹道是「同形平行」：每道的跨度 / 拱高 / 落脚都一样，只多一个横向偏移
+  function rainbowBowsDetail() {
+    const P = S.p.rainbow;
+    const nBows = clamp(Math.round(P.bows), 1, BOWS.length);
+    return BOWS.slice(0, nBows).map((f, i) => ({
+      index: i,
+      name: i === 0 ? '主虹' : i === 1 ? '第二道' : '第三道',
+      offsetXBlocks: r3(f.step * P.gap),
+      spanBlocks: r2(P.span),
+      archBlocks: r2(P.arch),
+      feetHeightBlocks: r2(P.feet),
+      alphaScale: f.alpha,
+      sizeScale: f.size
+    }));
+  }
+
+  function buildExport() {
+    const P = S.p;
+    const spec = {
+      note: '1 格 = 1 方块（预览按 92 px/格 对齐 CuratedCropParticle.SCALE）。t 为秒；转速/频率同时给出每 tick 值，可直接填 lifetime 与 place()。',
+      moon: {
+        count: P.moon.count,
+        lifetimeTicks: Math.round(P.moon.lifeT),
+        orbitRadiusBlocks: r2(P.moon.radius),
+        spinRadPerTick: pt(P.moon.spin),
+        bobAmplitudeBlocks: r3(P.moon.bob),
+        bobRadPerTick: pt(1.4),
+        baseHeightBlocks: 0.055,
+        ringTiltBlocks: 0.05,
+        coreRadiusBlocks: SIZES.moon,
+        formula: 'a = a0 + spin*t; r = R*(1+0.055*sin(1.1t+φ)); x = cos(a)*r; z = sin(a)*r; y = 0.055 + bob*sin(1.4t+2φ) + 0.05*sin(a); 颜色 象牙白→淡蓝; alpha 前 12% 淡入、后 45% 淡出; size*(1-0.35p)'
+      },
+      rainbow: {
+        count: P.rainbow.count,
+        bows: clamp(Math.round(P.rainbow.bows), 1, BOWS.length),
+        lifetimeTicks: Math.round(P.rainbow.lifeT),
+        primary: {
+          spanBlocks: r2(P.rainbow.span),
+          archBlocks: r2(P.rainbow.arch),
+          feetHeightBlocks: r2(P.rainbow.feet),
+          ribbonWidthBlocks: r2(P.rainbow.band),
+          parallelGapBlocks: r2(P.rainbow.gap),
+          hueStartDeg: 10,
+          hueSpanDeg: 300
+        },
+        bowsDetail: rainbowBowsDetail(),
+        coreRadiusBlocks: SIZES.rainbow,
+        formula: '每道形状相同，只差横向偏移：u = age/life; x = (u-0.5)*span + offsetX（主虹 0，其余 ±gap）; y = feet + arch*sin(πu)^0.85*(1+0.05*sin(0.9t+φ)); z = band*sin(2πu); hue = 10 + 300u; alpha = 两端淡没（前 10%、后 14%）× alphaScale'
+      },
+      popular: {
+        count: P.popular.count,
+        lifetimeTicks: Math.round(P.popular.lifeT),
+        orbitRadiusBlocks: r2(P.popular.radius),
+        spinRadPerTick: pt(P.popular.spin),
+        pulseAmplitudeBlocks: r2(P.popular.pulse),
+        heightBlocks: r2(P.popular.height),
+        bobAmplitudeBlocks: 0.1,
+        flutterAmplitudeBlocks: 0.02,
+        flutterRadPerTick: pt(9),
+        heartbeatPeriodTicks: Math.round(HEART_PERIOD * TICKS),
+        coreRadiusBlocks: SIZES.popular,
+        formula: 'pulse = heartbeat(t)（1.15 s 双跳）; r = R*(1+pulseAmp*pulse+0.035*sin(0.7t+φ)); x = cos(a)*r; z = sin(a)*r; y = H + 0.1*sin(2a) + 0.02*sin(9t); alpha/size 随 pulse 一起抬'
+      },
+      stars: {
+        count: P.stars.count,
+        lifetimeTicks: Math.round(P.stars.lifeT),
+        spreadBlocks: r2(P.stars.spread),
+        sinkBlocksPerSecond: r2(P.stars.sink),
+        sinkBlocksPerTick: Math.round(P.stars.sink / TICKS * 100000) / 100000,
+        twinkleRadPerTick: pt(P.stars.twinkle),
+        topHeightBlocks: r2(P.stars.top),
+        coreRadiusBlocks: SIZES.stars,
+        formula: 'y = top - sink*age; x/z 各自小幅漂移，每个周期换位置; tw = 0.5+0.5*sin(twinkle*t+φ); br = tw^2.4; 颜色 淡紫→白; br>0.8 时画十字星芒'
+      },
+      extra: {
+        cheer: S.cheer ? '开启：每次心跳额外补发 3 颗上浮碎光（需在 play 里补 addParticle）' : '关闭',
+        shooting: S.shoot ? '开启：装饰用落星划痕（不属于粒子类）' : '关闭'
+      }
+    };
+    return JSON.stringify(spec, null, 2);
+  }
+
+  const modal = document.getElementById('modal');
+  const exportText = document.getElementById('exportText');
+  const copyHint = document.getElementById('copyHint');
+
+  document.getElementById('btnExport').addEventListener('click', () => {
+    exportText.textContent = buildExport();
+    copyHint.textContent = '';
+    modal.classList.add('open');
+  });
+  document.getElementById('btnClose').addEventListener('click', () => modal.classList.remove('open'));
+  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+
+  document.getElementById('btnCopy').addEventListener('click', async () => {
+    const text = exportText.textContent || '';
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        throw new Error('no clipboard');
+      }
+      copyHint.textContent = '已复制';
+    } catch (err) {
+      // file:// 下没有剪贴板权限时的退路
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (e2) { ok = false; }
+      document.body.removeChild(ta);
+      copyHint.textContent = ok ? '已复制' : '复制失败，请手动全选';
+    }
+  });
+
+  /* ═══════════════ 初始化 ═══════════════ */
+  const errBox = document.getElementById('err');
+  function showError(msg) {
+    if (!errBox) return;
+    errBox.style.display = 'block';
+    errBox.textContent = '预览出错：' + msg;
+  }
+  window.addEventListener('error', e => showError(e.message || '未知错误'));
+
+  buildCards();
+  bindToggle('tSpin', 'spin');
+  bindToggle('tPaths', 'paths');
+  bindToggle('tRuler', 'ruler');
+  bindToggle('tPool', 'pool');
+  bindToggle('tCheer', 'cheer');
+  bindToggle('tShoot', 'shoot');
+  bindToggle('tGrid', 'grid');
+  bindRange('sizeMul', 'sizeMulOut', 'sizeMul', v => v.toFixed(2) + '×');
+  bindRange('glow', 'glowOut', 'glow', v => v.toFixed(2) + '×');
+  if (soloQ) syncVisibilityUI();
+  btnPlay.textContent = S.paused ? '播放' : '暂停';
+
+  ensureCache();
+  ready = true;
+  requestAnimationFrame(loop);
+  if (Q.get('export') === '1') {
+    exportText.textContent = buildExport();
+    copyHint.textContent = '';
+    modal.classList.add('open');
+  }
+})();
+</script>
+</body>
+</html>
