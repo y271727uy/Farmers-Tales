@@ -28,6 +28,13 @@ object ToolItems {
     @JvmField
     val NETHERITE_SCYTHE: ItemEntry<ScytheItem> = scythe("netherite_scythe", "Netherite Scythe", Tiers.NETHERITE, 5)
 
+    @JvmField
+    val FISHING_NET: ItemEntry<FishingNetItem> = ModRegistrate.REGISTRATE
+        .item("fishing_net") { properties -> FishingNetItem(properties) }
+        .model { context, provider -> provider.generated(context, provider.modLoc("item/tool/${context.name}")) }
+        .lang("Fishing Net")
+        .register()
+
     private fun scythe(id: String, displayName: String, tier: Tier, harvestWidth: Int): ItemEntry<ScytheItem> =
         ModRegistrate.REGISTRATE
             .item(id) { properties -> ScytheItem(tier, harvestWidth, properties) }

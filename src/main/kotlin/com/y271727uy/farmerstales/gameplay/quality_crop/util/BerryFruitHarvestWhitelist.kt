@@ -99,6 +99,17 @@ object BerryFruitHarvestWhitelist {
 			WhiteListItem("minecraft:glow_berries", "minecraft:cave_vines")
 
 			WhiteListItem("fruitsdelight:hawberry", "fruitsdelight:hawberry_leaves")
+			WhiteListItem("fruitsdelight:apple", "fruitsdelight:apple_leaves")
+			WhiteListItem("fruitsdelight:bayberry", "fruitsdelight:bayberry_leaves")
+			WhiteListItem("fruitsdelight:fig", "fruitsdelight:fig_leaves")
+			WhiteListItem("fruitsdelight:pear", "fruitsdelight:pear_leaves")
+			WhiteListItem("fruitsdelight:lychee", "fruitsdelight:lychee_leaves")
+			WhiteListItem("fruitsdelight:kiwi", "fruitsdelight:kiwi_leaves")
+			WhiteListItem("fruitsdelight:mango", "fruitsdelight:mango_leaves")
+			WhiteListItem("fruitsdelight:mangosteen", "fruitsdelight:mangosteen_leaves")
+			WhiteListItem("fruitsdelight:orange", "fruitsdelight:orange_leaves")
+			WhiteListItem("fruitsdelight:peach", "fruitsdelight:peach_leaves")
+			WhiteListItem("fruitsdelight:persimmon", "fruitsdelight:persimmon_leaves")
 		}
 	}
 }

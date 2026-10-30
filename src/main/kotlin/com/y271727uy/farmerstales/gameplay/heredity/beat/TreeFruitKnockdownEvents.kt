@@ -1,4 +1,4 @@
-package com.y271727uy.farmerstales.gameplay.beat
+package com.y271727uy.farmerstales.gameplay.heredity.beat
 
 import com.y271727uy.farmerstales.FTMod
 import net.minecraft.core.BlockPos
@@ -20,6 +20,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.registries.ForgeRegistries
 import java.util.ArrayDeque
+import kotlin.math.abs
 
 /** Knocks ripe fruit from compatible trees without depending on another mod's classes. */
 @Mod.EventBusSubscriber(modid = FTMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -140,7 +141,7 @@ object TreeFruitKnockdownEvents {
     }
 
     private fun withinRadius(origin: BlockPos, pos: BlockPos): Boolean =
-        kotlin.math.abs(pos.x - origin.x) <= SEARCH_RADIUS &&
-            kotlin.math.abs(pos.y - origin.y) <= SEARCH_RADIUS &&
-            kotlin.math.abs(pos.z - origin.z) <= SEARCH_RADIUS
+        abs(pos.x - origin.x) <= SEARCH_RADIUS &&
+            abs(pos.y - origin.y) <= SEARCH_RADIUS &&
+            abs(pos.z - origin.z) <= SEARCH_RADIUS
 }

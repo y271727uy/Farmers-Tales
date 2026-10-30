@@ -1,18 +1,13 @@
 package com.y271727uy.farmerstales.gameplay.quality_crop.event.harvest
 
-import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.gameplay.quality_crop.QualityHarvestRules
-import com.y271727uy.farmerstales.gameplay.quality_crop.QualityNbt
-import com.y271727uy.farmerstales.gameplay.quality_crop.QualityRoller
+import com.y271727uy.farmerstales.gameplay.quality_crop.QualityDropProcessor
 import com.y271727uy.farmerstales.gameplay.advancements.FarmersTalesAdvancements
 import com.y271727uy.farmerstales.gameplay.quality_crop.util.NonStandardCropWhitelist
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.level.block.Block
 import net.minecraftforge.event.level.BlockEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.common.Mod
-
-@Mod.EventBusSubscriber(modid = FTMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 @Suppress("unused")
 object NonStandardCropEvents {
 
@@ -44,15 +39,8 @@ object NonStandardCropEvents {
 				continue
 			}
 
-			if (QualityNbt.hasValidQuality(stack) || !NonStandardCropWhitelist.matches(stack, state.block)) {
-				Block.popResource(level, event.pos, stack)
-				continue
-			}
-
 			if (shouldApplyQuality) {
-				QualityRoller.roll(level.random)?.let { quality ->
-					QualityNbt.write(stack, quality, event.player)
-				}
+				QualityDropProcessor.applyNonStandard(stack, state.block, event.player, level.random)
 			}
 
 			Block.popResource(level, event.pos, stack)

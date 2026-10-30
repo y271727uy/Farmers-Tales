@@ -103,12 +103,18 @@ object SeasonSupport {
 
     fun createSeasonInfoLines(translationKey: String, seasons: Collection<SeasonWindow>): List<Component> {
         if (seasons.isEmpty() || isYearRound(seasons)) {
-            return listOf(Component.translatable(translationKey, formatSeasonsInlineOrYearRound(seasons)).withStyle(ChatFormatting.GRAY))
+            return listOf(
+                Component.translatable(translationKey)
+                    .append(Component.literal(": "))
+                    .append(formatSeasonsInlineOrYearRound(seasons))
+            )
         }
 
         return buildList {
-            add(Component.translatable(translationKey, Component.empty()).withStyle(ChatFormatting.GRAY))
-            addAll(orderedSeasons(seasons).map(SeasonWindow::displayName))
+            add(Component.translatable(translationKey).append(":"))
+            addAll(orderedSeasons(seasons).map { season ->
+                Component.literal(" ").append(season.displayName())
+            })
         }
     }
 

@@ -13,9 +13,15 @@ object FishingRuleTooltipEvents {
     @JvmStatic
     @SubscribeEvent
     fun onItemTooltip(event: ItemTooltipEvent) {
-        val seasons = SeasonalFishingTags.allowedSeasons(event.itemStack.item)
-        if (seasons.isNotEmpty()) {
-            event.toolTip.addAll(SeasonSupport.createSeasonInfoLines("tooltip.${FTMod.MODID}.fishing_seasons", seasons))
+        val item = event.itemStack.item
+        val activeSeasons = SeasonalFishingTags.activeSeasons(item)
+        if (activeSeasons.isNotEmpty()) {
+            event.toolTip.addAll(SeasonSupport.createSeasonInfoLines("tooltip.${FTMod.MODID}.fishing_seasons", activeSeasons))
+        }
+
+        val catchSeasons = SeasonalFishingTags.catchSeasons(item)
+        if (catchSeasons.isNotEmpty()) {
+            event.toolTip.addAll(SeasonSupport.createSeasonInfoLines("tooltip.${FTMod.MODID}.fishing_catch_seasons", catchSeasons))
         }
     }
 }

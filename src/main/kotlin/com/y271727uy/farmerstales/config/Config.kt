@@ -66,18 +66,6 @@ object Config {
         .comment("Whether eligible crop drops require a Farmers' Tales scythe in the main hand to receive quality")
         .define("requireScytheForCropQuality", true)
 
-    private val mdIronCropQualityChanceValue = builder
-        .comment("Chance for an eligible MD crop drop to receive iron quality; MD crop quality chances should total at most 1.0")
-        .defineInRange("mdIronCropQualityChance", 0.35, 0.0, 1.0)
-
-    private val mdGoldCropQualityChanceValue = builder
-        .comment("Chance for an eligible MD crop drop to receive gold quality; MD crop quality chances should total at most 1.0")
-        .defineInRange("mdGoldCropQualityChance", 0.10, 0.0, 1.0)
-
-    private val mdDiamondCropQualityChanceValue = builder
-        .comment("Chance for an eligible MD crop drop to receive diamond quality; MD crop quality chances should total at most 1.0")
-        .defineInRange("mdDiamondCropQualityChance", 0.05, 0.0, 1.0)
-
     private val metabolismSettlementsPerTickValue = builder
         .comment("Maximum domesticated animals whose daily metabolism is settled in one server tick")
         .defineInRange("metabolismSettlementsPerTick", 64, 1, 1_024)
@@ -197,12 +185,6 @@ object Config {
         private set
     var requireScytheForCropQuality: Boolean = true
         private set
-    var mdIronCropQualityChance: Double = 0.35
-        private set
-    var mdGoldCropQualityChance: Double = 0.10
-        private set
-    var mdDiamondCropQualityChance: Double = 0.05
-        private set
     var metabolismSettlementsPerTick: Int = 64
         private set
     var wildAnimalAvoidanceScanIntervalTicks: Int = 5
@@ -269,9 +251,6 @@ object Config {
         goldCropQualityChance = goldCropQualityChanceValue.get()
         diamondCropQualityChance = diamondCropQualityChanceValue.get()
         requireScytheForCropQuality = requireScytheForCropQualityValue.get()
-        mdIronCropQualityChance = mdIronCropQualityChanceValue.get()
-        mdGoldCropQualityChance = mdGoldCropQualityChanceValue.get()
-        mdDiamondCropQualityChance = mdDiamondCropQualityChanceValue.get()
         metabolismSettlementsPerTick = metabolismSettlementsPerTickValue.get()
         wildAnimalAvoidanceScanIntervalTicks = wildAnimalAvoidanceScanIntervalTicksValue.get()
         tropicalClimateEventsEnabled = tropicalClimateEventsEnabledValue.get()

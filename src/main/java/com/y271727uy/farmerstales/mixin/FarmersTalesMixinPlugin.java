@@ -16,6 +16,7 @@ public final class FarmersTalesMixinPlugin implements IMixinConfigPlugin {
     private static final List<OptionalMixin> OPTIONAL_MIXINS = List.of(
             new OptionalMixin("alexmob.", "alexsmobs"),
             new OptionalMixin("farmandcharm.", "farm_and_charm"),
+            new OptionalMixin("ftblibrary.", "ftblibrary"),
             new OptionalMixin("forestry.", "forestry"),
             new OptionalMixin("stellarview.", "stellarview")
     );

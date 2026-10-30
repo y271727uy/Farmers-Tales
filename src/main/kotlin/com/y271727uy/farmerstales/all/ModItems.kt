@@ -3,15 +3,20 @@ package com.y271727uy.farmerstales.all
 import com.tterrag.registrate.util.entry.ItemEntry
 import com.y271727uy.farmerstales.all.items.AnimalHusbandryItems
 import com.y271727uy.farmerstales.all.items.TreeItems
+import com.y271727uy.farmerstales.all.items.GeneCropItems
 import com.y271727uy.farmerstales.all.items.ToolItems
 import com.y271727uy.farmerstales.registrate.ModRegistrate
 import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.Item
+import com.y271727uy.farmerstales.all.items.FishingNetItem
 import com.y271727uy.farmerstales.all.items.ScytheItem
 import net.minecraft.resources.ResourceLocation
 
 /** Aggregates item groups so the mod entry point does not know individual categories. */
 object ModItems {
+    @JvmField
+    val CROP_STAND: ItemEntry<BlockItem> = GeneCropItems.CROP_STAND
+
     @JvmField
     val ANIMAL_DUNG: ItemEntry<BlockItem> = AnimalHusbandryItems.ANIMAL_DUNG
 
@@ -62,9 +67,13 @@ object ModItems {
     @JvmField
     val NETHERITE_SCYTHE: ItemEntry<ScytheItem> = ToolItems.NETHERITE_SCYTHE
 
+    @JvmField
+    val FISHING_NET: ItemEntry<FishingNetItem> = ToolItems.FISHING_NET
+
     fun init() {
         AnimalHusbandryItems.init()
         TreeItems.init()
+        GeneCropItems.init()
         ToolItems.init()
     }
 }

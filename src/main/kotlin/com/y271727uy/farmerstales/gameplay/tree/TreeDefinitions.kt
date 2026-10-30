@@ -105,6 +105,13 @@ object TreeDefinitions {
 				BlockPos(2, 5, 0), BlockPos(2, 4, 1), BlockPos(2, 5, 1)
 			),
 			listOf(BlockPos(0, 1, 0), BlockPos(0, 2, 0), BlockPos(0, 3, 0), BlockPos(0, 4, 0))
+		),
+		TreeShape(
+			listOf(
+				BlockPos(-1, 4, 0), BlockPos(1, 4, 0), BlockPos(0, 4, -1), BlockPos(0, 4, 1),
+				BlockPos(0, 5, 0)
+			),
+			listOf(BlockPos(0, 1, 0), BlockPos(0, 2, 0), BlockPos(0, 3, 0), BlockPos(0, 4, 0))
 		)
 	)
 
@@ -170,12 +177,15 @@ object TreeDefinitions {
 		val baseLeafState = definition.baseLeafState()
 		val extraLeafState = definition.extraLeafPlacement?.let { resolveBlockState(it.state) }
 		val leafBlock = resolveBlock(definition.leafId)
+		val leafOffset = if (seedId == "muffins_thaidelight:papaya_sapling") 0 else dy
 
 		for (relative in shape.leaveRelativePos) {
-			val targetPos = stumpPos.offset(relative.x, relative.y + dy, relative.z)
+			val targetPos = stumpPos.offset(relative.x, relative.y + leafOffset, relative.z)
 			if (level.getBlockState(targetPos).isAir) {
 				val leafState = if (isManorsBountyTree(definition)) {
 					createManorsBountyLeafState(leafBlock.defaultBlockState())
+				} else if (seedId == "immortalers_delight:himekaido_seed") {
+					withBooleanProperty(leafBlock.defaultBlockState(), "grow", true)
 				} else {
 					val genericLeafState = withBlockstateProperty(leafBlock.defaultBlockState(), baseLeafState)
 					withBooleanProperty(genericLeafState, "persistent", true)
@@ -211,11 +221,11 @@ object TreeDefinitions {
 		}
 
 		level.setBlockAndUpdate(stumpPos, resolveBlock("farmerstales:tree_stump").defaultBlockState())
-		(level.getBlockEntity(stumpPos) as? TreeStumpBlockEntity)?.initializeTree(seedId, definition.shapeIndex, dy)
+		(level.getBlockEntity(stumpPos) as? TreeStumpBlockEntity)?.initializeTree(seedId, definition.shapeIndex, leafOffset)
 		level.setBlockAndUpdate(stumpPos.below(), resolveBlock(ROOTED_DIRT).defaultBlockState())
 		if (level is ServerLevel) {
 			for (relative in shape.leaveRelativePos) {
-				val targetPos = stumpPos.offset(relative.x, relative.y + dy, relative.z)
+				val targetPos = stumpPos.offset(relative.x, relative.y + leafOffset, relative.z)
 				level.sendBlockUpdated(targetPos, level.getBlockState(targetPos), level.getBlockState(targetPos), 3)
 			}
 			for (relative in shape.logRelativePos) {
@@ -254,6 +264,13 @@ object TreeDefinitions {
 		for (relative in shape.logRelativePos) {
 			val targetPos = stumpPos.offset(relative.x, relative.y, relative.z)
 			if (level.getBlockState(targetPos).block == logBlock) {
+				for (direction in net.minecraft.core.Direction.Plane.HORIZONTAL) {
+					val sidePos = targetPos.relative(direction)
+					val sideId = BuiltInRegistries.BLOCK.getKey(level.getBlockState(sidePos).block).toString()
+					if (sideId == "muffins_thaidelight:papaya" || sideId == "ramadandelight:dates_branch") {
+						level.destroyBlock(sidePos, false)
+					}
+				}
 				level.destroyBlock(targetPos, false)
 			}
 		}
@@ -386,11 +403,18 @@ object TreeDefinitions {
 	}
 
 	fun isManorsBountyGrowthCandidate(state: BlockState, leafBlock: Block): Boolean {
-		if (state.block != leafBlock) {
+		if (state.block != leafBlock || state.block !is BonemealableBlock) {
 			return false
 		}
-		val age = integerPropertyValue(state, "age") ?: return false
-		return age < 2 && propertyValue(state, "can_fruit").equals("TRUE", ignoreCase = true)
+		if (state.properties.any { it.name == "can_fruit" }) {
+			val age = integerPropertyValue(state, "age") ?: return false
+			return age < 2 && propertyValue(state, "can_fruit").equals("TRUE", ignoreCase = true)
+		}
+		val age = integerPropertyValue(state, "age") ?: return true
+		val ripeAge = (state.properties.firstOrNull { it is IntegerProperty && it.name == "age" } as? IntegerProperty)
+			?.possibleValues
+			?.maxOrNull()
+		return ripeAge == null || age < ripeAge
 	}
 
 	fun growManorsBountyLeaf(level: ServerLevel, pos: BlockPos, state: BlockState): Boolean {
@@ -448,10 +472,35 @@ object TreeDefinitions {
 			"manors_bounty:cherries_seed" to TreeDefinition("manors_bounty:cherries_tree_leaves", "manors_bounty:cherries_tree_log", 1, 1, 3, 5),
 			"manors_bounty:kiwifruit_seed" to TreeDefinition("manors_bounty:kiwifruit_tree_leaves", "manors_bounty:kiwifruit_tree_log", 2, 1, 3, 5),
 			"manors_bounty:hawthorn_seed" to TreeDefinition("manors_bounty:hawthorn_tree_leaves", "manors_bounty:hawthorn_tree_log", 2, 1, 3, 5),
-			"manors_bounty:pomegranate_sapling" to TreeDefinition("manors_bounty:pomegranate_tree_leaves", "manors_bounty:pomegranate_tree_log", 1, 1, 3, 5),
-			//"" to TreeDefinition("", "", 1, 1, 3, 5),
+			"manors_bounty:pomegranate_seed" to TreeDefinition("manors_bounty:pomegranate_tree_leaves", "manors_bounty:pomegranate_tree_log", 1, 1, 3, 5),
+			"manors_bounty:durian_seed" to TreeDefinition("manors_bounty:durian_tree_leaves", "manors_bounty:durian_tree_log", 2, 1, 3, 5),
+			"manors_bounty:yuzumelo_seed" to TreeDefinition("manors_bounty:yuzumelo_leaves", "manors_bounty:rutaceae_tree_log", 2, 1, 3, 5),
+			"manors_bounty:fig_seed" to TreeDefinition("manors_bounty:fig_tree_leaves", "manors_bounty:fig_tree_log", 1, 1, 3, 5),
+			"manors_bounty:apricot_seed" to TreeDefinition("manors_bounty:apricot_leaves", "manors_bounty:rosaceae_tree_log", 2, 1, 3, 5),
+			"manors_bounty:coconut_sprout" to TreeDefinition("manors_bounty:coconut_tree_leaves", "manors_bounty:coconut_tree_log", 3, 1, 3, 5),
+			"bountifulfares:plum_sapling" to TreeDefinition("bountifulfares:plum_leaves", "bountifulfares:plum_log", 2, 1, 3, 5),
+			"bountifulfares:orange_sapling" to TreeDefinition("bountifulfares:orange_leaves", "bountifulfares:orange_log", 1, 1, 3, 5),
+			"bountifulfares:hoary_apple_sapling" to TreeDefinition("bountifulfares:hoary_leaves", "bountifulfares:hoary_log", 2, 1, 3, 5),
+			"bountifulfares:walnut_sapling" to TreeDefinition("bountifulfares:walnut_leaves", "bountifulfares:walnut_log", 3, 1, 3, 5),
+			"braziliandelight:lemon_sapling" to TreeDefinition("braziliandelight:budding_lemon_leaves", "minecraft:oak_log", 2, 1, 3, 5),
+			"braziliandelight:acai_palm_sapling" to TreeDefinition("braziliandelight:acai_palm_leaves", "minecraft:jungle_log", 3, 1, 3, 5),
+			"braziliandelight:coconut_palm_sapling" to TreeDefinition("braziliandelight:budding_coconut_palm_leaves", "minecraft:jungle_log", 3, 1, 3, 5),
+			"culturaldelights:avocado_sapling" to TreeDefinition("culturaldelights:fruiting_avocado_leaves", "culturaldelights:avocado_log", 2, 1, 3, 5),
+			"fruitfulfun:tangerine_sapling" to TreeDefinition("fruitfulfun:tangerine_leaves", "fruitfulfun:citrus_log", 1, 1, 3, 5),
+			"fruitfulfun:lime_sapling" to TreeDefinition("fruitfulfun:lime_leaves", "fruitfulfun:citrus_log", 1, 1, 3, 5),
+			"fruitfulfun:citron_sapling" to TreeDefinition("fruitfulfun:citron_leaves", "fruitfulfun:citrus_log", 2, 1, 3, 5),
+			"fruitfulfun:pomelo_sapling" to TreeDefinition("fruitfulfun:pomelo_leaves", "fruitfulfun:citrus_log", 2, 1, 3, 5),
+			"fruitfulfun:grapefruit_sapling" to TreeDefinition("fruitfulfun:grapefruit_leaves", "fruitfulfun:citrus_log", 2, 1, 3, 5),
+			"fruitfulfun:pomegranate_sapling" to TreeDefinition("fruitfulfun:pomegranate_leaves", "fruitfulfun:citrus_log", 1, 1, 3, 5),
+			"fruitfulfun:redlove_sapling" to TreeDefinition("fruitfulfun:redlove_leaves", "fruitfulfun:redlove_log", 2, 1, 3, 5),
+			"muffins_thaidelight:papaya_sapling" to TreeDefinition("muffins_thaidelight:papaya_leaves", "muffins_thaidelight:papaya_log", 4, 1, 3, 5),
+			"ramadandelight:palm_sapling" to TreeDefinition("ramadandelight:palm_leaves", "ramadandelight:palm_log", 3, 1, 3, 5),
+			"collectorsreap:lucuma_sapling" to TreeDefinition("collectorsreap:lucuma_leaves", "collectorsreap:lucuma_log", 2, 1, 3, 5),
+			"vinery:dark_cherry_sapling" to TreeDefinition("vinery:dark_cherry_leaves", "vinery:dark_cherry_log", 2, 1, 3, 5),
+			"yeastnfeast:hawthorn_sapling" to TreeDefinition("yeastnfeast:hawthorn_tree_leaves", "minecraft:oak_log", 2, 1, 3, 5),
+			"vietnam_delight:tamarind_sapling" to TreeDefinition("vietnam_delight:flowering_tamarind_leaves", "minecraft:jungle_log", 3, 1, 3, 5),
+			"immortalers_delight:himekaido_seed" to TreeDefinition("immortalers_delight:himekaido_flowering_leaves", "immortalers_delight:himekaido_log", 2, 1, 3, 5),
 		).filterKeys { seedId ->
-			// Only include entries where the seed item actually exists
 			val key = ResourceLocation.tryParse(seedId)
 			key != null && BuiltInRegistries.ITEM.containsKey(key)
 		}

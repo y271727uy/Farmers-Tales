@@ -16,11 +16,16 @@ object QualityOverlayRenderer {
 
     @JvmStatic
     fun render(guiGraphics: GuiGraphics, stack: ItemStack, x: Int, y: Int) {
+        render(guiGraphics, stack, x, y, 200.0)
+    }
+
+    @JvmStatic
+    fun render(guiGraphics: GuiGraphics, stack: ItemStack, x: Int, y: Int, zOffset: Double) {
         val quality = QualityNbt.get(stack) ?: return
 
         val poseStack = guiGraphics.pose()
         poseStack.pushPose()
-        poseStack.translate(-1.0, 0.0, 200.0)
+        poseStack.translate(-1.0, 0.0, zOffset)
         poseStack.translate((x + 8).toDouble(), (y + 8).toDouble(), 0.0)
         poseStack.scale(1.0f, 1.0f, 1.0f)
         guiGraphics.blit(quality.textureLocation, -8, -8, 0.0f, 0.0f, 16, 16, 16, 16)

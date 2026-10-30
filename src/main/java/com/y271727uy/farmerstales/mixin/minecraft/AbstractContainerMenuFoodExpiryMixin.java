@@ -11,6 +11,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public abstract class AbstractContainerMenuFoodExpiryMixin {
     @Redirect(method = "synchronizeSlotToRemote", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;equals(Lnet/minecraft/world/item/ItemStack;Z)Z", remap = false))
     private boolean farmerstales$syncFoodExpiry(ItemStack stack, ItemStack remoteStack, boolean limitTags) {
-        return !FoodExpiryCapabilitySync.hasExpiryData(stack) && stack.equals(remoteStack, limitTags);
+        return !FoodExpiryCapabilitySync.hasSyncableCapability(stack) && stack.equals(remoteStack, limitTags);
     }
 }

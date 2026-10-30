@@ -1,0 +1,32 @@
+{
+  "replace": false,
+  "values": [
+    "farmerstales:bluegill_fish_pool",
+    "farmerstales:camouflage_grouper_fish_pool",
+    "farmerstales:carp_fish_pool",
+    "farmerstales:catfish_fish_pool",
+    "farmerstales:checkerboard_wrasse_fish_pool",
+    "farmerstales:cod_fish_pool",
+    "farmerstales:fluke_fish_pool",
+    "farmerstales:grass_carp_fish_pool",
+    "farmerstales:large_yellow_croaker_fish_pool",
+    "farmerstales:lobster_fish_pool",
+    "farmerstales:ocean_fish_pool",
+    "farmerstales:parrotfish_fish_pool",
+    "farmerstales:pufferfish_fish_pool",
+    "farmerstales:rainbow_trout_fish_pool",
+    "farmerstales:redstone_bass_fish_pool",
+    "farmerstales:river_crab_fish_pool",
+    "farmerstales:river_fish_pool",
+    "farmerstales:river_shrimp_fish_pool",
+    "farmerstales:salmon_fish_pool",
+    "farmerstales:silver_pomfret_fish_pool",
+    "farmerstales:siniperca_chuatsi_fish_pool",
+    "farmerstales:spanish_mackerel_fish_pool",
+    "farmerstales:squid_fish_pool",
+    "farmerstales:striped_bass_fish_pool",
+    "farmerstales:swimming_crab_fish_pool",
+    "farmerstales:threadfin_bream_fish_pool",
+    "farmerstales:turbot_fish_pool"
+  ]
+}

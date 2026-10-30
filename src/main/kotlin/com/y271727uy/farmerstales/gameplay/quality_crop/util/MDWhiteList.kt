@@ -41,6 +41,8 @@ object MDWhiteList {
 
 	fun expectedDropId(block: Block): ResourceLocation? = active.expectedDropId(block)
 
+	fun dropIds(block: Block): List<ResourceLocation> = active.dropIds(block)
+
 	class Builder {
 		private val entries = linkedSetOf<Entry>()
 
@@ -89,9 +91,11 @@ object MDWhiteList {
 			return entries.any { entry -> entry.blockId == blockId }
 		}
 
-		fun expectedDropId(block: Block): ResourceLocation? {
-			val blockId = ForgeRegistries.BLOCKS.getKey(block) ?: return null
-			return entries.firstOrNull { entry -> entry.blockId == blockId }?.dropItemId
+		fun expectedDropId(block: Block): ResourceLocation? = dropIds(block).firstOrNull()
+
+		fun dropIds(block: Block): List<ResourceLocation> {
+			val blockId = ForgeRegistries.BLOCKS.getKey(block) ?: return emptyList()
+			return entries.filter { entry -> entry.blockId == blockId }.map { entry -> entry.dropItemId }
 		}
 
 		companion object {
@@ -99,9 +103,47 @@ object MDWhiteList {
 		}
 	}
 
+	/**
+	 * 庄园馀话的收获产物。方块自己生成掉落物，品质在掉落物进入世界时写入。
+	 * 方块 id 只用来区分同一产物来自哪株植物。
+	 */
 	private fun createDefaultConfig(): Config {
 		return mdWhiteList {
+			WhiteListItem("manors_bounty:baby_corn", "manors_bounty:baby_corn_bush")
+			WhiteListItem("manors_bounty:blackcurrant", "manors_bounty:blackcurrant_bush")
+			WhiteListItem("manors_bounty:gooseberry", "manors_bounty:blackcurrant_bush")
+			WhiteListItem("manors_bounty:cherry_tomatoes", "manors_bounty:cherry_tomatoes_bush")
+			WhiteListItem("manors_bounty:end_pepper", "manors_bounty:end_pepper_bush")
+			WhiteListItem("manors_bounty:blackberry", "manors_bounty:raspberry_bush")
+			WhiteListItem("manors_bounty:wild_jalapeno", "manors_bounty:wild_jalapeno_bush")
+			WhiteListItem("manors_bounty:jalapeno", "manors_bounty:jalapeno_crop")
+			WhiteListItem("manors_bounty:tomato", "manors_bounty:tomato_crop")
+			WhiteListItem("manors_bounty:purple_sugar_cane", "manors_bounty:purple_sugar_cane_block")
+
+			WhiteListItem("minecraft:apple", "manors_bounty:apple_leaves")
+			WhiteListItem("manors_bounty:green_apple", "manors_bounty:apple_leaves")
+			WhiteListItem("manors_bounty:apricot", "manors_bounty:apricot_leaves")
+			WhiteListItem("manors_bounty:ume", "manors_bounty:apricot_leaves")
+			WhiteListItem("manors_bounty:cherries", "manors_bounty:cherries_tree_leaves")
+			WhiteListItem("manors_bounty:gold_kiwifruit", "manors_bounty:kiwifruit_tree_leaves")
 			WhiteListItem("manors_bounty:olive_fruit", "manors_bounty:olive_tree_leaves")
+			WhiteListItem("manors_bounty:black_olive_fruit", "manors_bounty:olive_tree_leaves")
+			WhiteListItem("manors_bounty:grapefruit", "manors_bounty:orange_leaves")
+			WhiteListItem("manors_bounty:starfruit", "manors_bounty:starfruit_tree_leaves")
+			WhiteListItem("manors_bounty:musang_king_durian", "manors_bounty:durian_fruit")
+			WhiteListItem("manors_bounty:yuzumelo", "manors_bounty:yuzumelo_fruit")
+			WhiteListItem("manors_bounty:holly_berry", "manors_bounty:holly_tree_leaves")
+			WhiteListItem("manors_bounty:nutmeg", "manors_bounty:myriclave_tree_leaves")
+			WhiteListItem("manors_bounty:star_anise", "manors_bounty:cinnise_tree_leaves")
+			WhiteListItem("manors_bounty:hazelnut", "manors_bounty:hazelnut_leaves")
+			WhiteListItem("manors_bounty:muscat_grape", "manors_bounty:grape_crop")
+			WhiteListItem("manors_bounty:dragon_fruit", "manors_bounty:dragon_fruit_crop")
+			WhiteListItem("manors_bounty:scots_pine_cone", "manors_bounty:scots_pine_leaves")
+			WhiteListItem("manors_bounty:cashew", "manors_bounty:cashew_leaves")
+			WhiteListItem("manors_bounty:almond", "manors_bounty:almond_leaves")
+			WhiteListItem("manors_bounty:walpecan", "manors_bounty:walpecan_leaves")
+			WhiteListItem("manors_bounty:pistachio", "manors_bounty:pistachio_leaves")
+			WhiteListItem("manors_bounty:chestnut", "manors_bounty:chestnut_leaves")
 		}
 	}
 }

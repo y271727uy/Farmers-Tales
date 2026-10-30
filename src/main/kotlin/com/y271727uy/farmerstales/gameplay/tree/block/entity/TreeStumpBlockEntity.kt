@@ -18,6 +18,7 @@ import net.minecraft.world.item.Items
 import net.minecraft.world.item.alchemy.PotionUtils
 import net.minecraft.world.item.alchemy.Potions
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.BonemealableBlock
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
@@ -134,7 +135,51 @@ class TreeStumpBlockEntity(type: BlockEntityType<*>, pos: BlockPos, state: Block
 				return
 			}
 
-			if (TreeDefinitions.isManorsBountyTree(treeDefinition)) {
+			if (entity.treeType == "immortalers_delight:himekaido_seed") {
+				repeat(growthAttempts) {
+					val chance = if (maintenanceScore < MAINTENANCE_LOW_THRESHOLD) 0 else (maintenanceScore + maintenanceBonus).coerceAtMost(GROWTH_ROLL_MAX)
+					if (level.random.nextInt(GROWTH_ROLL_MAX) < chance && growImmortalersLeaf(level, pos, entity, leafBlock)) {
+						if (level.random.nextFloat() < TropicalClimateEffects.treeFertilizerConsumptionChance(level, pos, 0.4f)) {
+							fertilize = (fertilize - 1).coerceAtLeast(0)
+						}
+						if (level.random.nextFloat() < TropicalClimateEffects.treeWaterConsumptionChance(level, pos, 0.4f)) {
+							water = (water - 1).coerceAtLeast(0)
+						}
+						if (level.random.nextFloat() < BRANCHES_GAIN_CHANCE) {
+							branches = (branches + 1).coerceAtMost(BRANCHES_MAX)
+						}
+					}
+				}
+				entity.fertilize = fertilize
+				entity.water = water
+				entity.branches = branches
+				entity.syncToClient()
+				return
+			}
+
+			if (usesAttachedFruitGrowth(entity.treeType)) {
+				repeat(growthAttempts) {
+					val chance = if (maintenanceScore < MAINTENANCE_LOW_THRESHOLD) 0 else (maintenanceScore + maintenanceBonus).coerceAtMost(GROWTH_ROLL_MAX)
+					if (level.random.nextInt(GROWTH_ROLL_MAX) < chance && growAttachedFruit(level, pos, entity)) {
+						if (level.random.nextFloat() < TropicalClimateEffects.treeFertilizerConsumptionChance(level, pos, 0.4f)) {
+							fertilize = (fertilize - 1).coerceAtLeast(0)
+						}
+						if (level.random.nextFloat() < TropicalClimateEffects.treeWaterConsumptionChance(level, pos, 0.4f)) {
+							water = (water - 1).coerceAtLeast(0)
+						}
+						if (level.random.nextFloat() < BRANCHES_GAIN_CHANCE) {
+							branches = (branches + 1).coerceAtMost(BRANCHES_MAX)
+						}
+					}
+				}
+				entity.fertilize = fertilize
+				entity.water = water
+				entity.branches = branches
+				entity.syncToClient()
+				return
+			}
+
+			if (TreeDefinitions.isManorsBountyTree(treeDefinition) || usesBonemealGrowth(entity.treeType)) {
 				repeat(growthAttempts) {
 					val eligibleLeaves = treeShape.leaveRelativePos.mapNotNull { relative ->
 						val targetPos = pos.offset(relative.x, relative.y + entity.dy, relative.z)
@@ -240,6 +285,98 @@ class TreeStumpBlockEntity(type: BlockEntityType<*>, pos: BlockPos, state: Block
 			entity.water = water
 			entity.branches = branches
 			entity.syncToClient()
+		}
+
+		private fun growImmortalersLeaf(level: ServerLevel, stumpPos: BlockPos, entity: TreeStumpBlockEntity, leafBlock: net.minecraft.world.level.block.Block): Boolean {
+			val fruitId = "immortalers_delight:himekaido_fruited_leaves"
+			val fruitBlock = TreeDefinitions.resolveBlock(fruitId)
+			if (fruitBlock == net.minecraft.world.level.block.Blocks.AIR) {
+				return false
+			}
+			val candidates = TreeDefinitions.shapes.getOrNull(entity.treeShape)?.leaveRelativePos.orEmpty().mapNotNull { relative ->
+				val targetPos = stumpPos.offset(relative.x, relative.y + entity.dy, relative.z)
+				if (level.getBlockState(targetPos).block == leafBlock) targetPos else null
+			}
+			if (candidates.isEmpty()) {
+				return false
+			}
+			val targetPos = candidates[level.random.nextInt(candidates.size)]
+			val current = level.getBlockState(targetPos)
+			var next = fruitBlock.defaultBlockState()
+			for (propertyName in listOf("distance", "persistent", "waterlogged")) {
+				val currentValue = current.values.entries.firstOrNull { it.key.name == propertyName }?.value ?: continue
+				val property = next.properties.firstOrNull { it.name == propertyName && it.possibleValues.contains(currentValue) } ?: continue
+				@Suppress("UNCHECKED_CAST")
+				next = next.setValue(property as net.minecraft.world.level.block.state.properties.Property<Comparable<Any>>, currentValue as Comparable<Any>)
+			}
+			level.setBlockAndUpdate(targetPos, next)
+			return true
+		}
+
+		private fun usesAttachedFruitGrowth(treeType: String): Boolean {
+			return treeType == "muffins_thaidelight:papaya_sapling" || treeType == "ramadandelight:palm_sapling"
+		}
+
+		private fun growAttachedFruit(level: ServerLevel, stumpPos: BlockPos, entity: TreeStumpBlockEntity): Boolean {
+			val fruitId = if (entity.treeType == "muffins_thaidelight:papaya_sapling") "muffins_thaidelight:papaya" else "ramadandelight:dates_branch"
+			val fruitBlock = TreeDefinitions.resolveBlock(fruitId)
+			if (fruitBlock == net.minecraft.world.level.block.Blocks.AIR) {
+				return false
+			}
+			val growableFruits = mutableListOf<BlockPos>()
+			val emptySides = mutableListOf<Pair<BlockPos, net.minecraft.core.Direction>>()
+			val logPositions = TreeDefinitions.shapes.getOrNull(entity.treeShape)?.logRelativePos.orEmpty()
+			val topLogY = logPositions.maxOfOrNull { it.y } ?: 0
+			val fruitLogs = if (entity.treeType == "muffins_thaidelight:papaya_sapling") {
+				logPositions.filter { it.y >= topLogY - 1 && it.y < topLogY }
+			} else {
+				logPositions
+			}
+			for (relative in fruitLogs) {
+				val logPos = stumpPos.offset(relative.x, relative.y, relative.z)
+				for (direction in net.minecraft.core.Direction.Plane.HORIZONTAL) {
+					val sidePos = logPos.relative(direction)
+					val sideState = level.getBlockState(sidePos)
+					if (sideState.block == fruitBlock) {
+						val growable = sideState.block as? BonemealableBlock
+						if (growable != null && growable.isValidBonemealTarget(level, sidePos, sideState, false)) {
+							growableFruits += sidePos
+						}
+					} else if (sideState.isAir) {
+						emptySides += sidePos to direction
+					}
+				}
+			}
+			if (growableFruits.isNotEmpty()) {
+				val targetPos = growableFruits[level.random.nextInt(growableFruits.size)]
+				val targetState = level.getBlockState(targetPos)
+				val growable = targetState.block as? BonemealableBlock ?: return false
+				growable.performBonemeal(level, level.random, targetPos, targetState)
+				return true
+			}
+			if (emptySides.isEmpty() || level.random.nextFloat() > 0.35f) {
+				return false
+			}
+			val (targetPos, direction) = emptySides[level.random.nextInt(emptySides.size)]
+			var fruitState = fruitBlock.defaultBlockState()
+			val facing = fruitState.properties.firstOrNull { it.name == "facing" }
+			val attachDirection = if (entity.treeType == "muffins_thaidelight:papaya_sapling") direction.opposite else direction
+			if (facing != null && facing.possibleValues.contains(attachDirection)) {
+				@Suppress("UNCHECKED_CAST")
+				fruitState = fruitState.setValue(facing as net.minecraft.world.level.block.state.properties.Property<Comparable<Any>>, attachDirection as Comparable<Any>)
+			}
+			level.setBlockAndUpdate(targetPos, fruitState)
+			return true
+		}
+
+		private fun usesBonemealGrowth(treeType: String): Boolean {
+			return treeType.startsWith("bountifulfares:") ||
+				treeType.startsWith("braziliandelight:") ||
+				treeType.startsWith("culturaldelights:") ||
+				treeType.startsWith("fruitfulfun:") ||
+				treeType.startsWith("vinery:") ||
+				treeType.startsWith("yeastnfeast:") ||
+				treeType.startsWith("vietnam_delight:")
 		}
 
 		private fun isGenericGrowthCandidate(targetState: BlockState, leafBlock: net.minecraft.world.level.block.Block, extraLeafState: BlockState?, definition: com.y271727uy.farmerstales.gameplay.tree.TreeDefinition): Boolean {

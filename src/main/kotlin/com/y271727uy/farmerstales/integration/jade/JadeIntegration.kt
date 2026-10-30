@@ -6,6 +6,7 @@ import com.y271727uy.farmerstales.gameplay.fish_group.entity.OceanFishPoolEntity
 import com.y271727uy.farmerstales.gameplay.fish_group.entity.RiverFishPoolEntity
 import com.y271727uy.farmerstales.gameplay.tree.block.TreeStumpBlock
 import net.minecraft.world.entity.animal.Wolf
+import net.minecraft.world.level.block.CropBlock
 import snownee.jade.api.IWailaCommonRegistration
 import snownee.jade.api.IWailaPlugin
 import snownee.jade.api.IWailaClientRegistration
@@ -28,6 +29,7 @@ class FarmerTalesJadePlugin : IWailaPlugin {
 
     override fun registerClient(registration: IWailaClientRegistration) {
         registration.registerBlockComponent(TreeStumpTooltipProvider, TreeStumpBlock::class.java)
+        registration.registerBlockComponent(GeneCropTooltipProvider, CropBlock::class.java)
         registration.registerEntityComponent(
             AnimalBreedingTooltipProvider,
             net.minecraft.world.entity.animal.Animal::class.java

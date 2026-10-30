@@ -38,5 +38,15 @@ object FarmerstalesNetwork {
             .decoder(CuratedCropEffectPacket::decode)
             .consumerMainThread(CuratedCropEffectPacket::handle)
             .add()
+        CHANNEL.messageBuilder(GeneCropQueryPacket::class.java, nextId++)
+            .encoder(GeneCropQueryPacket::encode)
+            .decoder(GeneCropQueryPacket::decode)
+            .consumerMainThread(GeneCropQueryPacket::handle)
+            .add()
+        CHANNEL.messageBuilder(GeneCropStatusPacket::class.java, nextId++)
+            .encoder(GeneCropStatusPacket::encode)
+            .decoder(GeneCropStatusPacket::decode)
+            .consumerMainThread(GeneCropStatusPacket::handle)
+            .add()
     }
 }

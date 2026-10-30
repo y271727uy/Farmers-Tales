@@ -1,5 +1,5 @@
 {
-  "parent": "farmerstales:fishing/seasonal_catch",
+  "parent": "farmerstales:fishing/fish_pool_interaction",
   "display": {
     "icon": { "item": "minecraft:heart_of_the_sea" },
     "title": { "translate": "advancement.farmerstales.fish_king.title" },

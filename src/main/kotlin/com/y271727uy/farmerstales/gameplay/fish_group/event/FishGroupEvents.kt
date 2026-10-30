@@ -1,6 +1,7 @@
 package com.y271727uy.farmerstales.gameplay.fish_group.event
 
 import com.y271727uy.farmerstales.FTMod
+import com.y271727uy.farmerstales.gameplay.advancements.FarmersTalesAdvancements
 import com.y271727uy.farmerstales.gameplay.fish_group.entity.AbstractFishPoolEntity
 import com.y271727uy.farmerstales.gameplay.fish_group.pool.FishPoolLootManager
 import com.y271727uy.farmerstales.gameplay.fish_group.spawn.FloatingPoolsSpawnerHelper
@@ -16,6 +17,7 @@ import net.minecraftforge.fml.common.Mod
 object FishGroupEvents {
     private const val HOOK_INTERACTION_HORIZONTAL_RANGE = 2.5
     private const val HOOK_INTERACTION_VERTICAL_RANGE = 4.5
+    private const val FISH_POOL_DISCOVERY_RANGE = 8.0
 
     @JvmStatic
     @SubscribeEvent
@@ -24,8 +26,19 @@ object FishGroupEvents {
         if (event.phase != TickEvent.Phase.END) return
         FloatingPoolsSpawnerHelper.tick(serverLevel)
         serverLevel.players().forEach { player ->
+            val nearbyFishPool = serverLevel.getEntitiesOfClass(
+                AbstractFishPoolEntity::class.java,
+                player.boundingBox.inflate(FISH_POOL_DISCOVERY_RANGE),
+            ).any { !it.isRemoved && it.distanceToSqr(player) <= FISH_POOL_DISCOVERY_RANGE * FISH_POOL_DISCOVERY_RANGE }
+            if (nearbyFishPool) {
+                FarmersTalesAdvancements.award(player, "fishing/what_a_school_of_fish")
+            }
+
             val hook = player.fishing?.takeUnless { it.isRemoved } ?: return@forEach
-            findHookTarget(hook)?.markHookInteracting()
+            findHookTarget(hook)?.let { fishPool ->
+                fishPool.markHookInteracting()
+                FarmersTalesAdvancements.award(player, "fishing/fish_pool_interaction")
+            }
         }
     }
 
@@ -36,8 +49,14 @@ object FishGroupEvents {
         if (hook.level().isClientSide) return
         val owner = hook.playerOwner ?: return
         findHookTarget(hook)?.let { entity ->
+            // ItemFishedEvent owns a copy of the vanilla drops; clearing it cannot affect FishingHook.
+            // Cancellation is the Forge-supported way to suppress vanilla rewards while keeping rod damage.
+            event.isCanceled = true
             entity.markHookInteracting()
-            entity.onFishHookInteract(owner)
+            (owner as? net.minecraft.server.level.ServerPlayer)?.let {
+                FarmersTalesAdvancements.award(it, "fishing/fish_pool_interaction")
+            }
+            entity.onFishHookInteract(owner, hook)
         }
     }
 

@@ -1,0 +1,13 @@
+{
+  "parent": "farmerstales:root",
+  "display": {
+    "icon": { "item": "minecraft:cod" },
+    "title": { "translate": "advancement.farmerstales.what_a_school_of_fish.title" },
+    "description": { "translate": "advancement.farmerstales.what_a_school_of_fish.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

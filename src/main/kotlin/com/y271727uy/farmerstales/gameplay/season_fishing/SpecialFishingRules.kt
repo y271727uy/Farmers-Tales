@@ -2,12 +2,11 @@ package com.y271727uy.farmerstales.gameplay.season_fishing
 
 import com.y271727uy.farmerstales.integration.sereneseasons.SeasonSupport.SeasonWindow
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.world.item.Item
 import java.util.EnumSet
 
 /**
- * Optional hard-coded rules for special fish whose behavior cannot be expressed by a season tag alone.
- * A special rule takes priority over the item's season tags.
+ * Optional hard-coded rules for special fish whose catch window cannot be expressed by a Serene Seasons tag.
+ * A special rule takes priority over sereneseasons:*_fish tags.
  */
 object SpecialFishingRules {
     private val rules = linkedMapOf<ResourceLocation, SpecialFishingRule>()

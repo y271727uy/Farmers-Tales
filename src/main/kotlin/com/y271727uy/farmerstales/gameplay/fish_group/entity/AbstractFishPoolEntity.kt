@@ -13,9 +13,14 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerLevel
+import net.minecraft.stats.Stats
+import net.minecraft.tags.ItemTags
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.ExperienceOrb
+import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.projectile.FishingHook
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.Level
@@ -115,7 +120,7 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
         compound.putBoolean(FISH_KING_AWARDED_TAG, fishKingAwarded)
     }
 
-    override fun onFishHookInteract(player: Player) {
+    fun onFishHookInteract(player: Player, hook: FishingHook) {
         val serverLevel = level() as? ServerLevel ?: return
         if (isRemoved || isDestroying) return
         val definition = fishPoolDefinition
@@ -130,13 +135,13 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
             FTMod.LOGGER.warn("Fish pool {} produced no reward", fishPoolId)
             return
         }
-        giveReward(player, reward)
+        giveReward(player, reward, hook)
         (player as? net.minecraft.server.level.ServerPlayer)?.let { serverPlayer ->
             SeasonSupport.currentSeasonWindow(serverLevel)?.let { season ->
                 FarmersTalesAdvancements.award(serverPlayer, "fishing/seasonal_catch", season.name.lowercase(java.util.Locale.ROOT))
             }
         }
-        tryAwardFishKing(serverLevel, player, definition)
+        tryAwardFishKing(serverLevel, player, definition, hook)
         triggerHurt()
         currentFishCount++
         if (currentFishCount >= maxFishCount) {
@@ -185,7 +190,12 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
             else -> "tooltip.farmerstales.fish_pool.state.unavailable"
         }
 
-    private fun tryAwardFishKing(serverLevel: ServerLevel, player: Player, definition: FishPoolDefinition) {
+    private fun tryAwardFishKing(
+        serverLevel: ServerLevel,
+        player: Player,
+        definition: FishPoolDefinition,
+        hook: FishingHook,
+    ) {
         val fishKingId = definition.fishKing ?: return
         if (fishKingAwarded) return
         val cooldownData = FishKingCooldownSavedData.get(serverLevel)
@@ -197,7 +207,7 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
             FTMod.LOGGER.warn("Fish pool {} is configured with an invalid FishKing item {}", definition.id, fishKingId)
             return
         }
-        giveReward(player, ItemStack(fishKingItem))
+        giveReward(player, ItemStack(fishKingItem), hook)
         (player as? net.minecraft.server.level.ServerPlayer)?.let {
             FarmersTalesAdvancements.award(it, "fishing/fish_king")
         }
@@ -207,8 +217,22 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
 
     fun isFishKingAwarded(): Boolean = fishKingAwarded
 
-    private fun giveReward(player: Player, stack: ItemStack) {
-        if (!player.addItem(stack)) player.drop(stack, false)
+    private fun giveReward(player: Player, stack: ItemStack, hook: FishingHook) {
+        val itemEntity = ItemEntity(level(), hook.x, hook.y, hook.z, stack)
+        val dx = player.x - hook.x
+        val dy = player.y - hook.y
+        val dz = player.z - hook.z
+        val distance = kotlin.math.sqrt(kotlin.math.sqrt(dx * dx + dy * dy + dz * dz))
+        itemEntity.deltaMovement = net.minecraft.world.phys.Vec3(
+            dx * 0.1,
+            dy * 0.1 + distance * 0.08,
+            dz * 0.1,
+        )
+        level().addFreshEntity(itemEntity)
+        level().addFreshEntity(
+            ExperienceOrb(level(), player.x, player.y + 0.5, player.z + 0.5, random.nextInt(6) + 1),
+        )
+        if (stack.`is`(ItemTags.FISHES)) player.awardStat(Stats.FISH_CAUGHT)
     }
 
     companion object {

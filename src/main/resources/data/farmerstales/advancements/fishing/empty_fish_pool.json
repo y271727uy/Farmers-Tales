@@ -1,5 +1,5 @@
 {
-  "parent": "farmerstales:fishing/seasonal_catch",
+  "parent": "farmerstales:fishing/fish_pool_interaction",
   "display": {
     "icon": { "item": "minecraft:bucket" },
     "title": { "translate": "advancement.farmerstales.empty_fish_pool.title" },

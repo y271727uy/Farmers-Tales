@@ -4,22 +4,30 @@ import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.integration.sereneseasons.SeasonSupport
 import com.y271727uy.farmerstales.integration.sereneseasons.SeasonSupport.SeasonWindow
 import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.tags.TagKey
 import net.minecraft.util.RandomSource
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.Level
-import net.minecraft.core.registries.Registries
 
 object SeasonalFishingTags {
+    private const val SERENE_SEASONS = "sereneseasons"
     private const val IN_SEASON_WEIGHT_MULTIPLIER = 1.5
     private const val OUT_OF_SEASON_WEIGHT_MULTIPLIER = 0.5
 
-    private val seasonTags = linkedMapOf(
-        SeasonWindow.SPRING to itemTag("spring_fish"),
-        SeasonWindow.SUMMER to itemTag("summer_fish"),
-        SeasonWindow.AUTUMN to itemTag("autumn_fish"),
-        SeasonWindow.WINTER to itemTag("winter_fish")
+    private val activeSeasonTags = linkedMapOf(
+        SeasonWindow.SPRING to itemTag(FTMod.MODID, "active_seasons/spring"),
+        SeasonWindow.SUMMER to itemTag(FTMod.MODID, "active_seasons/summer"),
+        SeasonWindow.AUTUMN to itemTag(FTMod.MODID, "active_seasons/autumn"),
+        SeasonWindow.WINTER to itemTag(FTMod.MODID, "active_seasons/winter")
+    )
+
+    private val catchSeasonTags = linkedMapOf(
+        SeasonWindow.SPRING to itemTag(SERENE_SEASONS, "spring_fish"),
+        SeasonWindow.SUMMER to itemTag(SERENE_SEASONS, "summer_fish"),
+        SeasonWindow.AUTUMN to itemTag(SERENE_SEASONS, "autumn_fish"),
+        SeasonWindow.WINTER to itemTag(SERENE_SEASONS, "winter_fish")
     )
 
     private val vanillaFishWeights = mapOf(
@@ -29,19 +37,22 @@ object SeasonalFishingTags {
         ResourceLocation.withDefaultNamespace("tropical_fish") to 2.0
     )
 
-    fun allowedSeasons(item: Item): List<SeasonWindow> = SpecialFishingRules
+    fun activeSeasons(item: Item): List<SeasonWindow> =
+        if (catchSeasons(item).isNotEmpty()) emptyList() else taggedSeasons(item, activeSeasonTags)
+
+    fun catchSeasons(item: Item): List<SeasonWindow> = SpecialFishingRules
         .describe(BuiltInRegistries.ITEM.getKey(item))
         ?.seasons
         ?.toList()
-        ?: taggedSeasons(item)
+        ?: taggedSeasons(item, catchSeasonTags)
 
-    fun isManagedFish(item: Item): Boolean = allowedSeasons(item).isNotEmpty()
+    fun isManagedFish(item: Item): Boolean =
+        activeSeasons(item).isNotEmpty() || catchSeasons(item).isNotEmpty()
 
     fun resolveCatch(level: Level, random: RandomSource): ResolvedFishingCatch {
         val currentSeason = SeasonSupport.currentSeasonWindow(level)
         val candidates = BuiltInRegistries.ITEM.asSequence()
-            .mapNotNull(::candidateFor)
-            .map { it.withWeight(currentSeason) }
+            .mapNotNull { candidateFor(it, currentSeason) }
             .toList()
         val baseWeight = candidates.sumOf(WeightedFish::baseWeight)
         val adjustedWeight = candidates.sumOf(WeightedFish::weight)
@@ -61,36 +72,40 @@ object SeasonalFishingTags {
         return ResolvedFishingCatch.JUNK
     }
 
-    private fun itemTag(path: String): TagKey<Item> =
-        TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(FTMod.MODID, path))
+    private fun itemTag(namespace: String, path: String): TagKey<Item> =
+        TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(namespace, path))
 
     private fun baseWeight(item: Item): Double =
         vanillaFishWeights[BuiltInRegistries.ITEM.getKey(item)] ?: 1.0
 
-    private fun taggedSeasons(item: Item): List<SeasonWindow> = seasonTags
+    private fun taggedSeasons(item: Item, tags: Map<SeasonWindow, TagKey<Item>>): List<SeasonWindow> = tags
         .filter { (_, tag) -> item.builtInRegistryHolder().`is`(tag) }
         .keys
         .toList()
 
-    private fun candidateFor(item: Item): TaggedFish? {
+    private fun candidateFor(item: Item, currentSeason: SeasonWindow?): WeightedFish? {
         val specialRule = SpecialFishingRules.describe(BuiltInRegistries.ITEM.getKey(item))
-        if (specialRule != null) {
-            return TaggedFish(item, specialRule.seasons.toList(), specialRule.baseWeight ?: baseWeight(item))
-        }
-
-        val seasons = taggedSeasons(item)
-        return seasons.takeIf(List<SeasonWindow>::isNotEmpty)?.let { TaggedFish(item, it, baseWeight(item)) }
-    }
-
-    private data class TaggedFish(val item: Item, val seasons: List<SeasonWindow>, val baseWeight: Double) {
-        fun withWeight(currentSeason: SeasonWindow?): WeightedFish {
-            val multiplier = if (currentSeason != null && currentSeason in seasons) {
-                IN_SEASON_WEIGHT_MULTIPLIER
-            } else {
-                OUT_OF_SEASON_WEIGHT_MULTIPLIER
+        val catchSeasons = specialRule?.seasons?.toList() ?: taggedSeasons(item, catchSeasonTags)
+        if (catchSeasons.isNotEmpty()) {
+            if (currentSeason == null || currentSeason !in catchSeasons) {
+                return null
             }
-            return WeightedFish(item, baseWeight, baseWeight * multiplier)
+            val weight = specialRule?.baseWeight ?: baseWeight(item)
+            return WeightedFish(item, weight, weight * IN_SEASON_WEIGHT_MULTIPLIER)
         }
+
+        val activeSeasons = taggedSeasons(item, activeSeasonTags)
+        if (activeSeasons.isEmpty()) {
+            return null
+        }
+
+        val multiplier = if (currentSeason != null && currentSeason in activeSeasons) {
+            IN_SEASON_WEIGHT_MULTIPLIER
+        } else {
+            OUT_OF_SEASON_WEIGHT_MULTIPLIER
+        }
+        val weight = specialRule?.baseWeight ?: baseWeight(item)
+        return WeightedFish(item, weight, weight * multiplier)
     }
 
     private data class WeightedFish(val item: Item, val baseWeight: Double, val weight: Double)

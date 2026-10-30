@@ -88,7 +88,8 @@ val libModFiles = listOf(
     file("lib/StellarView-1.20.1-0.5.3-Forge.jar"),
     file("lib/ldlib-forge-1.20.1-1.0.52.a.jar"),
     file("lib/letsdo-farm_and_charm-forge-1.0.14.jar"),
-    file("lib/overweightfarming-1.20.1-2.1.0-forge.jar")
+    file("lib/overweightfarming-1.20.1-2.1.0-forge.jar"),
+    file("lib/ftb-library-forge-2001.2.13.jar")
 
 ).filter(File::exists)
 // Temporary test mods. Their coordinates are derived from each file name and
@@ -232,6 +233,10 @@ sourceSets.named("main") {
 
 extensions.configure<LegacyForgeExtension> {
     ideSyncTask(generateModMetadata)
+}
+
+tasks.jar {
+    manifest.attributes("MixinConfigs" to "farmerstales.mixin.json")
 }
 
 tasks.withType<JavaCompile>().configureEach {

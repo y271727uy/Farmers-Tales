@@ -1,0 +1,13 @@
+{
+  "parent": "farmerstales:fishing/what_a_school_of_fish",
+  "display": {
+    "icon": { "item": "minecraft:fishing_rod" },
+    "title": { "translate": "advancement.farmerstales.fish_pool_interaction.title" },
+    "description": { "translate": "advancement.farmerstales.fish_pool_interaction.description" },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": { "unlocked": { "trigger": "minecraft:impossible" } }
+}

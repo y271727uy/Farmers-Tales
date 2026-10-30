@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class FoodExpiryCapabilities {
     public static final Capability<Data> CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
+    public static final Capability<Data> NETWORK_CAPABILITY = CapabilityManager.get(new CapabilityToken<>() {});
     private static final ResourceLocation KEY = new ResourceLocation(FTMod.MODID, "food_expiry");
 
     private FoodExpiryCapabilities() {}
@@ -81,6 +82,8 @@ public final class FoodExpiryCapabilities {
         public long created;
         public long duration;
         public boolean rotten;
+        /** Legacy field retained only for reading old saves; never updated. */
+        @Deprecated
         public long lastDecayUpdate;
 
         @Override
@@ -90,7 +93,6 @@ public final class FoodExpiryCapabilities {
             tag.putLong("created", created);
             tag.putLong("duration", duration);
             tag.putBoolean("rotten", rotten);
-            tag.putLong("lastDecayUpdate", lastDecayUpdate);
             return tag;
         }
 
@@ -110,7 +112,7 @@ public final class FoodExpiryCapabilities {
 
         @Override
         public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction side) {
-            return capability == CAPABILITY ? optional.cast() : LazyOptional.empty();
+            return capability == CAPABILITY || capability == NETWORK_CAPABILITY ? optional.cast() : LazyOptional.empty();
         }
 
         @Override

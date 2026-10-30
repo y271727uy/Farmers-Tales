@@ -1,6 +1,7 @@
 package com.y271727uy.farmerstales.gameplay.quality_crop.event.harvest
 
 import com.y271727uy.farmerstales.FTMod
+import com.y271727uy.farmerstales.all.items.ScytheItem
 import com.y271727uy.farmerstales.gameplay.quality_crop.QualityHarvestRules
 import com.y271727uy.farmerstales.gameplay.quality_crop.QualityNbt
 import com.y271727uy.farmerstales.gameplay.quality_crop.QualityRoller
@@ -9,6 +10,7 @@ import com.y271727uy.farmerstales.gameplay.quality_crop.util.BerryFruitHarvestWh
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
+import net.minecraft.world.item.context.UseOnContext
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.block.state.properties.BooleanProperty
@@ -26,11 +28,19 @@ object BerryHarvestEvents {
 	@SubscribeEvent
 	fun onRightClickBlock(event: PlayerInteractEvent.RightClickBlock) {
 		val level = event.level
-		if (level.isClientSide || level !is ServerLevel) {
+		if (event.hand != InteractionHand.MAIN_HAND) {
 			return
 		}
 
-		if (event.hand != InteractionHand.MAIN_HAND) {
+		val scythe = event.itemStack.item as? ScytheItem
+		if (scythe != null) {
+			val result = scythe.harvestWithContext(UseOnContext(event.entity, event.hand, event.hitVec))
+			event.setCancellationResult(result)
+			event.isCanceled = true
+			return
+		}
+
+		if (level.isClientSide || level !is ServerLevel) {
 			return
 		}
 
@@ -51,9 +61,20 @@ object BerryHarvestEvents {
 
 		event.setCancellationResult(InteractionResult.SUCCESS)
 		event.isCanceled = true
+		harvest(level, event.pos, state, drops, shouldApplyQuality, event.entity)
+	}
 
-		level.setBlockAndUpdate(event.pos, resetHarvestState(state))
-		FarmersTalesAdvancements.awardIfRaining(event.entity, level)
+	/** Picks a ripe bush and leaves the plant in place. Quality is applied only to whitelist drops. */
+	fun harvest(
+		level: ServerLevel,
+		pos: net.minecraft.core.BlockPos,
+		state: BlockState,
+		drops: List<net.minecraft.world.item.ItemStack>,
+		shouldApplyQuality: Boolean,
+		harvester: net.minecraft.world.entity.player.Player?,
+	) {
+		level.setBlockAndUpdate(pos, resetHarvestState(state))
+		FarmersTalesAdvancements.awardIfRaining(harvester, level)
 
 		for (stack in drops) {
 			if (stack.isEmpty) {
@@ -61,25 +82,33 @@ object BerryHarvestEvents {
 			}
 
 			if (QualityNbt.hasValidQuality(stack) || !BerryFruitHarvestWhitelist.matches(stack, state.block)) {
-				Block.popResource(level, event.pos, stack)
+				Block.popResource(level, pos, stack)
 				continue
 			}
 
 			if (shouldApplyQuality) {
 				QualityRoller.roll(level.random)?.let { quality ->
-					QualityNbt.write(stack, quality, event.entity)
+					QualityNbt.write(stack, quality, harvester)
 				}
 			}
 
-			Block.popResource(level, event.pos, stack)
+			Block.popResource(level, pos, stack)
 		}
+	}
+
+	fun isRipe(state: BlockState): Boolean = isHarvestReady(state)
+
+	/** Ripe state with the fruit flag cleared. Null when this block has no such state. */
+	fun pickedState(state: BlockState): BlockState? {
+		val reset = resetHarvestState(state)
+		return reset.takeIf { it != state }
 	}
 
 	private fun isHarvestReady(state: BlockState): Boolean {
 		for (property in state.properties) {
 			when (property) {
 				is IntegerProperty -> {
-					if (property.name == "age") {
+					if (property.name == "age" || property.name == "blockstate") {
 						val maxAge = property.possibleValues.maxOrNull() ?: continue
 						if (state.getValue(property) >= maxAge) {
 							return true
@@ -87,7 +116,7 @@ object BerryHarvestEvents {
 					}
 				}
 				is BooleanProperty -> {
-					if (property.name == "berries" && state.getValue(property)) {
+					if ((property.name == "berries" || property.name == "fruiting") && state.getValue(property)) {
 						return true
 					}
 				}
@@ -107,14 +136,14 @@ object BerryHarvestEvents {
 		for (property in state.properties) {
 			when (property) {
 				is BooleanProperty -> {
-					if (property.name == "berries" && state.getValue(property)) {
+					if ((property.name == "berries" || property.name == "fruiting") && state.getValue(property)) {
 						return state.setValue(property, false)
 					}
 				}
 				is IntegerProperty -> {
-					if (property.name == "age") {
+					if (property.name == "age" || property.name == "blockstate") {
 						val resetValue = when {
-							1 in property.possibleValues -> 1
+							property.name == "age" && 1 in property.possibleValues -> 1
 							property.possibleValues.isNotEmpty() -> property.possibleValues.minOrNull() ?: state.getValue(property)
 							else -> state.getValue(property)
 						}
@@ -131,14 +160,12 @@ object BerryHarvestEvents {
 							candidate.toString().equals("LEAVES", ignoreCase = true) || candidate.toString().equals("FLOWERS", ignoreCase = true)
 						}
 
-						if (resetValue != null) {
+						if (resetValue != null && currentValue(state, property).uppercase() in HARVEST_READY_VALUES) {
 							@Suppress("UNCHECKED_CAST")
 							val typed = property as Property<Comparable<Any>>
 							@Suppress("UNCHECKED_CAST")
 							val typedValue = resetValue as Comparable<Any>
-							if (currentValue(state, property).uppercase() in HARVEST_READY_VALUES) {
-								return state.setValue(typed, typedValue)
-							}
+							return state.setValue(typed, typedValue)
 						}
 					}
 				}

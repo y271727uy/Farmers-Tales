@@ -77,46 +77,29 @@ object FoodExpiry {
             data.created = created
             data.duration = duration
             data.expiry = created + duration
-            // Matching stacks must begin seasonal settlement at the same time.
-            data.lastDecayUpdate = created
+            // Creation date and duration are stable, like TFC FoodHandler.
         } else {
             // Migrate stacks created by the first version, which only stored expiry.
             if (data.duration == 0L) data.duration = duration
             if (data.created == 0L) {
                 data.created = data.expiry - data.duration
             }
-            if (data.lastDecayUpdate == 0L) data.lastDecayUpdate = gameTime
         }
-    }
-
-    /** Applies elapsed seasonal decay before inspecting or using a food stack. */
-    @JvmStatic
-    fun settleSeasonalDecay(stack: ItemStack, level: Level) {
-        settleSeasonalDecay(stack, level, null)
     }
 
     /**
-     * @param exposedPos sky-exposed position of a carried or dropped stack. Null means the stack
-     * is stored, so a crimson night does not hurry it.
+     * Compatibility hook retained for callers from the seasonal-decay implementation.
+     * TFC-style food state is stable: expiration is determined from creation + duration,
+     * rather than mutating the ItemStack capability every tick.
      */
     @JvmStatic
+    fun settleSeasonalDecay(stack: ItemStack, level: Level) {
+        // Intentionally no-op. Do not mutate ItemStack capability during gameplay ticks.
+    }
+
+    @JvmStatic
     fun settleSeasonalDecay(stack: ItemStack, level: Level, exposedPos: BlockPos?) {
-        val data = FoodExpiryCapabilities.get(stack) ?: return
-        if (data.expiry == 0L || data.duration == NEVER_EXPIRES) return
-
-        val now = level.gameTime
-        val lastUpdate = data.lastDecayUpdate
-        if (lastUpdate <= 0L) {
-            data.lastDecayUpdate = now
-            return
-        }
-        val elapsed = now - lastUpdate
-        if (elapsed <= 0L) return
-
-        val seasonalRate = decayRate(level, exposedPos)
-        val expiryAdjustment = kotlin.math.round(elapsed * (seasonalRate - 1.0)).toLong()
-        data.expiry -= expiryAdjustment
-        data.lastDecayUpdate = now
+        // Intentionally no-op. Do not mutate ItemStack capability during gameplay ticks.
     }
 
     @JvmStatic
