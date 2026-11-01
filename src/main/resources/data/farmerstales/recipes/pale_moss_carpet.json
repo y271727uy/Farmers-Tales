@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "##"
+  ],
+  "key": {
+    "#": {
+      "item": "farmerstales:pale_moss_block"
+    }
+  },
+  "result": {
+    "item": "farmerstales:pale_moss_carpet",
+    "count": 3
+  }
+}

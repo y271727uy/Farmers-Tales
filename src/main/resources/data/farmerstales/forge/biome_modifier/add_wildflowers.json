@@ -1,0 +1,12 @@
+{
+  "type": "forge:add_features",
+  "biomes": [
+    "minecraft:birch_forest",
+    "minecraft:old_growth_birch_forest",
+    "minecraft:meadow"
+  ],
+  "features": [
+    "farmerstales:patch_wildflowers"
+  ],
+  "step": "vegetal_decoration"
+}

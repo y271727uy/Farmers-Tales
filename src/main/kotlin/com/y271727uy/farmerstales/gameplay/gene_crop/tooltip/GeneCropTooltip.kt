@@ -51,7 +51,8 @@ object GeneCropTooltip {
         if (!Screen.hasShiftDown()) {
             return listOf(detailsLine())
         }
-        return rows(stats)
+        return rows(stats) + Component.translatable("tooltip.${FTMod.MODID}.gene_crop.temperature_preference")
+            .withStyle(ChatFormatting.GRAY)
     }
 
     /** Forestry styles the collapsed line gray and italic, without changing the font. */

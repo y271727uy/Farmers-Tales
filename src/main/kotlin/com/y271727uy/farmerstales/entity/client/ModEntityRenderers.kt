@@ -16,7 +16,6 @@ object ModEntityRenderers {
     @JvmStatic
     @SubscribeEvent
     fun registerRenderers(event: EntityRenderersEvent.RegisterRenderers) {
-        event.registerEntityRenderer(ModEntities.ARMADILLO.type.get(), ::ArmadilloRenderer)
         event.registerEntityRenderer(ModEntities.NAUTILUS.type.get(), ::NautilusRenderer)
         event.registerEntityRenderer(ModEntities.ZOMBIE_NAUTILUS.type.get(), ::ZombieNautilusRenderer)
         event.registerEntityRenderer(ModEntities.BAMBOO_RAT.type.get(), ::BambooRatRenderer)
@@ -26,7 +25,6 @@ object ModEntityRenderers {
     @JvmStatic
     @SubscribeEvent
     fun registerLayerDefinitions(event: EntityRenderersEvent.RegisterLayerDefinitions) {
-        event.registerLayerDefinition(ArmadilloModel.LAYER_LOCATION, ArmadilloModel::createBodyLayer)
         event.registerLayerDefinition(NautilusModel.LAYER_LOCATION) { NautilusModel.createBodyLayer() }
         event.registerLayerDefinition(BambooRatModel.LAYER_LOCATION, BambooRatModel::createBodyLayer)
         event.registerLayerDefinition(RatModel.LAYER_LOCATION, RatModel::createBodyLayer)

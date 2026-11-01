@@ -1,0 +1,8 @@
+{
+  "parent": "farmerstales:block/template_shelf_body",
+  "textures": {
+    "all": "farmerstales:block/poplar_shelf",
+    "particle": "farmerstales:block/stripped_poplar_log"
+  },
+  "render_type": "minecraft:cutout"
+}

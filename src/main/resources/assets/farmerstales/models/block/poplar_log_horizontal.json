@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "end": "farmerstales:block/poplar_log_top",
+    "side": "farmerstales:block/poplar_log"
+  }
+}

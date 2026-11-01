@@ -61,7 +61,11 @@ open class MobRegistry(private val modId: String) {
             ResourceLocation.fromNamespaceAndPath("minecraft", "item/template_spawn_egg"),
         )
         registeredMobs.forEach { mob ->
-            provider.getBuilder(mob.spawnEggId).parent(spawnEggTemplate)
+            if (mob.id == "armadillo") {
+                provider.getBuilder(mob.spawnEggId)
+                    .parent(ModelFile.UncheckedModelFile(ResourceLocation.fromNamespaceAndPath("minecraft", "item/generated")))
+                    .texture("layer0", ResourceLocation.fromNamespaceAndPath(modId, "item/armadillo_spawn_egg"))
+            } else provider.getBuilder(mob.spawnEggId).parent(spawnEggTemplate)
         }
     }
 

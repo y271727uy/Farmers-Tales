@@ -12,5 +12,1282 @@
     "sounds": [
       "farmerstales:wolf"
     ]
+  },
+  "block.firefly_bush.idle": {
+    "sounds": [
+      {
+        "name": "farmerstales:block/firefly_bush/firefly_bush1",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/firefly_bush/firefly_bush2",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/firefly_bush/firefly_bush3",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/firefly_bush/firefly_bush4",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/firefly_bush/firefly_bush5",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/firefly_bush/firefly_bush6",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/firefly_bush/firefly_bush7",
+        "volume": 4.0,
+        "weight": 2
+      },
+      {
+        "name": "farmerstales:block/firefly_bush/firefly_bush8",
+        "volume": 4.0,
+        "weight": 2
+      },
+      {
+        "name": "farmerstales:block/firefly_bush/firefly_bush9",
+        "volume": 4.0,
+        "weight": 2
+      },
+      {
+        "name": "farmerstales:block/firefly_bush/firefly_bush10",
+        "volume": 4.0,
+        "weight": 2
+      },
+      {
+        "name": "farmerstales:block/firefly_bush/firefly_bush11",
+        "volume": 4.0
+      }
+    ],
+    "subtitle": "subtitles.farmerstales.block.firefly_bush.idle"
+  },
+  "block.creaking_heart.break": {
+    "sounds": [
+      {
+        "name": "farmerstales:block/creaking_heart/break/creaking_heart_break",
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.block.generic.break"
+  },
+  "block.creaking_heart.fall": {
+    "sounds": [
+      "farmerstales:block/creaking_heart/fall/creaking_heart_fall"
+    ],
+    "subtitle": "subtitles.block.generic.fall"
+  },
+  "block.creaking_heart.hit": {
+    "sounds": [
+      "farmerstales:block/creaking_heart/hit/creaking_heart_hit1",
+      "farmerstales:block/creaking_heart/hit/creaking_heart_hit2",
+      "farmerstales:block/creaking_heart/hit/creaking_heart_hit3",
+      "farmerstales:block/creaking_heart/hit/creaking_heart_hit4",
+      "farmerstales:block/creaking_heart/hit/creaking_heart_hit5"
+    ],
+    "subtitle": "subtitles.block.generic.hit"
+  },
+  "block.creaking_heart.hurt": {
+    "sounds": [
+      "farmerstales:block/creaking_heart/hurt/trail1",
+      "farmerstales:block/creaking_heart/hurt/trail2",
+      "farmerstales:block/creaking_heart/hurt/trail3",
+      "farmerstales:block/creaking_heart/hurt/trail4",
+      "farmerstales:block/creaking_heart/hurt/trail5",
+      "farmerstales:block/creaking_heart/hurt/trail6",
+      "farmerstales:block/creaking_heart/hurt/trail7"
+    ],
+    "subtitle": "subtitles.farmerstales.block.creaking_heart.hurt"
+  },
+  "block.creaking_heart.idle": {
+    "sounds": [
+      "farmerstales:block/creaking_heart/idle/creaking_heart_idle1",
+      "farmerstales:block/creaking_heart/idle/creaking_heart_idle2",
+      "farmerstales:block/creaking_heart/idle/creaking_heart_idle3",
+      "farmerstales:block/creaking_heart/idle/creaking_heart_idle4"
+    ],
+    "subtitle": "subtitles.ambient.sound"
+  },
+  "block.creaking_heart.place": {
+    "sounds": [
+      "farmerstales:block/creaking_heart/place/creaking_heart_place1",
+      "farmerstales:block/creaking_heart/place/creaking_heart_place2",
+      "farmerstales:block/creaking_heart/place/creaking_heart_place3",
+      "farmerstales:block/creaking_heart/place/creaking_heart_place4"
+    ],
+    "subtitle": "subtitles.block.generic.place"
+  },
+  "block.creaking_heart.spawn": {
+    "sounds": [
+      "farmerstales:block/creaking_heart/spawnmob/creaking_heart_spawnmob"
+    ],
+    "subtitle": "subtitles.farmerstales.block.creaking_heart.spawn"
+  },
+  "block.creaking_heart.step": {
+    "sounds": [
+      "farmerstales:block/creaking_heart/step/creaking_heart_step1",
+      "farmerstales:block/creaking_heart/step/creaking_heart_step2",
+      "farmerstales:block/creaking_heart/step/creaking_heart_step3",
+      "farmerstales:block/creaking_heart/step/creaking_heart_step4",
+      "farmerstales:block/creaking_heart/step/creaking_heart_step5",
+      "farmerstales:block/creaking_heart/step/creaking_heart_step6"
+    ],
+    "subtitle": "subtitles.block.generic.footsteps"
+  },
+  "entity.creaking.activate": {
+    "sounds": [
+      "farmerstales:mob/creaking/creaking_activate"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.creaking.activate"
+  },
+  "entity.creaking.ambient": {
+    "sounds": [
+      "farmerstales:mob/creaking/creaking_idle1",
+      "farmerstales:mob/creaking/creaking_idle2",
+      "farmerstales:mob/creaking/creaking_idle3",
+      "farmerstales:mob/creaking/creaking_idle4",
+      "farmerstales:mob/creaking/creaking_idle5",
+      "farmerstales:mob/creaking/creaking_idle6"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.creaking.ambient"
+  },
+  "entity.creaking.attack": {
+    "sounds": [
+      "farmerstales:mob/creaking/creaking_attack1",
+      "farmerstales:mob/creaking/creaking_attack2",
+      "farmerstales:mob/creaking/creaking_attack3",
+      "farmerstales:mob/creaking/creaking_attack4"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.creaking.attack"
+  },
+  "entity.creaking.deactivate": {
+    "sounds": [
+      "farmerstales:mob/creaking/creaking_deactivate"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.creaking.deactivate"
+  },
+  "entity.creaking.death": {
+    "sounds": [
+      "farmerstales:mob/creaking/creaking_death"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.creaking.death"
+  },
+  "entity.creaking.freeze": {
+    "sounds": [
+      "farmerstales:mob/creaking/creaking_freeze1",
+      "farmerstales:mob/creaking/creaking_freeze2",
+      "farmerstales:mob/creaking/creaking_freeze3",
+      "farmerstales:mob/creaking/creaking_freeze4"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.creaking.freeze"
+  },
+  "entity.creaking.spawn": {
+    "sounds": [
+      "farmerstales:mob/creaking/creaking_spawn"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.creaking.spawn"
+  },
+  "entity.creaking.step": {
+    "sounds": [
+      "farmerstales:mob/creaking/creaking_step1",
+      "farmerstales:mob/creaking/creaking_step2",
+      "farmerstales:mob/creaking/creaking_step3",
+      "farmerstales:mob/creaking/creaking_step4",
+      "farmerstales:mob/creaking/creaking_step5"
+    ],
+    "subtitle": "subtitles.block.generic.footsteps"
+  },
+  "entity.creaking.sway": {
+    "sounds": [
+      "farmerstales:mob/creaking/creaking_sway1",
+      "farmerstales:mob/creaking/creaking_sway2",
+      "farmerstales:mob/creaking/creaking_sway3",
+      "farmerstales:mob/creaking/creaking_sway4"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.creaking.sway"
+  },
+  "entity.creaking.twitch": {
+    "sounds": [
+      "farmerstales:mob/creaking/creaking_twitch"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.creaking.twitch"
+  },
+  "entity.creaking.unfreeze": {
+    "sounds": [
+      "farmerstales:mob/creaking/creaking_unfreeze1",
+      "farmerstales:mob/creaking/creaking_unfreeze2",
+      "farmerstales:mob/creaking/creaking_unfreeze3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.creaking.unfreeze"
+  },
+  "block.resin.break": {
+    "sounds": [
+      "farmerstales:block/resin/resin_break1",
+      "farmerstales:block/resin/resin_break2",
+      "farmerstales:block/resin/resin_break3",
+      "farmerstales:block/resin/resin_break4",
+      "farmerstales:block/resin/resin_break5"
+    ],
+    "subtitle": "subtitles.block.generic.break"
+  },
+  "block.resin.fall": {
+    "sounds": [
+      "farmerstales:block/resin/resin_fall"
+    ],
+    "subtitle": "subtitles.block.generic.fall"
+  },
+  "block.resin.place": {
+    "sounds": [
+      "farmerstales:block/resin/resin_place1",
+      "farmerstales:block/resin/resin_place2",
+      "farmerstales:block/resin/resin_place3",
+      "farmerstales:block/resin/resin_place4"
+    ],
+    "subtitle": "subtitles.block.generic.place"
+  },
+  "block.resin.step": {
+    "sounds": [
+      "farmerstales:block/resin/resin_step1",
+      "farmerstales:block/resin/resin_step2",
+      "farmerstales:block/resin/resin_step3",
+      "farmerstales:block/resin/resin_step4",
+      "farmerstales:block/resin/resin_step5"
+    ],
+    "subtitle": "subtitles.block.generic.footsteps"
+  },
+  "block.resin_bricks.break": {
+    "sounds": [
+      "farmerstales:block/resin_bricks/resin_brick_break"
+    ],
+    "subtitle": "subtitles.block.generic.break"
+  },
+  "block.resin_bricks.fall": {
+    "sounds": [
+      "farmerstales:block/resin_bricks/resin_brick_fall"
+    ],
+    "subtitle": "subtitles.block.generic.fall"
+  },
+  "block.resin_bricks.hit": {
+    "sounds": [
+      "farmerstales:block/resin_bricks/resin_brick_hit1",
+      "farmerstales:block/resin_bricks/resin_brick_hit2",
+      "farmerstales:block/resin_bricks/resin_brick_hit3",
+      "farmerstales:block/resin_bricks/resin_brick_hit4",
+      "farmerstales:block/resin_bricks/resin_brick_hit5"
+    ],
+    "subtitle": "subtitles.block.generic.hit"
+  },
+  "block.resin_bricks.place": {
+    "sounds": [
+      "farmerstales:block/resin_bricks/resin_brick_place1",
+      "farmerstales:block/resin_bricks/resin_brick_place2",
+      "farmerstales:block/resin_bricks/resin_brick_place3",
+      "farmerstales:block/resin_bricks/resin_brick_place4",
+      "farmerstales:block/resin_bricks/resin_brick_place5"
+    ],
+    "subtitle": "subtitles.block.generic.place"
+  },
+  "block.resin_bricks.step": {
+    "sounds": [
+      "farmerstales:block/resin_bricks/resin_brick_step1",
+      "farmerstales:block/resin_bricks/resin_brick_step2",
+      "farmerstales:block/resin_bricks/resin_brick_step3",
+      "farmerstales:block/resin_bricks/resin_brick_step4",
+      "farmerstales:block/resin_bricks/resin_brick_step5"
+    ],
+    "subtitle": "subtitles.block.generic.footsteps"
+  },
+  "block.leaf_litter.break": {
+    "sounds": [
+      "farmerstales:block/leaf_litter/break1",
+      "farmerstales:block/leaf_litter/break2",
+      "farmerstales:block/leaf_litter/break3",
+      "farmerstales:block/leaf_litter/break4",
+      "farmerstales:block/leaf_litter/break5"
+    ],
+    "subtitle": "subtitles.block.generic.break"
+  },
+  "block.leaf_litter.step": {
+    "sounds": [
+      "farmerstales:block/leaf_litter/step1",
+      "farmerstales:block/leaf_litter/step2",
+      "farmerstales:block/leaf_litter/step3",
+      "farmerstales:block/leaf_litter/step4",
+      "farmerstales:block/leaf_litter/step5",
+      "farmerstales:block/leaf_litter/step6"
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.footsteps"
+  },
+  "block.leaf_litter.place": {
+    "sounds": [
+      "farmerstales:block/leaf_litter/place1",
+      "farmerstales:block/leaf_litter/place2",
+      "farmerstales:block/leaf_litter/place3",
+      "farmerstales:block/leaf_litter/place4",
+      "farmerstales:block/leaf_litter/place5"
+    ],
+    "subtitle": "subtitles.block.generic.place"
+  },
+  "block.leaf_litter.hit": {
+    "sounds": [
+      "farmerstales:block/leaf_litter/step1",
+      "farmerstales:block/leaf_litter/step2",
+      "farmerstales:block/leaf_litter/step3",
+      "farmerstales:block/leaf_litter/step4",
+      "farmerstales:block/leaf_litter/step5",
+      "farmerstales:block/leaf_litter/step6"
+    ],
+    "subtitle": "subtitles.block.generic.hit"
+  },
+  "block.leaf_litter.fall": {
+    "sounds": [
+      "farmerstales:block/leaf_litter/step1",
+      "farmerstales:block/leaf_litter/step2",
+      "farmerstales:block/leaf_litter/step3",
+      "farmerstales:block/leaf_litter/step4",
+      "farmerstales:block/leaf_litter/step5",
+      "farmerstales:block/leaf_litter/step6"
+    ],
+    "subtitle": "subtitles.block.generic.fall"
+  },
+  "block.dry_grass.ambient": {
+    "sounds": [
+      "farmerstales:block/dry_grass/wind1",
+      "farmerstales:block/dry_grass/wind2",
+      "farmerstales:block/dry_grass/wind3",
+      "farmerstales:block/dry_grass/wind4",
+      "farmerstales:block/dry_grass/wind5",
+      "farmerstales:block/dry_grass/wind6",
+      "farmerstales:block/dry_grass/wind7",
+      "farmerstales:block/dry_grass/wind8",
+      "farmerstales:block/dry_grass/wind9",
+      "farmerstales:block/dry_grass/wind10",
+      "farmerstales:block/dry_grass/wind11",
+      "farmerstales:block/dry_grass/wind12"
+    ],
+    "subtitle": "subtitles.farmerstales.block.dry_grass.ambient"
+  },
+  "block.sand.idle": {
+    "sounds": [
+      {
+        "name": "farmerstales:block/sand/sand1",
+        "volume": 4.0,
+        "weight": 2
+      },
+      {
+        "name": "farmerstales:block/sand/sand2",
+        "volume": 4.0,
+        "weight": 2
+      },
+      {
+        "name": "farmerstales:block/sand/sand3",
+        "volume": 4.0,
+        "weight": 2
+      },
+      {
+        "name": "farmerstales:block/sand/sand4",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/sand/sand5",
+        "volume": 4.0,
+        "weight": 2
+      },
+      {
+        "name": "farmerstales:block/sand/sand6",
+        "volume": 4.0,
+        "weight": 2
+      },
+      {
+        "name": "farmerstales:block/sand/sand7",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/sand/sand8",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/sand/sand9",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/sand/sand10",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/sand/sand10",
+        "volume": 4.0,
+        "weight": 2
+      },
+      {
+        "name": "farmerstales:block/sand/sand11",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/sand/sand12",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/sand/sand12",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/sand/sand13",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/sand/sand14",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/sand/sand15",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/sand/sand16",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/sand/sand17",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/sand/sand18",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/sand/sand19",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/sand/sand20",
+        "volume": 4.0
+      },
+      {
+        "name": "farmerstales:block/sand/sand21",
+        "volume": 4.0
+      }
+    ],
+    "subtitle": "subtitles.farmerstales.block.sand.idle"
+  },
+  "block.pale_hanging_moss.idle": {
+    "sounds": [
+      "farmerstales:block/pale_hanging_moss/pale_hanging_moss1",
+      "farmerstales:block/pale_hanging_moss/pale_hanging_moss2",
+      "farmerstales:block/pale_hanging_moss/pale_hanging_moss3",
+      "farmerstales:block/pale_hanging_moss/pale_hanging_moss4",
+      "farmerstales:block/pale_hanging_moss/pale_hanging_moss5",
+      "farmerstales:block/pale_hanging_moss/pale_hanging_moss6",
+      "farmerstales:block/pale_hanging_moss/pale_hanging_moss7",
+      "farmerstales:block/pale_hanging_moss/pale_hanging_moss8",
+      "farmerstales:block/pale_hanging_moss/pale_hanging_moss9",
+      "farmerstales:block/pale_hanging_moss/pale_hanging_moss10",
+      "farmerstales:block/pale_hanging_moss/pale_hanging_moss11",
+      "farmerstales:block/pale_hanging_moss/pale_hanging_moss12",
+      "farmerstales:block/pale_hanging_moss/pale_hanging_moss13",
+      "farmerstales:block/pale_hanging_moss/pale_hanging_moss14",
+      "farmerstales:block/pale_hanging_moss/pale_hanging_moss15"
+    ],
+    "subtitle": "subtitles.farmerstales.ambient.sound"
+  },
+  "block.eyeblossom.idle": {
+    "sounds": [
+      "farmerstales:block/eyeblossom/eyeblossom_idle1",
+      "farmerstales:block/eyeblossom/eyeblossom_idle2",
+      "farmerstales:block/eyeblossom/eyeblossom_idle3",
+      "farmerstales:block/eyeblossom/eyeblossom_idle4",
+      "farmerstales:block/eyeblossom/eyeblossom_idle5",
+      "farmerstales:block/eyeblossom/eyeblossom_idle6"
+    ],
+    "subtitle": "subtitles.farmerstales.ambient.sound"
+  },
+  "block.eyeblossom.open": {
+    "sounds": [
+      "farmerstales:block/eyeblossom/eyeblossom_open1",
+      "farmerstales:block/eyeblossom/eyeblossom_open2",
+      "farmerstales:block/eyeblossom/eyeblossom_open3",
+      "farmerstales:block/eyeblossom/eyeblossom_open4"
+    ],
+    "subtitle": "subtitles.farmerstales.block.eyeblossom.open"
+  },
+  "block.eyeblossom.close": {
+    "sounds": [
+      "farmerstales:block/eyeblossom/eyeblossom_close1",
+      "farmerstales:block/eyeblossom/eyeblossom_close2",
+      "farmerstales:block/eyeblossom/eyeblossom_close3"
+    ],
+    "subtitle": "subtitles.farmerstales.block.eyeblossom.close"
+  },
+  "block.eyeblossom.open_long": {
+    "sounds": [
+      "farmerstales:block/eyeblossom/eyeblossom_open_long"
+    ],
+    "subtitle": "subtitles.farmerstales.block.eyeblossom.open"
+  },
+  "block.eyeblossom.close_long": {
+    "sounds": [
+      "farmerstales:block/eyeblossom/eyeblossom_close_long"
+    ],
+    "subtitle": "subtitles.farmerstales.block.eyeblossom.close"
+  },
+  "entity.wolf_angry.ambient": {
+    "sounds": [
+      "farmerstales:mob/wolf/angry/bark1",
+      "farmerstales:mob/wolf/angry/bark2",
+      "farmerstales:mob/wolf/angry/bark3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.bark"
+  },
+  "entity.wolf_angry.death": {
+    "sounds": [
+      "farmerstales:mob/wolf/angry/death"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.death"
+  },
+  "entity.wolf_angry.growl": {
+    "sounds": [
+      "farmerstales:mob/wolf/angry/growl1",
+      "farmerstales:mob/wolf/angry/growl2",
+      "farmerstales:mob/wolf/angry/growl3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.growl"
+  },
+  "entity.wolf_angry.hurt": {
+    "sounds": [
+      "farmerstales:mob/wolf/angry/hurt1",
+      "farmerstales:mob/wolf/angry/hurt2",
+      "farmerstales:mob/wolf/angry/hurt3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.hurt"
+  },
+  "entity.wolf_angry.pant": {
+    "sounds": [
+      "farmerstales:mob/wolf/angry/panting"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.pant"
+  },
+  "entity.wolf_angry.whine": {
+    "sounds": [
+      "farmerstales:mob/wolf/angry/whine"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.whine"
+  },
+  "entity.wolf_big.ambient": {
+    "sounds": [
+      "farmerstales:mob/wolf/big/bark1",
+      "farmerstales:mob/wolf/big/bark2",
+      "farmerstales:mob/wolf/big/bark3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.bark"
+  },
+  "entity.wolf_big.death": {
+    "sounds": [
+      "farmerstales:mob/wolf/big/death"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.death"
+  },
+  "entity.wolf_big.growl": {
+    "sounds": [
+      "farmerstales:mob/wolf/big/growl1",
+      "farmerstales:mob/wolf/big/growl2",
+      "farmerstales:mob/wolf/big/growl3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.growl"
+  },
+  "entity.wolf_big.hurt": {
+    "sounds": [
+      "farmerstales:mob/wolf/big/hurt1",
+      "farmerstales:mob/wolf/big/hurt2",
+      "farmerstales:mob/wolf/big/hurt3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.hurt"
+  },
+  "entity.wolf_big.pant": {
+    "sounds": [
+      "farmerstales:mob/wolf/big/panting"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.pant"
+  },
+  "entity.wolf_big.whine": {
+    "sounds": [
+      "farmerstales:mob/wolf/big/whine"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.whine"
+  },
+  "entity.wolf_cute.ambient": {
+    "sounds": [
+      "farmerstales:mob/wolf/cute/bark1",
+      "farmerstales:mob/wolf/cute/bark2",
+      "farmerstales:mob/wolf/cute/bark3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.bark"
+  },
+  "entity.wolf_cute.death": {
+    "sounds": [
+      "farmerstales:mob/wolf/cute/death"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.death"
+  },
+  "entity.wolf_cute.growl": {
+    "sounds": [
+      "farmerstales:mob/wolf/cute/growl1",
+      "farmerstales:mob/wolf/cute/growl2",
+      "farmerstales:mob/wolf/cute/growl3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.growl"
+  },
+  "entity.wolf_cute.hurt": {
+    "sounds": [
+      "farmerstales:mob/wolf/cute/hurt1",
+      "farmerstales:mob/wolf/cute/hurt2",
+      "farmerstales:mob/wolf/cute/hurt3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.hurt"
+  },
+  "entity.wolf_cute.pant": {
+    "sounds": [
+      "farmerstales:mob/wolf/cute/panting"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.pant"
+  },
+  "entity.wolf_cute.whine": {
+    "sounds": [
+      "farmerstales:mob/wolf/cute/whine"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.whine"
+  },
+  "entity.wolf_grumpy.ambient": {
+    "sounds": [
+      "farmerstales:mob/wolf/grumpy/bark1",
+      "farmerstales:mob/wolf/grumpy/bark2",
+      "farmerstales:mob/wolf/grumpy/bark3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.bark"
+  },
+  "entity.wolf_grumpy.death": {
+    "sounds": [
+      "farmerstales:mob/wolf/grumpy/death"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.death"
+  },
+  "entity.wolf_grumpy.growl": {
+    "sounds": [
+      "farmerstales:mob/wolf/grumpy/growl1",
+      "farmerstales:mob/wolf/grumpy/growl2",
+      "farmerstales:mob/wolf/grumpy/growl3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.growl"
+  },
+  "entity.wolf_grumpy.hurt": {
+    "sounds": [
+      "farmerstales:mob/wolf/grumpy/hurt1",
+      "farmerstales:mob/wolf/grumpy/hurt2",
+      "farmerstales:mob/wolf/grumpy/hurt3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.hurt"
+  },
+  "entity.wolf_grumpy.pant": {
+    "sounds": [
+      "farmerstales:mob/wolf/grumpy/panting"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.pant"
+  },
+  "entity.wolf_grumpy.whine": {
+    "sounds": [
+      "farmerstales:mob/wolf/grumpy/whine"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.whine"
+  },
+  "entity.wolf_puglin.ambient": {
+    "sounds": [
+      "farmerstales:mob/wolf/puglin/bark1",
+      "farmerstales:mob/wolf/puglin/bark2",
+      "farmerstales:mob/wolf/puglin/bark3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.bark"
+  },
+  "entity.wolf_puglin.death": {
+    "sounds": [
+      "farmerstales:mob/wolf/puglin/death"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.death"
+  },
+  "entity.wolf_puglin.growl": {
+    "sounds": [
+      "farmerstales:mob/wolf/puglin/growl1",
+      "farmerstales:mob/wolf/puglin/growl2",
+      "farmerstales:mob/wolf/puglin/growl3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.growl"
+  },
+  "entity.wolf_puglin.hurt": {
+    "sounds": [
+      "farmerstales:mob/wolf/puglin/hurt1",
+      "farmerstales:mob/wolf/puglin/hurt2",
+      "farmerstales:mob/wolf/puglin/hurt3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.hurt"
+  },
+  "entity.wolf_puglin.pant": {
+    "sounds": [
+      "farmerstales:mob/wolf/puglin/panting"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.pant"
+  },
+  "entity.wolf_puglin.whine": {
+    "sounds": [
+      "farmerstales:mob/wolf/puglin/whine"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.whine"
+  },
+  "entity.wolf_sad.ambient": {
+    "sounds": [
+      "farmerstales:mob/wolf/sad/bark1",
+      "farmerstales:mob/wolf/sad/bark2",
+      "farmerstales:mob/wolf/sad/bark3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.bark"
+  },
+  "entity.wolf_sad.death": {
+    "sounds": [
+      "farmerstales:mob/wolf/sad/death"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.death"
+  },
+  "entity.wolf_sad.growl": {
+    "sounds": [
+      "farmerstales:mob/wolf/sad/growl1",
+      "farmerstales:mob/wolf/sad/growl2",
+      "farmerstales:mob/wolf/sad/growl3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.growl"
+  },
+  "entity.wolf_sad.hurt": {
+    "sounds": [
+      "farmerstales:mob/wolf/sad/hurt1",
+      "farmerstales:mob/wolf/sad/hurt2",
+      "farmerstales:mob/wolf/sad/hurt3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.hurt"
+  },
+  "entity.wolf_sad.pant": {
+    "sounds": [
+      "farmerstales:mob/wolf/sad/panting"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.pant"
+  },
+  "entity.wolf_sad.whine": {
+    "sounds": [
+      "farmerstales:mob/wolf/sad/whine"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.wolf.whine"
+  },
+  "entity.armadillo.ambient": {
+    "sounds": [
+      "farmerstales:mob/armadillo/ambient1",
+      "farmerstales:mob/armadillo/ambient2",
+      "farmerstales:mob/armadillo/ambient3",
+      "farmerstales:mob/armadillo/ambient4",
+      "farmerstales:mob/armadillo/ambient5",
+      "farmerstales:mob/armadillo/ambient6",
+      "farmerstales:mob/armadillo/ambient7",
+      "farmerstales:mob/armadillo/ambient8"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.armadillo.ambient"
+  },
+  "entity.armadillo.brush": {
+    "sounds": [
+      {
+        "name": "farmerstales:mob/armadillo/brush_armadillo1",
+        "volume": 0.9
+      },
+      {
+        "name": "farmerstales:mob/armadillo/brush_armadillo1",
+        "pitch": 0.8,
+        "volume": 0.9
+      },
+      {
+        "name": "farmerstales:mob/armadillo/brush_armadillo1",
+        "pitch": 0.9,
+        "volume": 0.9
+      },
+      {
+        "name": "farmerstales:mob/armadillo/brush_armadillo2",
+        "volume": 0.9
+      },
+      {
+        "name": "farmerstales:mob/armadillo/brush_armadillo2",
+        "pitch": 0.8,
+        "volume": 0.9
+      },
+      {
+        "name": "farmerstales:mob/armadillo/brush_armadillo2",
+        "pitch": 0.9,
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.farmerstales.entity.armadillo.brush"
+  },
+  "entity.armadillo.death": {
+    "sounds": [
+      "farmerstales:mob/armadillo/death1",
+      "farmerstales:mob/armadillo/death2",
+      "farmerstales:mob/armadillo/death3",
+      "farmerstales:mob/armadillo/death4"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.armadillo.death"
+  },
+  "entity.armadillo.eat": {
+    "sounds": [
+      "farmerstales:mob/armadillo/eat1",
+      "farmerstales:mob/armadillo/eat2",
+      "farmerstales:mob/armadillo/eat3"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.armadillo.eat"
+  },
+  "entity.armadillo.hurt": {
+    "sounds": [
+      "farmerstales:mob/armadillo/hurt1",
+      "farmerstales:mob/armadillo/hurt2",
+      "farmerstales:mob/armadillo/hurt3",
+      "farmerstales:mob/armadillo/hurt4",
+      "farmerstales:mob/armadillo/hurt5"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.armadillo.hurt"
+  },
+  "entity.armadillo.hurt_reduced": {
+    "sounds": [
+      "farmerstales:mob/armadillo/hurt_reduced1",
+      "farmerstales:mob/armadillo/hurt_reduced2",
+      "farmerstales:mob/armadillo/hurt_reduced3",
+      "farmerstales:mob/armadillo/hurt_reduced4"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.armadillo.hurt_reduced"
+  },
+  "entity.armadillo.land": {
+    "sounds": [
+      "farmerstales:mob/armadillo/land1",
+      "farmerstales:mob/armadillo/land2",
+      "farmerstales:mob/armadillo/land3",
+      "farmerstales:mob/armadillo/land4"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.armadillo.land"
+  },
+  "entity.armadillo.peek": {
+    "sounds": [
+      "farmerstales:mob/armadillo/peek"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.armadillo.peek"
+  },
+  "entity.armadillo.roll": {
+    "sounds": [
+      "farmerstales:mob/armadillo/roll1",
+      "farmerstales:mob/armadillo/roll2",
+      "farmerstales:mob/armadillo/roll3",
+      "farmerstales:mob/armadillo/roll4"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.armadillo.roll"
+  },
+  "entity.armadillo.scute_drop": {
+    "sounds": [
+      "farmerstales:mob/armadillo/scute_drop1",
+      {
+        "name": "farmerstales:mob/armadillo/scute_drop1",
+        "pitch": 0.9
+      },
+      "farmerstales:mob/armadillo/scute_drop2",
+      {
+        "name": "farmerstales:mob/armadillo/scute_drop2",
+        "pitch": 0.9
+      }
+    ],
+    "subtitle": "subtitles.farmerstales.entity.armadillo.scute_drop"
+  },
+  "entity.armadillo.step": {
+    "sounds": [
+      "farmerstales:mob/armadillo/step1",
+      "farmerstales:mob/armadillo/step2",
+      "farmerstales:mob/armadillo/step3",
+      "farmerstales:mob/armadillo/step4",
+      "farmerstales:mob/armadillo/step5"
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.footsteps"
+  },
+  "entity.armadillo.unroll_finish": {
+    "sounds": [
+      "farmerstales:mob/armadillo/unroll_finish1",
+      "farmerstales:mob/armadillo/unroll_finish2"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.armadillo.unroll_finish"
+  },
+  "entity.armadillo.unroll_start": {
+    "sounds": [
+      "farmerstales:mob/armadillo/unroll_start"
+    ],
+    "subtitle": "subtitles.farmerstales.entity.armadillo.unroll_start"
+  },
+  "item.armor.equip_wolf": {
+    "sounds": [
+      "farmerstales:item/armor/equip_wolf1",
+      {
+        "name": "farmerstales:item/armor/equip_wolf1",
+        "pitch": 1.1
+      },
+      "farmerstales:item/armor/equip_wolf2",
+      {
+        "name": "farmerstales:item/armor/equip_wolf2",
+        "pitch": 1.1
+      }
+    ],
+    "subtitle": "subtitles.farmerstales.item.armor.equip_wolf"
+  },
+  "item.armor.unequip_wolf": {
+    "sounds": [
+      "farmerstales:item/armor/unequip_wolf1",
+      "farmerstales:item/armor/unequip_wolf2"
+    ],
+    "subtitle": "subtitles.farmerstales.item.armor.unequip_wolf"
+  },
+  "item.wolf_armor.break": {
+    "sounds": [
+      "farmerstales:item/armor/break_wolf"
+    ],
+    "subtitle": "subtitles.farmerstales.item.wolf_armor.break"
+  },
+  "item.wolf_armor.crack": {
+    "sounds": [
+      "farmerstales:item/armor/crack_wolf1",
+      "farmerstales:item/armor/crack_wolf2",
+      "farmerstales:item/armor/crack_wolf3",
+      "farmerstales:item/armor/crack_wolf4"
+    ],
+    "subtitle": "subtitles.farmerstales.item.wolf_armor.crack"
+  },
+  "item.wolf_armor.damage": {
+    "sounds": [
+      "farmerstales:item/armor/damage_wolf1",
+      "farmerstales:item/armor/damage_wolf2",
+      "farmerstales:item/armor/damage_wolf3",
+      "farmerstales:item/armor/damage_wolf4"
+    ],
+    "subtitle": "subtitles.farmerstales.item.wolf_armor.damage"
+  },
+  "item.wolf_armor.repair": {
+    "sounds": [
+      "farmerstales:item/armor/repair_wolf1",
+      "farmerstales:item/armor/repair_wolf2",
+      "farmerstales:item/armor/repair_wolf3",
+      "farmerstales:item/armor/repair_wolf4"
+    ],
+    "subtitle": "subtitles.farmerstales.item.wolf_armor.repair"
+  },
+  "block.polished_tuff.break": {
+    "sounds": [
+      {
+        "name": "farmerstales:block/tuff/break1",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/break2",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/break3",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/break4",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/break5",
+        "pitch": 1.2
+      }
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.break"
+  },
+  "block.polished_tuff.fall": {
+    "sounds": [
+      {
+        "name": "farmerstales:block/tuff/step1",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/step2",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/step3",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/step4",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/step5",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/step6",
+        "pitch": 1.2
+      }
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.fall"
+  },
+  "block.polished_tuff.hit": {
+    "sounds": [
+      {
+        "name": "farmerstales:block/tuff/step1",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/step2",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/step3",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/step4",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/step5",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/step6",
+        "pitch": 1.2
+      }
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.hit"
+  },
+  "block.polished_tuff.place": {
+    "sounds": [
+      {
+        "name": "farmerstales:block/tuff/break1",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/break2",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/break3",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/break4",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/break5",
+        "pitch": 1.2
+      }
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.place"
+  },
+  "block.polished_tuff.step": {
+    "sounds": [
+      {
+        "name": "farmerstales:block/tuff/step1",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/step2",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/step3",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/step4",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/step5",
+        "pitch": 1.2
+      },
+      {
+        "name": "farmerstales:block/tuff/step6",
+        "pitch": 1.2
+      }
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.footsteps"
+  },
+  "block.tuff_bricks.break": {
+    "sounds": [
+      "farmerstales:block/tuff_bricks/place1",
+      "farmerstales:block/tuff_bricks/place2",
+      "farmerstales:block/tuff_bricks/place3",
+      "farmerstales:block/tuff_bricks/place4",
+      "farmerstales:block/tuff_bricks/place5"
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.break"
+  },
+  "block.tuff_bricks.fall": {
+    "sounds": [
+      "farmerstales:block/tuff_bricks/step1",
+      "farmerstales:block/tuff_bricks/step2",
+      "farmerstales:block/tuff_bricks/step3",
+      "farmerstales:block/tuff_bricks/step4",
+      "farmerstales:block/tuff_bricks/step5",
+      "farmerstales:block/tuff_bricks/step6"
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.fall"
+  },
+  "block.tuff_bricks.hit": {
+    "sounds": [
+      "farmerstales:block/tuff_bricks/step1",
+      "farmerstales:block/tuff_bricks/step2",
+      "farmerstales:block/tuff_bricks/step3",
+      "farmerstales:block/tuff_bricks/step4",
+      "farmerstales:block/tuff_bricks/step5",
+      "farmerstales:block/tuff_bricks/step6"
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.hit"
+  },
+  "block.tuff_bricks.place": {
+    "sounds": [
+      "farmerstales:block/tuff_bricks/place1",
+      "farmerstales:block/tuff_bricks/place2",
+      "farmerstales:block/tuff_bricks/place3",
+      "farmerstales:block/tuff_bricks/place4",
+      "farmerstales:block/tuff_bricks/place5"
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.place"
+  },
+  "block.tuff_bricks.step": {
+    "sounds": [
+      "farmerstales:block/tuff_bricks/step1",
+      "farmerstales:block/tuff_bricks/step2",
+      "farmerstales:block/tuff_bricks/step3",
+      "farmerstales:block/tuff_bricks/step4",
+      "farmerstales:block/tuff_bricks/step5",
+      "farmerstales:block/tuff_bricks/step6"
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.footsteps"
+  },
+  "item.golden_dandelion.unuse": {
+    "sounds": [
+      "farmerstales:item/golden_dandelion/unuse"
+    ],
+    "subtitle": "subtitles.farmerstales.item.golden_dandelion.unuse"
+  },
+  "item.golden_dandelion.use": {
+    "sounds": [
+      "farmerstales:item/golden_dandelion/use"
+    ],
+    "subtitle": "subtitles.farmerstales.item.golden_dandelion.use"
+  },
+  "block.shelf.activate": {
+    "sounds": [
+      "farmerstales:block/shelf/activate1",
+      "farmerstales:block/shelf/activate2",
+      "farmerstales:block/shelf/activate3"
+    ],
+    "subtitle": "subtitles.farmerstales.block.shelf.activate"
+  },
+  "block.shelf.break": {
+    "sounds": [
+      "farmerstales:block/chiseled_bookshelf/break1",
+      "farmerstales:block/chiseled_bookshelf/break2",
+      "farmerstales:block/chiseled_bookshelf/break3",
+      "farmerstales:block/chiseled_bookshelf/break4",
+      "farmerstales:block/chiseled_bookshelf/break5",
+      "farmerstales:block/chiseled_bookshelf/break6"
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.break"
+  },
+  "block.shelf.deactivate": {
+    "sounds": [
+      "farmerstales:block/shelf/deactivate1",
+      "farmerstales:block/shelf/deactivate2",
+      "farmerstales:block/shelf/deactivate3"
+    ],
+    "subtitle": "subtitles.farmerstales.block.shelf.deactivate"
+  },
+  "block.shelf.fall": {
+    "sounds": [
+      "farmerstales:block/chiseled_bookshelf/step1",
+      "farmerstales:block/chiseled_bookshelf/step2",
+      "farmerstales:block/chiseled_bookshelf/step3",
+      "farmerstales:block/chiseled_bookshelf/step4",
+      "farmerstales:block/chiseled_bookshelf/step5"
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.fall"
+  },
+  "block.shelf.hit": {
+    "sounds": [
+      "farmerstales:block/chiseled_bookshelf/step1",
+      "farmerstales:block/chiseled_bookshelf/step2",
+      "farmerstales:block/chiseled_bookshelf/step3",
+      "farmerstales:block/chiseled_bookshelf/step4",
+      "farmerstales:block/chiseled_bookshelf/step5"
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.hit"
+  },
+  "block.shelf.multi_swap": {
+    "sounds": [
+      "farmerstales:block/shelf/multi_swap1",
+      "farmerstales:block/shelf/multi_swap2",
+      "farmerstales:block/shelf/multi_swap3"
+    ],
+    "subtitle": "subtitles.farmerstales.block.shelf.multi_swap"
+  },
+  "block.shelf.place": {
+    "sounds": [
+      "farmerstales:block/chiseled_bookshelf/break1",
+      "farmerstales:block/chiseled_bookshelf/break2",
+      "farmerstales:block/chiseled_bookshelf/break3",
+      "farmerstales:block/chiseled_bookshelf/break4",
+      "farmerstales:block/chiseled_bookshelf/break5",
+      "farmerstales:block/chiseled_bookshelf/break6"
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.place"
+  },
+  "block.shelf.place_item": {
+    "sounds": [
+      "farmerstales:block/shelf/place_item1",
+      "farmerstales:block/shelf/place_item2",
+      "farmerstales:block/shelf/place_item3",
+      "farmerstales:block/shelf/place_item4"
+    ],
+    "subtitle": "subtitles.farmerstales.block.shelf.place_item"
+  },
+  "block.shelf.single_swap": {
+    "sounds": [
+      "farmerstales:block/shelf/single_swap1",
+      "farmerstales:block/shelf/single_swap2",
+      "farmerstales:block/shelf/single_swap3",
+      "farmerstales:block/shelf/single_swap4"
+    ],
+    "subtitle": "subtitles.farmerstales.block.shelf.single_swap"
+  },
+  "block.shelf.step": {
+    "sounds": [
+      "farmerstales:block/chiseled_bookshelf/step1",
+      "farmerstales:block/chiseled_bookshelf/step2",
+      "farmerstales:block/chiseled_bookshelf/step3",
+      "farmerstales:block/chiseled_bookshelf/step4",
+      "farmerstales:block/chiseled_bookshelf/step5"
+    ],
+    "subtitle": "subtitles.farmerstales.block.generic.footsteps"
+  },
+  "block.shelf.take_item": {
+    "sounds": [
+      "farmerstales:block/shelf/single_swap1",
+      "farmerstales:block/shelf/single_swap2",
+      "farmerstales:block/shelf/single_swap3",
+      "farmerstales:block/shelf/single_swap4"
+    ],
+    "subtitle": "subtitles.farmerstales.block.shelf.take_item"
   }
 }

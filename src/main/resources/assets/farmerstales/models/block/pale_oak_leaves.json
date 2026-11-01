@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/leaves",
+  "textures": {
+    "all": "farmerstales:block/pale_oak_leaves"
+  },
+  "render_type": "minecraft:cutout"
+}

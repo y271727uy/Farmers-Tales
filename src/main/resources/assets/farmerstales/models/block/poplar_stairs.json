@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "farmerstales:block/poplar_planks",
+    "side": "farmerstales:block/poplar_planks",
+    "top": "farmerstales:block/poplar_planks"
+  }
+}

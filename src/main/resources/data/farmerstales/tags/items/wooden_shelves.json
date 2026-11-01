@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    "farmerstales:oak_shelf",
+    "farmerstales:spruce_shelf",
+    "farmerstales:birch_shelf",
+    "farmerstales:jungle_shelf",
+    "farmerstales:acacia_shelf",
+    "farmerstales:dark_oak_shelf",
+    "farmerstales:mangrove_shelf",
+    "farmerstales:cherry_shelf",
+    "farmerstales:bamboo_shelf",
+    "farmerstales:crimson_shelf",
+    "farmerstales:warped_shelf",
+    "farmerstales:pale_oak_shelf",
+    "farmerstales:poplar_shelf"
+  ]
+}

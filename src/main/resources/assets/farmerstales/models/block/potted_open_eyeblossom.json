@@ -1,0 +1,8 @@
+{
+  "parent": "farmerstales:block/flower_pot_cross_emissive",
+  "textures": {
+    "cross_emissive": "farmerstales:block/open_eyeblossom_emissive",
+    "plant": "farmerstales:block/open_eyeblossom"
+  },
+  "render_type": "minecraft:cutout"
+}

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "farmerstales:block/resin_brick_slab"
+    },
+    "type=double": {
+      "model": "farmerstales:block/resin_bricks"
+    },
+    "type=top": {
+      "model": "farmerstales:block/resin_brick_slab_top"
+    }
+  }
+}

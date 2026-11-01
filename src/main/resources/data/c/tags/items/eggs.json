@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:egg",
+    "farmerstales:blue_egg",
+    "farmerstales:brown_egg"
+  ]
+}

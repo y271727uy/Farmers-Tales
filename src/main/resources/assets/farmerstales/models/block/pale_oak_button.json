@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/button",
+  "textures": {
+    "texture": "farmerstales:block/pale_oak_planks"
+  }
+}

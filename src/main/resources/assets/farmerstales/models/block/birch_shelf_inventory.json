@@ -1,0 +1,8 @@
+{
+  "parent": "farmerstales:block/template_shelf_inventory",
+  "textures": {
+    "all": "farmerstales:block/birch_shelf",
+    "particle": "minecraft:block/stripped_birch_log"
+  },
+  "render_type": "minecraft:cutout"
+}

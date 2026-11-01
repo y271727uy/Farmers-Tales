@@ -4,6 +4,8 @@ import com.y271727uy.farmerstales.FTMod
 import forestry.api.genetics.ForestrySpeciesTypes
 import forestry.api.plugin.IForestryPlugin
 import forestry.api.plugin.IGeneticRegistration
+import forestry.api.plugin.IPollenRegistration
+import com.y271727uy.farmerstales.integration.forestry.pollen.CropPollenType
 import net.minecraft.resources.ResourceLocation
 
 /**
@@ -12,6 +14,10 @@ import net.minecraft.resources.ResourceLocation
  */
 class ForestryPlugin : IForestryPlugin {
     override fun id(): ResourceLocation = ID
+
+    override fun registerPollen(registration: IPollenRegistration) {
+        registration.registerPollenType(CropPollenType)
+    }
 
     override fun registerGenetics(genetics: IGeneticRegistration) {
         genetics.modifySpeciesType(ForestrySpeciesTypes.TREE) { type ->

@@ -21,10 +21,10 @@ object ModEntities : MobRegistry(FTMod.MODID) {
     @JvmField
     val ARMADILLO = mob("armadillo", ::ArmadilloEntity) {
         category = MobCategory.CREATURE
-        size(0.8F, 0.65F)
+        size(0.7F, 0.65F)
         attributes(ArmadilloEntity::createAttributes)
         spawnOnGround(ArmadilloEntity::checkSpawnRules)
-        naturalSpawn("minecraft:is_savanna", weight = 8, minCount = 2, maxCount = 3)
+        naturalSpawn("farmerstales:has_armadillos", weight = 10, minCount = 2, maxCount = 3)
         breedingFood("minecraft:spider_eye")
         ai {
             passiveAnimal {
@@ -32,7 +32,7 @@ object ModEntities : MobRegistry(FTMod.MODID) {
             }
         }
         loot {
-            drop("farmerstales:armadillo_scute", count = 1..1, chance = 0.15F)
+            // Scutes are obtained from brushing and shedding, never by killing.
         }
         lang("Armadillo")
         spawnEgg(primaryColor = 0x7A6756, secondaryColor = 0xB7A58D)

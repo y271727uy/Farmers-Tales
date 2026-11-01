@@ -6,7 +6,7 @@ import net.minecraftforge.network.NetworkRegistry
 import net.minecraftforge.network.simple.SimpleChannel
 
 object FarmerstalesNetwork {
-    private const val PROTOCOL = "1"
+    private const val PROTOCOL = "3"
 
     val CHANNEL: SimpleChannel = NetworkRegistry.newSimpleChannel(
         ResourceLocation.fromNamespaceAndPath(FTMod.MODID, "main"),
@@ -47,6 +47,11 @@ object FarmerstalesNetwork {
             .encoder(GeneCropStatusPacket::encode)
             .decoder(GeneCropStatusPacket::decode)
             .consumerMainThread(GeneCropStatusPacket::handle)
+            .add()
+        CHANNEL.messageBuilder(RainIntensitySyncPacket::class.java, nextId++, net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT)
+            .encoder(RainIntensitySyncPacket::encode)
+            .decoder(RainIntensitySyncPacket::decode)
+            .consumerMainThread(RainIntensitySyncPacket::handle)
             .add()
     }
 }

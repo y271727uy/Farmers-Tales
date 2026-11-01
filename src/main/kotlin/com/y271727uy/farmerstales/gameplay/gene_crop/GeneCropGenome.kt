@@ -6,6 +6,8 @@ import forestry.api.genetics.alleles.AllelePair
 import forestry.api.genetics.alleles.BeeChromosomes
 import forestry.api.genetics.alleles.ForestryAlleles
 import forestry.api.genetics.alleles.IAllele
+import forestry.api.genetics.alleles.IValueAllele
+import forestry.api.core.ToleranceType
 import forestry.api.genetics.alleles.IChromosome
 import forestry.api.genetics.alleles.TreeChromosomes
 import net.minecraft.core.BlockPos
@@ -17,7 +19,8 @@ import net.minecraft.tags.ItemTags
 import net.minecraft.util.RandomSource
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.LevelReader
-import net.minecraft.world.level.block.CropBlock
+import com.y271727uy.farmerstales.gameplay.gene_crop.block.CropStandBlock
+import com.y271727uy.farmerstales.gameplay.gene_crop.block.entity.CropStandBlockEntity
 import net.minecraft.world.level.block.state.BlockState
 
 /**
@@ -44,11 +47,11 @@ object GeneCropGenome {
     @JvmStatic
     fun isGeneSeed(stack: ItemStack): Boolean = !stack.isEmpty && stack.`is`(SEEDS)
 
-    /** Any crop whose seed is in [SEEDS]. The tag decides, not a hardcoded block. */
+    /** Only opted-in stands expose planted genetics; ordinary farmland is never a gene crop. */
     @JvmStatic
     fun isGeneCrop(state: BlockState, level: LevelReader, pos: BlockPos): Boolean {
-        val crop = state.block as? CropBlock ?: return false
-        return isGeneSeed(crop.getCloneItemStack(level, pos, state))
+        if (state.block !is CropStandBlock) return false
+        return (level.getBlockEntity(pos) as? CropStandBlockEntity)?.breedingSeed() != null
     }
 
     @JvmStatic
@@ -122,6 +125,15 @@ object GeneCropGenome {
 
     @JvmStatic
     fun temperatureName(stack: ItemStack): Component? = traits(stack).getOrNull(2)?.active
+
+    /** Express only the active allele; old/malformed genomes retain zero extra tolerance. */
+    @JvmStatic
+    fun temperatureTolerance(stack: ItemStack): ToleranceType {
+        val trait = genome(stack)?.getCompound(TEMPERATURE) ?: return ToleranceType.NONE
+        val id = ResourceLocation.tryParse(trait.getString(ACTIVE)) ?: return ToleranceType.NONE
+        val allele = ForestryAlleles.REGISTRY.getAllele(id) as? IValueAllele<*> ?: return ToleranceType.NONE
+        return allele.value() as? ToleranceType ?: ToleranceType.NONE
+    }
 
     @JvmStatic
     fun resistanceName(stack: ItemStack): Component? = traits(stack).getOrNull(3)?.active

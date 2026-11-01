@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "cookingtime": 200,
+  "experience": 0.1,
+  "ingredient": {
+    "item": "farmerstales:resin_clump"
+  },
+  "result": "farmerstales:resin_brick"
+}

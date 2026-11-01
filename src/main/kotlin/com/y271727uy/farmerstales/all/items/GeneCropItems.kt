@@ -7,6 +7,12 @@ import net.minecraft.world.item.BlockItem
 
 object GeneCropItems {
     @JvmField
+    val CROP_POLLEN: ItemEntry<CropPollenItem> = ModRegistrate.REGISTRATE
+        .item("crop_pollen", ::CropPollenItem)
+        .model { context, provider -> provider.generated(context, provider.mcLoc("item/glowstone_dust")) }
+        .register()
+
+    @JvmField
     val CROP_STAND: ItemEntry<BlockItem> = ModRegistrate.REGISTRATE
         .item("crop_stand") { properties -> BlockItem(ModBlocks.CROP_STAND.get(), properties) }
         .model { _, provider -> provider.blockItem { ModBlocks.CROP_STAND.get() } }

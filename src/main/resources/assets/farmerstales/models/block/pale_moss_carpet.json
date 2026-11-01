@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/carpet",
+  "textures": {
+    "wool": "farmerstales:block/pale_moss_carpet"
+  },
+  "render_type": "minecraft:cutout"
+}

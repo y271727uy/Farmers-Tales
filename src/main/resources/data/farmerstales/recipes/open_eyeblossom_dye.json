@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "farmerstales:open_eyeblossom"
+    }
+  ],
+  "result": {
+    "item": "minecraft:orange_dye"
+  }
+}

@@ -39,7 +39,7 @@ object FoodExpiry {
     private const val TICKS_PER_MINUTE = TICKS_PER_HOUR / 60f
     private const val DAYS_IN_MONTH = 8
     private const val MONTHS_IN_YEAR = 12
-    private const val START_YEAR = 1000L
+    private const val START_YEAR = 1L
     private const val NEVER_EXPIRES = Long.MAX_VALUE
     private val MONTH_KEYS = arrayOf(
         "january", "february", "march", "april", "may", "june",

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": {
+      "item": "farmerstales:pale_oak_log"
+    }
+  },
+  "result": {
+    "item": "farmerstales:pale_oak_wood",
+    "count": 3
+  }
+}

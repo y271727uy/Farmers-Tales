@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "X": {
+      "item": "farmerstales:armadillo_scute"
+    }
+  },
+  "pattern": [
+    "X  ",
+    "XXX",
+    "X X"
+  ],
+  "result": {
+    "item": "farmerstales:wolf_armor"
+  }
+}

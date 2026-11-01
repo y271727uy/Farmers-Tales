@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "farmerstales:pale_moss_carpet",
+    "farmerstales:closed_eyeblossom",
+    "farmerstales:open_eyeblossom",
+    "farmerstales:red_shrub",
+    "farmerstales:leaf_litter",
+    "farmerstales:short_dry_grass",
+    "farmerstales:tall_dry_grass",
+    "farmerstales:bush",
+    "farmerstales:firefly_bush",
+    "farmerstales:wildflowers",
+    "farmerstales:cactus_flower"
+  ]
+}

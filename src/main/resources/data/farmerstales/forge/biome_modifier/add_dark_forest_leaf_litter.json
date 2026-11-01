@@ -1,0 +1,10 @@
+{
+  "type": "forge:add_features",
+  "biomes": [
+    "minecraft:dark_forest"
+  ],
+  "features": [
+    "farmerstales:patch_forest_leaf_litter"
+  ],
+  "step": "vegetal_decoration"
+}

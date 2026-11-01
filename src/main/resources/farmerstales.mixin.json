@@ -6,6 +6,11 @@
   "refmap": "farmerstales.refmap.json",
   "plugin": "com.y271727uy.farmerstales.mixin.FarmersTalesMixinPlugin",
   "mixins": [
+    "minecraft.ChickenVariantEggMixin",
+    "minecraft.ThrownVariantEggMixin",
+    "minecraft.CactusFlowerGrowthMixin",
+    "minecraft.ForestClimateMixin",
+    "minecraft.EatDryGrassMixin",
     "minecraft.MobAppearanceVariantMixin",
     "minecraft.FriendlyByteBufFoodExpiryMixin",
     "minecraft.BlockQualityDropMixin",
@@ -30,9 +35,23 @@
     "forestry.InventoryAnalyzerMixin",
     "forestry.ItemInventoryAlyzerMixin",
     "forestry.TileAnalyzerMixin",
-    "forestry.TreeSpeciesTooltipMixin"
+    "forestry.TreeSpeciesTooltipMixin",
+    "minecraft.WolfSoundMixin",
+    "minecraft.ForestBoatDropsMixin",
+    "minecraft.WolfArmorMixin",
+    "minecraft.BeeEyeblossomMixin",
+    "minecraft.BeePollinationEyeblossomMixin",
+    "minecraft.AgeLockMixin",
+    "minecraft.AnimalAgeLockMixin",
+    "minecraft.ShelfComparatorMixin"
   ],
   "client": [
+    "minecraft.client.LeavesFallingParticlesMixin",
+    "minecraft.client.PaleGardenMusicMixin",
+    "minecraft.client.BiomeTemperatureAccessor",
+    "xaero.BuiltInInfoDisplaysMixin",
+    "xaero.InfoDisplayRendererMixin",
+    "minecraft.client.LevelRendererHeavyRainMixin",
     "minecraft.client.ChickenAppearanceVariantRendererMixin",
     "minecraft.client.CatAppearanceVariantRendererMixin",
     "minecraft.client.CowAppearanceVariantRendererMixin",
@@ -45,7 +64,8 @@
     "stellarview.TextureLayerMoonTextureMixin",
     "forestry.TreeAnalyzerPluginMixin",
     "forestry.GuiAnalyzerMixin",
-    "forestry.PortableAnalyzerScreenMixin"
+    "forestry.PortableAnalyzerScreenMixin",
+    "minecraft.client.NatureAmbienceMixin"
   ],
   "server": [],
   "injectors": {

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "farmerstales:block/stripped_pale_oak_log",
+    "side": "farmerstales:block/stripped_pale_oak_log"
+  }
+}

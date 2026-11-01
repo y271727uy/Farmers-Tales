@@ -1,0 +1,613 @@
+{
+  "providers": [
+    {
+      "type": "space",
+      "advances": {
+        "\ue100": 1
+      }
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_00.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue000"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_01.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue001"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_02.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue002"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_03.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue003"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_04.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue004"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_05.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue005"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_06.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue006"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_07.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue007"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_08.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue008"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_09.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue009"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_10.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue00a"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_11.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue00b"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_12.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue00c"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_13.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue00d"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_14.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue00e"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_15.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue00f"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_16.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue010"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_17.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue011"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_18.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue012"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_19.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue013"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_20.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue014"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_21.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue015"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_22.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue016"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_23.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue017"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_24.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue018"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_25.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue019"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_26.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue01a"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_27.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue01b"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_28.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue01c"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_29.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue01d"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_30.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue01e"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_31.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue01f"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_32.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue020"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_33.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue021"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_34.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue022"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_35.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue023"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_36.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue024"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_37.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue025"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_38.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue026"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_39.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue027"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_40.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue028"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_41.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue029"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_42.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue02a"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_43.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue02b"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_44.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue02c"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_45.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue02d"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_46.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue02e"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_47.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue02f"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_48.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue030"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_49.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue031"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_50.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue032"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_51.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue033"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_52.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue034"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_53.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue035"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_54.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue036"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_55.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue037"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_56.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue038"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_57.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue039"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_58.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue03a"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_59.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue03b"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_60.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue03c"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_61.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue03d"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_62.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue03e"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:item/clock_63.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue03f"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "minecraft:block/acacia_sapling.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue101"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "farmerstales:item/hud/temperature.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue102"
+      ]
+    },
+    {
+      "type": "bitmap",
+      "file": "farmerstales:item/hud/droplet.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": [
+        "\ue103"
+      ]
+    }
+  ]
+}

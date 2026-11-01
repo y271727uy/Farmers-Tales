@@ -89,7 +89,10 @@ val libModFiles = listOf(
     file("lib/ldlib-forge-1.20.1-1.0.52.a.jar"),
     file("lib/letsdo-farm_and_charm-forge-1.0.14.jar"),
     file("lib/overweightfarming-1.20.1-2.1.0-forge.jar"),
-    file("lib/ftb-library-forge-2001.2.13.jar")
+    file("lib/ftb-library-forge-2001.2.13.jar"),
+    file("lib/seasonhud-forge-1.20.1-2.0.11.jar"),
+    file("lib/xaerominimap-forge-1.20.1-26.6.0.jar"),
+    file("lib/xaeroworldmap-forge-1.20.1-1.47.0.jar"),
 
 ).filter(File::exists)
 // Temporary test mods. Their coordinates are derived from each file name and
@@ -179,6 +182,16 @@ sourceSets.named("main") {
     resources.srcDir("src/generated/resources")
 }
 
+// Xaero ships its config API inside the minimap JAR. Reuse that local copy for
+// compilation; neither optional integration JAR is included in our mod.
+val xaeroMinimapApi = file("lib/xaerominimap-forge-1.20.1-26.6.0.jar")
+val extractXaeroLibApi = tasks.register<Sync>("extractXaeroLibApi") {
+    from(zipTree(xaeroMinimapApi)) {
+        include("META-INF/jarjar/*.jar")
+    }
+    into(layout.buildDirectory.dir("xaeroLibApi"))
+}
+
 dependencies {
     jarJar(modApi(libs.registrate.get())!!)
     modImplementation("thedarkcolour:kotlinforforge:4.12.0")
@@ -203,6 +216,10 @@ dependencies {
     add("compileOnly", files("lib/CraftTweaker-forge-1.20.1-14.0.60.jar"))
     add("compileOnly", files("lib/StellarView-1.20.1-0.5.3-Forge.jar"))
     add("compileOnly", files("lib/forestry-1.20.1-2.11.1.jar"))
+    add("compileOnly", files(xaeroMinimapApi))
+    add("compileOnly", files(fileTree(layout.buildDirectory.dir("xaeroLibApi")) {
+        include("**/*.jar")
+    }).builtBy(extractXaeroLibApi))
 
 }
 

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "farmerstales:block/pale_oak_slab"
+    },
+    "type=double": {
+      "model": "farmerstales:block/pale_oak_planks"
+    },
+    "type=top": {
+      "model": "farmerstales:block/pale_oak_slab_top"
+    }
+  }
+}

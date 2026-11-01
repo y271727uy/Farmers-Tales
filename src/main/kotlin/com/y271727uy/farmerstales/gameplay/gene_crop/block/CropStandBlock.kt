@@ -19,8 +19,11 @@ import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.BeetrootBlock
 import com.y271727uy.farmerstales.all.ModBlockEntities
 import com.y271727uy.farmerstales.gameplay.gene_crop.block.entity.CropStandBlockEntity
+import net.minecraftforge.common.IPlantable
+import net.minecraftforge.common.PlantType
 import net.minecraft.world.level.block.state.BlockBehaviour
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.shapes.CollisionContext
@@ -28,13 +31,19 @@ import net.minecraft.world.phys.shapes.VoxelShape
 
 /** Holds a virtual crop so its model and genome can coexist with the stand. */
 @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
-class CropStandBlock(properties: BlockBehaviour.Properties) : BaseEntityBlock(properties), BonemealableBlock {
+class CropStandBlock(properties: BlockBehaviour.Properties) : BaseEntityBlock(properties), BonemealableBlock, IPlantable {
     override fun getShape(state: BlockState, level: BlockGetter, pos: BlockPos, context: CollisionContext): VoxelShape = SHAPE
 
     override fun newBlockEntity(pos: BlockPos, state: BlockState): BlockEntity =
         CropStandBlockEntity(ModBlockEntities.CROP_STAND.get(), pos, state)
 
     override fun getRenderShape(state: BlockState): RenderShape = RenderShape.MODEL
+
+    // Keep even an empty stand's dry farmland from reverting to dirt.
+    override fun getPlantType(level: BlockGetter, pos: BlockPos): PlantType = PlantType.CROP
+
+    override fun getPlant(level: BlockGetter, pos: BlockPos): BlockState =
+        (level.getBlockEntity(pos) as? CropStandBlockEntity)?.cropState ?: Blocks.AIR.defaultBlockState()
 
     override fun canSurvive(state: BlockState, level: LevelReader, pos: BlockPos): Boolean =
         level.getBlockState(pos.below()).block is FarmBlock
@@ -70,12 +79,14 @@ class CropStandBlock(properties: BlockBehaviour.Properties) : BaseEntityBlock(pr
     }
 
     override fun isValidBonemealTarget(level: LevelReader, pos: BlockPos, state: BlockState, isClient: Boolean): Boolean =
-        (level.getBlockEntity(pos) as? CropStandBlockEntity)?.canGrow() == true
+        (level.getBlockEntity(pos) as? CropStandBlockEntity)?.canFertilize() == true
 
     override fun isBonemealSuccess(level: Level, random: RandomSource, pos: BlockPos, state: BlockState): Boolean = true
 
     override fun performBonemeal(level: ServerLevel, random: RandomSource, pos: BlockPos, state: BlockState) {
-        (level.getBlockEntity(pos) as? CropStandBlockEntity)?.grow(2 + random.nextInt(4))
+        val stand = level.getBlockEntity(pos) as? CropStandBlockEntity ?: return
+        val amount = 2 + random.nextInt(4)
+        stand.fertilize(if (stand.cropState.block is BeetrootBlock) amount / 3 else amount)
     }
 
     override fun onRemove(state: BlockState, level: Level, pos: BlockPos, newState: BlockState, isMoving: Boolean) {

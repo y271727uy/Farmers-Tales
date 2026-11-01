@@ -29,6 +29,15 @@ object GreenRainEvents {
 
     fun isActive(level: ServerLevel): Boolean = data(level).active
 
+    /** A debug rain-type override must also suppress another green roll in this storm. */
+    fun clearForStorm(level: ServerLevel) {
+        val state = data(level)
+        state.active = false
+        state.wasRaining = level.isRaining
+        state.setDirty()
+        syncAll(level)
+    }
+
     /**
      * Debug override for the current storm. Returns false if this dimension
      * is not raining, because rain-stop would clear the flag on the next tick.

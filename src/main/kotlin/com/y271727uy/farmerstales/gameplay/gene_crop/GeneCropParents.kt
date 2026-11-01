@@ -10,8 +10,8 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.saveddata.SavedData
 
 /**
- * A vanilla potato block cannot remember which seed planted it.
- * The planted genome stays with the world until that position is replanted or cleared.
+ * Legacy world data retained for compatibility. Gameplay no longer reads or writes this store:
+ * only crop stand block entities supply breeding parents. Old field entries remain inert.
  */
 class GeneCropParents : SavedData() {
     private val parents = HashMap<String, CompoundTag>()

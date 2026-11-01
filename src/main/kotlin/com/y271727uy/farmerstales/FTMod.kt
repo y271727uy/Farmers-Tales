@@ -33,6 +33,15 @@ class FTMod {
         val modEventBus = FMLJavaModLoadingContext.get().modEventBus
 
         ModItems.init()
+        com.y271727uy.farmerstales.gameplay.animal_variants.VariantEggs.register(modEventBus)
+        com.y271727uy.farmerstales.gameplay.creaking.CreakingContent.register(modEventBus)
+        com.y271727uy.farmerstales.all.NaturalEnvironmentBlocks.register(modEventBus)
+        com.y271727uy.farmerstales.all.ForestBlocks.register(modEventBus)
+        com.y271727uy.farmerstales.gameplay.environment.forest.NatureSounds.register(modEventBus)
+        com.y271727uy.farmerstales.gameplay.environment.forest.ForestTravel.register(modEventBus)
+        com.y271727uy.farmerstales.gameplay.fauna.FaunaContent.register(modEventBus)
+        com.y271727uy.farmerstales.gameplay.building.BuildingContent.register(modEventBus)
+        com.y271727uy.farmerstales.gameplay.shelf.ShelfContent.register(modEventBus)
         ModSounds.register(modEventBus)
         ModEnchantments.register(modEventBus)
         ModLootModifiers.register(modEventBus)

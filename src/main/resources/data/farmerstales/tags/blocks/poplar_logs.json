@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "farmerstales:poplar_log",
+    "farmerstales:stripped_poplar_log",
+    "farmerstales:poplar_wood",
+    "farmerstales:stripped_poplar_wood"
+  ]
+}

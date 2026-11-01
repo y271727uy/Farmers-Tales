@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "farmerstales:resin_brick_slab",
+    "farmerstales:tuff_slab",
+    "farmerstales:polished_tuff_slab",
+    "farmerstales:tuff_brick_slab"
+  ]
+}

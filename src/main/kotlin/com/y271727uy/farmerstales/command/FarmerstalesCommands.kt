@@ -6,6 +6,8 @@ import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.gameplay.animal_husbandry.raid.PredatorRaidEvents
 import com.y271727uy.farmerstales.gameplay.weather.dark_cumulonimbus.DarkCumulonimbusEvents
 import com.y271727uy.farmerstales.gameplay.weather.green_rain.GreenRainEvents
+import com.y271727uy.farmerstales.gameplay.weather.heavy_rain.HeavyRainEvents
+import com.y271727uy.farmerstales.gameplay.weather.heavy_rain.RainIntensity
 import com.y271727uy.farmerstales.network.CuratedCropEffectPacket
 import com.y271727uy.farmerstales.network.FarmerstalesNetwork
 import com.y271727uy.farmerstales.gameplay.special_event.common.MoonPhaseEvents
@@ -75,6 +77,34 @@ object FarmerstalesCommands {
                             )
                             1
                         },
+                )
+                .then(
+                    Commands.literal("rain")
+                        .requires { it.hasPermission(2) }
+                        .then(
+                            Commands.argument("intensity", StringArgumentType.word())
+                                .suggests { _, builder ->
+                                    SharedSuggestionProvider.suggest(listOf("normal", "heavy", "torrential"), builder)
+                                }
+                                .executes { context ->
+                                    val id = StringArgumentType.getString(context, "intensity")
+                                    val intensity = RainIntensity.entries.firstOrNull { it.name.equals(id, ignoreCase = true) }
+                                    if (intensity == null) {
+                                        context.source.sendFailure(Component.translatable("commands.${FTMod.MODID}.rain.unknown", id))
+                                        return@executes 0
+                                    }
+                                    if (!HeavyRainEvents.force(context.source.level, intensity)) {
+                                        context.source.sendFailure(Component.translatable("commands.${FTMod.MODID}.rain.not_raining"))
+                                        return@executes 0
+                                    }
+                                    context.source.sendSuccess(
+                                        { Component.translatable("commands.${FTMod.MODID}.rain.success",
+                                            Component.translatable("weather.${FTMod.MODID}.${intensity.name.lowercase()}")) },
+                                        true,
+                                    )
+                                    1
+                                },
+                        ),
                 )
                 .then(
                     Commands.literal("dark_cumulonimbus")

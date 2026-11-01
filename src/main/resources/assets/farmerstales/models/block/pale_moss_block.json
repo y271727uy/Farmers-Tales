@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "farmerstales:block/pale_moss_block"
+  },
+  "render_type": "minecraft:cutout"
+}

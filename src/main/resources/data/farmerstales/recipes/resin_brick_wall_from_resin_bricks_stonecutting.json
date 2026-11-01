@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "farmerstales:resin_bricks"
+  },
+  "result": "farmerstales:resin_brick_wall",
+  "count": 1
+}

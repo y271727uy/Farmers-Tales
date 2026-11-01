@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "farmerstales:item/pale_oak_door"
+  },
+  "render_type": "minecraft:cutout"
+}

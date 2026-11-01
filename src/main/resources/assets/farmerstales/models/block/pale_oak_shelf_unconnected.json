@@ -1,0 +1,8 @@
+{
+  "parent": "farmerstales:block/template_shelf_unconnected",
+  "textures": {
+    "all": "farmerstales:block/pale_oak_shelf",
+    "particle": "farmerstales:block/stripped_pale_oak_log"
+  },
+  "render_type": "minecraft:cutout"
+}

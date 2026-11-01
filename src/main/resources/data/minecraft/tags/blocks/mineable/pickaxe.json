@@ -1,0 +1,23 @@
+{
+  "replace": false,
+  "values": [
+    "farmerstales:resin_bricks",
+    "farmerstales:resin_brick_stairs",
+    "farmerstales:resin_brick_slab",
+    "farmerstales:resin_brick_wall",
+    "farmerstales:chiseled_resin_bricks",
+    "farmerstales:tuff_slab",
+    "farmerstales:tuff_stairs",
+    "farmerstales:tuff_wall",
+    "farmerstales:polished_tuff",
+    "farmerstales:polished_tuff_slab",
+    "farmerstales:polished_tuff_stairs",
+    "farmerstales:polished_tuff_wall",
+    "farmerstales:tuff_bricks",
+    "farmerstales:tuff_brick_slab",
+    "farmerstales:tuff_brick_stairs",
+    "farmerstales:tuff_brick_wall",
+    "farmerstales:chiseled_tuff",
+    "farmerstales:chiseled_tuff_bricks"
+  ]
+}

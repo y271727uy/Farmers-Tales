@@ -34,6 +34,10 @@ object Config {
         .comment("Whether rain and snow affect crop growth")
         .define("weatherAffectsCropGrowth", true)
 
+    private val geneCropTemperatureEffectsValue = builder
+        .comment("Apply Forestry temperature tolerance to identified gene crops: normal climate baseline, 50% growth one tier outside tolerance, stopped two or more tiers outside")
+        .define("geneCropTemperatureEffects", true)
+
     private val foodExpiryEnabledValue = builder
         .comment("Whether edible items expire after their configured shelf life")
         .define("foodExpiryEnabled", false)
@@ -110,6 +114,26 @@ object Config {
         .comment("Chance for each summer rainstorm to become green rain. There is no pity timer.")
         .defineInRange("greenRainChance", 0.05, 0.0, 1.0)
 
+    private val heavyRainEnabledValue = builder
+        .comment("Whether vanilla rainstorms can become heavy or torrential rain")
+        .define("heavyRainEnabled", true)
+
+    private val heavyRainChanceValue = builder
+        .comment("Base chance per storm for heavy rain; heavy rain removes the rain growth bonus")
+        .defineInRange("heavyRainChance", 0.10, 0.0, 1.0)
+
+    private val torrentialRainChanceValue = builder
+        .comment("Base chance per storm for torrential rain; mutually exclusive with heavy rain")
+        .defineInRange("torrentialRainChance", 0.02, 0.0, 1.0)
+
+    private val heavyRainSeasonMultiplierValue = builder
+        .comment("Chance multiplier in temperate summer OR tropical wet season; applied once, never stacked")
+        .defineInRange("heavyRainSeasonMultiplier", 2.0, 1.0, 10.0)
+
+    private val torrentialRainGrowthPenaltyValue = builder
+        .comment("Chance to deny a natural growth attempt for rain-exposed crops during torrential rain")
+        .defineInRange("torrentialRainGrowthPenalty", 0.15, 0.0, 1.0)
+
     private val darkCumulonimbusEnabledValue = builder
         .comment("Whether clear skies can roll into dark cumulonimbus, a dry overcast weather")
         .define("darkCumulonimbusEnabled", true)
@@ -169,6 +193,8 @@ object Config {
         private set
     var weatherAffectsCropGrowth: Boolean = true
         private set
+    var geneCropTemperatureEffects: Boolean = true
+        private set
     var foodExpiryEnabled: Boolean = false
         private set
     var foodShelfLifeDays: Int = 7
@@ -207,6 +233,16 @@ object Config {
         private set
     var greenRainChance: Double = 0.05
         private set
+    var heavyRainEnabled: Boolean = true
+        private set
+    var heavyRainChance: Double = 0.10
+        private set
+    var torrentialRainChance: Double = 0.02
+        private set
+    var heavyRainSeasonMultiplier: Double = 2.0
+        private set
+    var torrentialRainGrowthPenalty: Double = 0.15
+        private set
     var darkCumulonimbusEnabled: Boolean = true
         private set
     var darkCumulonimbusChance: Double = 0.08
@@ -243,6 +279,7 @@ object Config {
         restrictFishingLoot = restrictFishingLootValue.get()
         sendActionBarFeedback = sendActionBarFeedbackValue.get()
         weatherAffectsCropGrowth = weatherAffectsCropGrowthValue.get()
+        geneCropTemperatureEffects = geneCropTemperatureEffectsValue.get()
         foodExpiryEnabled = foodExpiryEnabledValue.get()
         foodShelfLifeDays = foodShelfLifeDaysValue.get()
         foodExpiryStackWindowHours = foodExpiryStackWindowHoursValue.get()
@@ -262,6 +299,11 @@ object Config {
         tropicalMonsoonTreeWaterMultiplier = tropicalMonsoonTreeWaterMultiplierValue.get()
         greenRainEnabled = greenRainEnabledValue.get()
         greenRainChance = greenRainChanceValue.get()
+        heavyRainEnabled = heavyRainEnabledValue.get()
+        heavyRainChance = heavyRainChanceValue.get()
+        torrentialRainChance = torrentialRainChanceValue.get()
+        heavyRainSeasonMultiplier = heavyRainSeasonMultiplierValue.get()
+        torrentialRainGrowthPenalty = torrentialRainGrowthPenaltyValue.get()
         darkCumulonimbusEnabled = darkCumulonimbusEnabledValue.get()
         darkCumulonimbusChance = darkCumulonimbusChanceValue.get()
         darkCumulonimbusDurationTicks = darkCumulonimbusDurationTicksValue.get()

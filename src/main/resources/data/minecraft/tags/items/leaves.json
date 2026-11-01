@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "farmerstales:pale_oak_leaves",
+    "farmerstales:red_poplar_leaves",
+    "farmerstales:orange_poplar_leaves",
+    "farmerstales:yellow_poplar_leaves"
+  ]
+}

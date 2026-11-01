@@ -60,6 +60,12 @@ object IntegrationManager {
         return level?.let(::currentSeasonName)
     }
 
+    fun usesTropicalSeasons(level: Level, pos: net.minecraft.core.BlockPos): Boolean =
+        isSereneSeasonsLoaded() && SereneSeasonsIntegration.usesTropicalSeasons(level, pos)
+
+    fun rainSeasonBoosts(level: Level): Pair<Boolean, Boolean> =
+        if (isSereneSeasonsLoaded()) SereneSeasonsIntegration.rainSeasonBoosts(level) else false to false
+
     fun isSereneSeasonsLoaded(): Boolean {
         return ModList.get().isLoaded(SERENE_SEASONS)
     }

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "L": {
+      "item": "farmerstales:pale_oak_log"
+    },
+    "R": {
+      "item": "farmerstales:resin_block"
+    }
+  },
+  "pattern": [
+    " L ",
+    " R ",
+    " L "
+  ],
+  "result": {
+    "item": "farmerstales:creaking_heart"
+  }
+}

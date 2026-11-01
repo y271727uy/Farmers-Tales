@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "farmerstales:block/closed_eyeblossom"
+  },
+  "render_type": "minecraft:cutout"
+}

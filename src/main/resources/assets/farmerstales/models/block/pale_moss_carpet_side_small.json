@@ -1,0 +1,7 @@
+{
+  "parent": "farmerstales:block/mossy_carpet_side",
+  "textures": {
+    "side": "farmerstales:block/pale_moss_carpet_side_small"
+  },
+  "render_type": "minecraft:cutout"
+}

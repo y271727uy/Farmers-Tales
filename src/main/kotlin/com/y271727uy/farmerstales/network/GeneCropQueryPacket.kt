@@ -1,7 +1,8 @@
 package com.y271727uy.farmerstales.network
 
 import com.y271727uy.farmerstales.gameplay.gene_crop.GeneCropGenome
-import com.y271727uy.farmerstales.gameplay.gene_crop.GeneCropParents
+import com.y271727uy.farmerstales.gameplay.gene_crop.CropTemperatureStatus
+import com.y271727uy.farmerstales.gameplay.gene_crop.block.entity.CropStandBlockEntity
 import net.minecraft.core.BlockPos
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.world.phys.Vec3
@@ -32,12 +33,15 @@ class GeneCropQueryPacket(val pos: BlockPos) {
                         return@enqueueWork
                     }
                     val level = player.serverLevel()
+                    if (!level.hasChunkAt(pos)) return@enqueueWork
                     val state = level.getBlockState(pos)
-                    val identified = GeneCropGenome.isGeneCrop(state, level, pos) &&
-                        GeneCropParents.get(level).read(level, pos) != null
+                    val identified = GeneCropGenome.isGeneCrop(state, level, pos)
+                    val temperature = if (identified) {
+                        (level.getBlockEntity(pos) as? CropStandBlockEntity)?.temperatureStatus()
+                    } else null
                     FarmerstalesNetwork.CHANNEL.send(
                         PacketDistributor.PLAYER.with(Supplier { player }),
-                        GeneCropStatusPacket(pos, identified),
+                        GeneCropStatusPacket(pos, identified, temperature ?: CropTemperatureStatus.SUITABLE),
                     )
                 }
             }

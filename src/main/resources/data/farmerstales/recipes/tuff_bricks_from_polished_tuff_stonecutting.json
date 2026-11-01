@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "farmerstales:polished_tuff"
+  },
+  "result": "farmerstales:tuff_bricks",
+  "count": 1
+}

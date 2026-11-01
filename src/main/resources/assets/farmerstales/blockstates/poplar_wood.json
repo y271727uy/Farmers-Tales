@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "farmerstales:block/poplar_wood",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "farmerstales:block/poplar_wood"
+    },
+    "axis=z": {
+      "model": "farmerstales:block/poplar_wood",
+      "x": 90
+    }
+  }
+}

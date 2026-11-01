@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "farmerstales:block/orange_poplar_leaves"
+  },
+  "render_type": "minecraft:cutout"
+}

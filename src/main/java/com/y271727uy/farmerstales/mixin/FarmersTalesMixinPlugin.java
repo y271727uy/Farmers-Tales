@@ -18,7 +18,8 @@ public final class FarmersTalesMixinPlugin implements IMixinConfigPlugin {
             new OptionalMixin("farmandcharm.", "farm_and_charm"),
             new OptionalMixin("ftblibrary.", "ftblibrary"),
             new OptionalMixin("forestry.", "forestry"),
-            new OptionalMixin("stellarview.", "stellarview")
+            new OptionalMixin("stellarview.", "stellarview"),
+            new OptionalMixin("xaero.", "xaerominimap")
     );
 
     @Override

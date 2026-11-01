@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "##",
+    "##"
+  ],
+  "key": {
+    "#": {
+      "item": "farmerstales:poplar_log"
+    }
+  },
+  "result": {
+    "item": "farmerstales:poplar_wood",
+    "count": 3
+  }
+}

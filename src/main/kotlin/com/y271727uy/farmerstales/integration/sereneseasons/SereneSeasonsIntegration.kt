@@ -11,12 +11,14 @@ import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
+import net.minecraft.core.BlockPos
+import sereneseasons.api.season.Season
 import sereneseasons.api.season.SeasonHelper
 import java.util.EnumSet
 import java.util.Locale
 
 object SereneSeasonsIntegration {
-    private const val START_YEAR = 1000L
+    private const val START_YEAR = 1L
     private const val MONTHS_IN_YEAR = 12
 
     fun init() {
@@ -27,6 +29,19 @@ object SereneSeasonsIntegration {
 
     fun currentSeasonName(level: Level): String {
         return SeasonHelper.getSeasonState(level).season.name.lowercase(Locale.ROOT)
+    }
+
+    fun usesTropicalSeasons(level: Level, pos: BlockPos): Boolean =
+        SeasonHelper.usesTropicalSeasons(level.getBiome(pos))
+
+    /** Snapshot both calendars once when a storm starts; never use a player's location. */
+    fun rainSeasonBoosts(level: Level): Pair<Boolean, Boolean> {
+        val state = SeasonHelper.getSeasonState(level)
+        return (state.season == Season.SUMMER) to (state.tropicalSeason in setOf(
+            Season.TropicalSeason.EARLY_WET,
+            Season.TropicalSeason.MID_WET,
+            Season.TropicalSeason.LATE_WET,
+        ))
     }
 
     /**

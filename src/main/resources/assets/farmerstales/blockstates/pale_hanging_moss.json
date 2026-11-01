@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "tip=false": {
+      "model": "farmerstales:block/pale_hanging_moss"
+    },
+    "tip=true": {
+      "model": "farmerstales:block/pale_hanging_moss_tip"
+    }
+  }
+}

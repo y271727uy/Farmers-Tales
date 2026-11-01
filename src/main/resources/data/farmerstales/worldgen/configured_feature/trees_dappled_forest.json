@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:random_selector",
+  "config": {
+    "features": [
+      {
+        "chance": 0.3333333333333333,
+        "feature": {
+          "feature": "farmerstales:red_poplar",
+          "placement": []
+        }
+      },
+      {
+        "chance": 0.5,
+        "feature": {
+          "feature": "farmerstales:orange_poplar",
+          "placement": []
+        }
+      }
+    ],
+    "default": {
+      "feature": "farmerstales:yellow_poplar",
+      "placement": []
+    }
+  }
+}
