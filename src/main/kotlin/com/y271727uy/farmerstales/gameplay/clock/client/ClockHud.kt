@@ -37,8 +37,6 @@ object ClockHud {
         val biomeName = holder.unwrapKey().map<Component> {
             Component.translatable(it.location().toLanguageKey("biome"))
         }.orElseGet { Component.translatable("hud.${FTMod.MODID}.unknown_biome") }
-        // Follow IGI's display convention, using Minecraft's local temperature
-        // (including altitude/modifiers), not a separate weather simulation.
         val fahrenheit = (biome as BiomeTemperatureAccessor).`farmerstales$getTemperature`(pos) * 100.0
         val celsius = (fahrenheit - 32.0) / 1.8
         val humidity = (biome.modifiedClimateSettings.downfall() * 100.0F).roundToInt()
@@ -58,17 +56,12 @@ object ClockHud {
     data class CalendarLines(val date: Component, val time: Component)
 
     fun calendarLines(level: Level): CalendarLines {
-        // Use the daylight cycle so sleeping and /time changes are reflected immediately.
         val dayTime = level.dayTime
         val day = Math.floorDiv(dayTime, 24000L) + 1L
-        // Start at year 1 and keep the configured season-year length. Serene
-        // Seasons wraps its cycle counter, so count years from cumulative world
-        // days instead of its within-cycle year; /time changes affect both fields.
         val calendar = IntegrationManager.calendarAt(level, 0L)
         val ticksPerYear = (calendar?.dayDuration?.toLong() ?: 24000L) *
             (calendar?.daysInMonth?.toLong() ?: 8L) * 12L
         val year = 1L + Math.floorDiv(dayTime, ticksPerYear)
-        // Vanilla tick 0 is 06:00; keep the time in the 24-hour range at midnight.
         val clockTicks = (Math.floorMod(dayTime, 24000L) + 6000L) % 24000L
         val hour = (clockTicks / 1000L).toString().padStart(2, '0')
         val minute = (clockTicks % 1000L * 60L / 1000L).toString().padStart(2, '0')
@@ -104,7 +97,6 @@ object ClockHud {
                 graphics.drawString(font, text, x + PADDING, y + PADDING + index * (font.lineHeight + 1), 0xFFFFFF, true)
             }
             val dateY = y + PADDING + environmentHeight
-            // Rendering the vanilla item preserves its animated clock model in every dimension.
             graphics.renderItem(clock, x + PADDING, dateY)
             graphics.drawString(
                 font, lines.date, x + PADDING + ICON_SIZE + GAP,

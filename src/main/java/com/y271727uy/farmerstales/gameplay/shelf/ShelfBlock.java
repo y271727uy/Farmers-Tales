@@ -69,7 +69,7 @@ public final class ShelfBlock extends BaseEntityBlock implements SimpleWaterlogg
         if(hand!=InteractionHand.MAIN_HAND||!(level.getBlockEntity(pos) instanceof ShelfBlockEntity shelf))return InteractionResult.PASS;
         int slot=hitSlot(hit,state.getValue(FACING));if(slot<0)return InteractionResult.PASS;
         var held=player.getItemInHand(hand);
-        if(level.isClientSide)return held.isEmpty()?InteractionResult.PASS:InteractionResult.CONSUME;
+        if(level.isClientSide)return state.getValue(POWERED)||!held.isEmpty()||!shelf.getItem(slot).isEmpty()?InteractionResult.SUCCESS:InteractionResult.PASS;
         if(state.getValue(POWERED)){
             if(swapHotbar(level,pos,player.getInventory()))sound(level,pos,"multi_swap");
         }else{
