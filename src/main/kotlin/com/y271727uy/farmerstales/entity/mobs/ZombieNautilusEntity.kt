@@ -13,6 +13,8 @@ import net.minecraft.world.level.Level
 class ZombieNautilusEntity(type: EntityType<out ZombieNautilusEntity>, level: Level) : NautilusEntity(type, level) {
     override fun isFood(stack: ItemStack): Boolean = false
 
+    override fun hasBreedingGoals(): Boolean = false
+
     override fun mobInteract(player: Player, hand: InteractionHand): InteractionResult = InteractionResult.PASS
 
     override fun getBreedOffspring(level: ServerLevel, otherParent: AgeableMob): AgeableMob? = null

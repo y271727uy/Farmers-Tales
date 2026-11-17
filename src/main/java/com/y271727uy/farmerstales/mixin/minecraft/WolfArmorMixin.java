@@ -1,4 +1,6 @@
 package com.y271727uy.farmerstales.mixin.minecraft;
+import com.y271727uy.farmerstales.backport.Backport;
+import com.y271727uy.farmerstales.backport.BackportFeature;
 import com.y271727uy.farmerstales.variant.WolfArmorHolder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.*;
@@ -7,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+@Backport(BackportFeature.ARMORED_PAWS)
 @Mixin(Wolf.class)
 public abstract class WolfArmorMixin implements WolfArmorHolder {
     @Unique private static final EntityDataAccessor<ItemStack> FARMERSTALES_ARMOR=SynchedEntityData.defineId(Wolf.class,EntityDataSerializers.ITEM_STACK);

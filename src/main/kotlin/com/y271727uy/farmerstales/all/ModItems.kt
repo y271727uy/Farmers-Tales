@@ -15,6 +15,20 @@ import net.minecraft.resources.ResourceLocation
 /** Aggregates item groups so the mod entry point does not know individual categories. */
 object ModItems {
     @JvmField
+    val POCKET_WATCH: ItemEntry<Item> = ModRegistrate.REGISTRATE
+        .item("pocket_watch") { properties -> Item(properties.stacksTo(1)) }
+        .lang("Pocket Watch")
+        .model { context, provider -> provider.generated(context, provider.modLoc("item/pocket_watch")) }
+        .register()
+
+    @JvmField
+    val MOON_PHASE_DIAL: ItemEntry<Item> = ModRegistrate.REGISTRATE
+        .item("moon_phase_dial") { properties -> Item(properties.stacksTo(1)) }
+        .lang("Moon Phase Dial")
+        .model { context, provider -> provider.generated(context, provider.modLoc("item/moon_phase_dial")) }
+        .register()
+
+    @JvmField
     val CROP_STAND: ItemEntry<BlockItem> = GeneCropItems.CROP_STAND
 
     @JvmField
@@ -41,13 +55,6 @@ object ModItems {
     @JvmField
     val ANIMAL_FAT: ItemEntry<Item> =
         ModRegistrate.REGISTRATE.item("animal_fat") { properties -> Item(properties) }.register()
-
-    /** Kept separate from the turtle scute so recipes and loot can target armadillos precisely. */
-    @JvmField
-    val ARMADILLO_SCUTE: ItemEntry<Item> = ModRegistrate.REGISTRATE
-        .item("armadillo_scute") { properties -> Item(properties) }
-        .model { context, provider -> provider.generated(context, provider.modLoc("item/armadillo_scute")) }
-        .register()
 
     @JvmField
     val WOODEN_SCYTHE: ItemEntry<ScytheItem> = ToolItems.WOODEN_SCYTHE

@@ -1,0 +1,16 @@
+{
+  "type": "forge:add_features",
+  "biomes": [
+    "minecraft:river",
+    "minecraft:frozen_river",
+    "minecraft:swamp",
+    "minecraft:mangrove_swamp",
+    "minecraft:badlands",
+    "minecraft:wooded_badlands",
+    "minecraft:eroded_badlands"
+  ],
+  "features": [
+    "farmerstales:patch_firefly_bush"
+  ],
+  "step": "vegetal_decoration"
+}

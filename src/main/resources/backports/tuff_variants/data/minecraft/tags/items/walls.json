@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "farmerstales:tuff_wall",
+    "farmerstales:polished_tuff_wall",
+    "farmerstales:tuff_brick_wall"
+  ]
+}

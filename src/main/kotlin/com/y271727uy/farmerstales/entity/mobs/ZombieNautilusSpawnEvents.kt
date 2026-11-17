@@ -1,4 +1,6 @@
 package com.y271727uy.farmerstales.entity.mobs
+import com.y271727uy.farmerstales.backport.Backport
+import com.y271727uy.farmerstales.backport.BackportFeature
 
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.entity.ModEntities
@@ -13,7 +15,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 
 /** Adds the distinctive Mounts of Mayhem-style drowned rider without adding loose undead mounts. */
-@Mod.EventBusSubscriber(modid = FTMod.MODID)
+@Backport(BackportFeature.NAUTILUS, subscribe = [Backport.Bus.FORGE])
 object ZombieNautilusSpawnEvents {
     private const val DROWNED_MOUNT_CHANCE = 0.08F
 

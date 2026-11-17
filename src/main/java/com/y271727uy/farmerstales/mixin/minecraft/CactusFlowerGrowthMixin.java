@@ -1,4 +1,6 @@
 package com.y271727uy.farmerstales.mixin.minecraft;
+import com.y271727uy.farmerstales.backport.Backport;
+import com.y271727uy.farmerstales.backport.BackportFeature;
 
 import com.y271727uy.farmerstales.gameplay.environment.SpringPlants;
 import net.minecraft.core.BlockPos;
@@ -11,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@Backport(BackportFeature.SPRING_PLANTS)
 @Mixin(CactusBlock.class)
 public abstract class CactusFlowerGrowthMixin {
     @Inject(method = "randomTick", at = @At("HEAD"), cancellable = true)

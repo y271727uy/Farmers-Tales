@@ -13,6 +13,8 @@ import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.MobSpawnType
 import net.minecraft.world.entity.animal.Animal
+import net.minecraft.world.entity.animal.horse.AbstractHorse
+import net.minecraft.network.chat.Component
 import net.minecraftforge.event.entity.living.BabyEntitySpawnEvent
 import net.minecraftforge.event.entity.living.MobSpawnEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
@@ -143,21 +145,34 @@ object AnimalHusbandryEvents {
                 return
             }
             AnimalHusbandryStatus.DOMESTICATED -> {
-                if (event.itemStack.isEmpty && AnimalMetabolism.pet(animal)) {
-                    val level = animal.level() as ServerLevel
-                    level.sendParticles(ParticleTypes.HEART, animal.x, animal.y + animal.bbHeight, animal.z, 5, 0.35, 0.2, 0.35, 0.0)
-                    level.playSound(null, animal.blockPosition(), SoundEvents.CHICKEN_EGG, SoundSource.NEUTRAL, 0.5F, 1.5F)
-                    event.setCancellationResult(InteractionResult.SUCCESS)
-                    event.isCanceled = true
-                    return
+                if (event.itemStack.isEmpty) {
+                    if (AnimalMetabolism.pet(animal)) {
+                        AnimalCare.tryStartCare(animal)
+                        val level = animal.level() as ServerLevel
+                        level.sendParticles(ParticleTypes.HEART, animal.x, animal.y + animal.bbHeight, animal.z, 5, 0.35, 0.2, 0.35, 0.0)
+                        level.playSound(null, animal.blockPosition(), SoundEvents.CHICKEN_EGG, SoundSource.NEUTRAL, 0.5F, 1.5F)
+                        event.setCancellationResult(InteractionResult.SUCCESS)
+                        event.isCanceled = true
+                        return
+                    }
+                    // Feedback only, never cancelled: an empty hand also mounts horses, camels and llamas,
+                    // so mounts get no message at all to avoid nagging every time the player rides.
+                    if (animal !is AbstractHorse && AnimalMetabolism.wasPettedToday(animal)) {
+                        event.entity.displayClientMessage(
+                            Component.translatable("message.${FTMod.MODID}.animal_husbandry.already_petted", animal.displayName),
+                            true,
+                        )
+                    }
                 }
                 if (animal.isBaby && AnimalHusbandryRules.isSupported(animal) && animal.isFood(heldItem)) {
+                    AnimalCare.tryStartCare(animal)
                     AnimalMetabolismScheduler.rescheduleMaturityAfterGrowthFood(animal)
                     return
                 }
                 if (AnimalHusbandryRules.isSupported(animal) && animal.isFood(heldItem)) {
                     val wasFullyFed = AnimalMetabolism.isFullyFed(animal)
                     AnimalMetabolism.feed(animal, AnimalHusbandryRules.breedingFoodNutrition(animal))
+                    AnimalCare.tryStartCare(animal)
                     if (!event.entity.abilities.instabuild) {
                         heldItem.shrink(1)
                     }

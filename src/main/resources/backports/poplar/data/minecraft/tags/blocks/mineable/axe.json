@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": [
+    "farmerstales:poplar_log",
+    "farmerstales:stripped_poplar_log",
+    "farmerstales:poplar_wood",
+    "farmerstales:stripped_poplar_wood",
+    "farmerstales:poplar_planks",
+    "farmerstales:poplar_stairs",
+    "farmerstales:poplar_slab",
+    "farmerstales:poplar_fence",
+    "farmerstales:poplar_fence_gate",
+    "farmerstales:poplar_door",
+    "farmerstales:poplar_trapdoor",
+    "farmerstales:poplar_button",
+    "farmerstales:poplar_pressure_plate",
+    "farmerstales:poplar_sign",
+    "farmerstales:poplar_wall_sign",
+    "farmerstales:poplar_hanging_sign",
+    "farmerstales:poplar_wall_hanging_sign"
+  ]
+}

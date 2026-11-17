@@ -1,0 +1,9 @@
+{
+  "sources": [
+    {
+      "type": "single",
+      "resource": "minecraft:item/lava_bucket",
+      "sprite": "farmerstales:clear_fire"
+    }
+  ]
+}

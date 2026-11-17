@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.povstalec.stellarview.common.util.TextureLayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
 /**
@@ -17,6 +18,9 @@ import org.spongepowered.asm.mixin.injection.At;
 @Pseudo
 @Mixin(targets = "net.povstalec.stellarview.common.util.TextureLayer", remap = false)
 public abstract class TextureLayerMoonTextureMixin {
+    @Shadow
+    private ResourceLocation texture;
+
     @WrapOperation(
             method = "texture",
             at = @At(
@@ -34,6 +38,23 @@ public abstract class TextureLayerMoonTextureMixin {
             return texture;
         }
         return replacement;
+    }
+
+    @WrapOperation(
+            method = "shoulBlend",
+            at = @At(
+                    value = "FIELD",
+                    target = "Lnet/povstalec/stellarview/common/util/TextureLayer;blend:Z",
+                    remap = false
+            ),
+            remap = false
+    )
+    private boolean farmerstales$blendEventMoon(TextureLayer layer, Operation<Boolean> original) {
+        // Event atlases have an opaque black background, as vanilla's additive
+        // moon rendering expects. Stellar View's normal alpha blend draws that
+        // background over the sky; its additive mode leaves the sky visible.
+        return original.call(layer) || (texture != null && isVanillaMoonAtlas(texture)
+                && MoonPhaseClientVisuals.activeMoonTexture() != null);
     }
 
     /** Covers both the vanilla-moon toggle and Stellar View's own luna atlas. */

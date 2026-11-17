@@ -7,6 +7,7 @@ import com.y271727uy.farmerstales.gameplay.gene_crop.pollen.CropPollenSample
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.item.CreativeModeTab
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.Block
@@ -39,39 +40,23 @@ object ModCreativeModeTabs {
             .build()
     }
 
-    /** Resolve registry objects only while building tab contents, after block/item registration. */
-    private fun naturalEnvironmentBlocks(): List<Block> = listOf(
-        ForestBlocks.PALE_OAK_SAPLING.get(),
-        ForestBlocks.PALE_OAK_LEAVES.get(),
-        ForestBlocks.PALE_OAK_LOG.get(),
-        ForestBlocks.STRIPPED_PALE_OAK_LOG.get(),
-        ForestBlocks.PALE_OAK_WOOD.get(),
-        ForestBlocks.STRIPPED_PALE_OAK_WOOD.get(),
-        ForestBlocks.PALE_OAK_PLANKS.get(),
-        ForestBlocks.POPLAR_SAPLING.get(),
-        ForestBlocks.RED_POPLAR_LEAVES.get(),
-        ForestBlocks.ORANGE_POPLAR_LEAVES.get(),
-        ForestBlocks.YELLOW_POPLAR_LEAVES.get(),
-        ForestBlocks.POPLAR_LOG.get(),
-        ForestBlocks.STRIPPED_POPLAR_LOG.get(),
-        ForestBlocks.POPLAR_WOOD.get(),
-        ForestBlocks.STRIPPED_POPLAR_WOOD.get(),
-        ForestBlocks.POPLAR_PLANKS.get(),
-        ForestBlocks.PALE_MOSS_BLOCK.get(),
-        ForestBlocks.PALE_MOSS_CARPET.get(),
-        ForestBlocks.PALE_HANGING_MOSS.get(),
-        ForestBlocks.CLOSED_EYEBLOSSOM.get(),
-        ForestBlocks.OPEN_EYEBLOSSOM.get(),
-        ForestBlocks.LEAF_LITTER.get(),
-        ForestBlocks.RED_SHRUB.get(),
-        ForestBlocks.SHELF_MUSHROOM.get(),
-        NaturalEnvironmentBlocks.BUSH.get(),
-        NaturalEnvironmentBlocks.SHORT_DRY_GRASS.get(),
-        NaturalEnvironmentBlocks.TALL_DRY_GRASS.get(),
-        NaturalEnvironmentBlocks.FIREFLY_BUSH.get(),
-        NaturalEnvironmentBlocks.WILDFLOWERS.get(),
-        NaturalEnvironmentBlocks.CACTUS_FLOWER.get(),
-    ) + ForestBlocks.BUILDING.values.map { it.get() }
+    /**
+     * Natural blocks listed last, in this order. Resolved by name while building tab contents so
+     * blocks of disabled backport features are simply skipped.
+     */
+    private fun naturalEnvironmentBlocks(): List<Block> = (listOf(
+        "pale_oak_sapling", "pale_oak_leaves", "pale_oak_log", "stripped_pale_oak_log", "pale_oak_wood",
+        "stripped_pale_oak_wood", "pale_oak_planks",
+        "poplar_sapling", "red_poplar_leaves", "orange_poplar_leaves", "yellow_poplar_leaves", "poplar_log",
+        "stripped_poplar_log", "poplar_wood", "stripped_poplar_wood", "poplar_planks",
+        "pale_moss_block", "pale_moss_carpet", "pale_hanging_moss", "closed_eyeblossom", "open_eyeblossom",
+        "leaf_litter", "red_shrub", "shelf_mushroom",
+        "bush", "short_dry_grass", "tall_dry_grass", "firefly_bush", "wildflowers", "cactus_flower",
+    ) + listOf("pale_oak", "poplar").flatMap { tree ->
+        listOf("stairs", "slab", "fence", "fence_gate", "door", "trapdoor", "button", "pressure_plate").map { "${tree}_$it" }
+    }).mapNotNull { name ->
+        BuiltInRegistries.BLOCK.getOptional(ResourceLocation.fromNamespaceAndPath(FTMod.MODID, name)).orElse(null)
+    }
 
     fun register(bus: IEventBus) {
         tabs.register(bus)

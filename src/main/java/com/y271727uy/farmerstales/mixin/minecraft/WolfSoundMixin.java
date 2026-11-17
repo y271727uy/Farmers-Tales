@@ -1,4 +1,6 @@
 package com.y271727uy.farmerstales.mixin.minecraft;
+import com.y271727uy.farmerstales.backport.Backport;
+import com.y271727uy.farmerstales.backport.BackportFeature;
 import com.y271727uy.farmerstales.gameplay.environment.forest.NatureSounds;
 import com.y271727uy.farmerstales.variant.WolfSoundHolder;
 import net.minecraft.nbt.CompoundTag;
@@ -9,6 +11,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.*;
+@Backport(BackportFeature.WOLF_SOUND_VARIANTS)
 @Mixin(Wolf.class)
 public abstract class WolfSoundMixin implements WolfSoundHolder {
     @Unique private static final EntityDataAccessor<Integer> FARMERSTALES_SOUND=SynchedEntityData.defineId(Wolf.class,EntityDataSerializers.INT);

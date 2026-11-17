@@ -2,12 +2,12 @@ package com.y271727uy.farmerstales.gameplay.tropical_climate
 
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.config.Config
+import com.y271727uy.farmerstales.gameplay.common.announce
 import com.y271727uy.farmerstales.integration.IntegrationManager
 import glitchcore.event.EventManager
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
-import net.minecraft.server.level.ServerPlayer
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.saveddata.SavedData
@@ -57,10 +57,7 @@ object TropicalClimateEvents {
     }
 
     private fun sendToTropicalPlayers(level: ServerLevel, message: Component) {
-        level.players()
-            .filterIsInstance<ServerPlayer>()
-            .filter { player -> SeasonHelper.usesTropicalSeasons(level.getBiome(player.blockPosition())) }
-            .forEach { it.sendSystemMessage(message) }
+        level.announce(message) { player -> SeasonHelper.usesTropicalSeasons(level.getBiome(player.blockPosition())) }
     }
 }
 

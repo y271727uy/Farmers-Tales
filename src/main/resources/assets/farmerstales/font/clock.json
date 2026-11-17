@@ -608,6 +608,27 @@
       "chars": [
         "\ue103"
       ]
+    },
+    {
+      "type": "bitmap",
+      "file": "farmerstales:item/hud/weather.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": ["\ue104"]
+    },
+    {
+      "type": "bitmap",
+      "file": "farmerstales:item/hud/moon.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": ["\ue105"]
+    },
+    {
+      "type": "bitmap",
+      "file": "farmerstales:item/hud/precipitation.png",
+      "ascent": 8,
+      "height": 9,
+      "chars": ["\ue106"]
     }
   ]
 }

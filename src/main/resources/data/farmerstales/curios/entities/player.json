@@ -1,0 +1,4 @@
+{
+  "entities": ["minecraft:player"],
+  "slots": ["pocket_watch", "moon_phase_dial"]
+}

@@ -4,13 +4,17 @@ import com.mojang.logging.LogUtils
 import com.y271727uy.farmerstales.all.ModBlocks
 import com.y271727uy.farmerstales.all.ModBlockEntities
 import com.y271727uy.farmerstales.all.ModCreativeModeTabs
+import com.y271727uy.farmerstales.all.ModEffects
 import com.y271727uy.farmerstales.all.ModEnchantments
 import com.y271727uy.farmerstales.all.ModItems
 import com.y271727uy.farmerstales.all.ModLootModifiers
+import com.y271727uy.farmerstales.all.ModPotions
 import com.y271727uy.farmerstales.all.ModSounds
+import com.y271727uy.farmerstales.backport.BackportLoader
 import com.y271727uy.farmerstales.entity.ModEntities
 import com.y271727uy.farmerstales.integration.IntegrationManager
 import com.y271727uy.farmerstales.config.Config
+import com.y271727uy.farmerstales.config.ConfigFiles
 import com.y271727uy.farmerstales.data.ModDataGen
 import com.y271727uy.farmerstales.gameplay.fish_group.item.FishGroupRegistry
 import com.y271727uy.farmerstales.gameplay.food_expiry.FoodExpiryCapabilities
@@ -33,16 +37,17 @@ class FTMod {
         val modEventBus = FMLJavaModLoadingContext.get().modEventBus
 
         ModItems.init()
-        com.y271727uy.farmerstales.gameplay.animal_variants.VariantEggs.register(modEventBus)
-        com.y271727uy.farmerstales.gameplay.creaking.CreakingContent.register(modEventBus)
-        com.y271727uy.farmerstales.all.NaturalEnvironmentBlocks.register(modEventBus)
-        com.y271727uy.farmerstales.all.ForestBlocks.register(modEventBus)
+        // Shared tree/leaf types used by several forest features (poplar, pale garden, spring plants).
+        com.y271727uy.farmerstales.gameplay.environment.forest.ForestWorldgen.register(modEventBus)
+        com.y271727uy.farmerstales.gameplay.environment.forest.ForestLeafParticles.register(modEventBus)
         com.y271727uy.farmerstales.gameplay.environment.forest.NatureSounds.register(modEventBus)
         com.y271727uy.farmerstales.gameplay.environment.forest.ForestTravel.register(modEventBus)
-        com.y271727uy.farmerstales.gameplay.fauna.FaunaContent.register(modEventBus)
-        com.y271727uy.farmerstales.gameplay.building.BuildingContent.register(modEventBus)
-        com.y271727uy.farmerstales.gameplay.shelf.ShelfContent.register(modEventBus)
+        // Content back-ported from newer Minecraft versions: every @Backport class whose feature is
+        // enabled in config/farmerstales/farmerstales-backports.toml is registered and subscribed here.
+        BackportLoader.init(modEventBus)
         ModSounds.register(modEventBus)
+        ModEffects.register(modEventBus)
+        ModPotions.register(modEventBus)
         ModEnchantments.register(modEventBus)
         ModLootModifiers.register(modEventBus)
         ModBlocks.init()
@@ -57,12 +62,14 @@ class FTMod {
         modEventBus.addListener<RegisterCapabilitiesEvent>(FoodExpiryCapabilities::register)
         modEventBus.addListener(::commonSetup)
         MinecraftForge.EVENT_BUS.register(this)
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC)
+        ConfigFiles.migrate("farmerstales-common.toml", ConfigFiles.GAMEPLAY)
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC, ConfigFiles.GAMEPLAY)
     }
 
     private fun commonSetup(event: FMLCommonSetupEvent) {
         FarmerstalesNetwork.register()
         event.enqueueWork(ModEntities::registerSpawnPlacements)
+        event.enqueueWork(ModPotions::registerBrewingRecipes)
         IntegrationManager.init()
         LOGGER.info("Farmer's Tales common setup complete")
     }

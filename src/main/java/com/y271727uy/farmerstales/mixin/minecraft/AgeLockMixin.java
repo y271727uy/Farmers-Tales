@@ -19,10 +19,10 @@ public abstract class AgeLockMixin implements AgeLockHolder {
     public int farmerstales$getAgeLockCooldown(){return farmerstales$ageLockCooldown;}
     public void farmerstales$startAgeLockCooldown(){farmerstales$ageLockCooldown=40;}
     @Inject(method="addAdditionalSaveData",at=@At("TAIL")) private void saveLock(CompoundTag tag,CallbackInfo ci){tag.putBoolean("AgeLocked",farmerstales$isAgeLocked());}
-    @Inject(method="readAdditionalSaveData",at=@At("TAIL")) private void loadLock(CompoundTag tag,CallbackInfo ci){farmerstales$setAgeLocked(tag.getBoolean("AgeLocked"));farmerstales$ageLockCooldown=0;}
+    @Inject(method="readAdditionalSaveData",at=@At("TAIL")) private void loadLock(CompoundTag tag,CallbackInfo ci){farmerstales$setAgeLocked(tag.getBoolean("AgeLocked")&&com.y271727uy.farmerstales.backport.BackportFeature.GOLDEN_DANDELION.isEnabled());farmerstales$ageLockCooldown=0;}
     // Only suppress the natural baby-age increment; adult breeding cooldown still ticks normally.
     @Redirect(method="aiStep",at=@At(value="INVOKE",target="Lnet/minecraft/world/entity/AgeableMob;setAge(I)V"))
-    private void ageNaturally(AgeableMob mob,int age){if(!farmerstales$isAgeLocked()||mob.getAge()>=0)mob.setAge(age);}
+    private void ageNaturally(AgeableMob mob,int age){if((!farmerstales$isAgeLocked()||mob.getAge()>=0)&&com.y271727uy.farmerstales.gameplay.weather.area_weather.AreaWeatherEffects.allowAnimalGrowth(mob))mob.setAge(age);}
     @Inject(method="ageUp(IZ)V",at=@At("HEAD"),cancellable=true) private void preventFeedingGrowth(int amount,boolean forced,CallbackInfo ci){if(farmerstales$isAgeLocked()&&((AgeableMob)(Object)this).isBaby())ci.cancel();}
     @Inject(method="aiStep",at=@At("TAIL")) private void tickLockParticles(CallbackInfo ci){
         if(farmerstales$ageLockCooldown>0){

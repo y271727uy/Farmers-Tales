@@ -7,6 +7,8 @@ import com.y271727uy.farmerstales.gameplay.fish_group.entity.RiverFishPoolEntity
 import com.y271727uy.farmerstales.gameplay.tree.block.TreeStumpBlock
 import net.minecraft.world.entity.animal.Wolf
 import com.y271727uy.farmerstales.gameplay.gene_crop.block.CropStandBlock
+import com.y271727uy.farmerstales.integration.IntegrationManager
+import net.minecraft.world.level.block.Block
 import snownee.jade.api.IWailaCommonRegistration
 import snownee.jade.api.IWailaPlugin
 import snownee.jade.api.IWailaClientRegistration
@@ -28,6 +30,9 @@ class FarmerTalesJadePlugin : IWailaPlugin {
     }
 
     override fun registerClient(registration: IWailaClientRegistration) {
+        if (IntegrationManager.isSereneSeasonsLoaded()) {
+            registration.registerBlockComponent(CropSeasonTooltipProvider, Block::class.java)
+        }
         registration.registerBlockComponent(TreeStumpTooltipProvider, TreeStumpBlock::class.java)
         registration.registerBlockComponent(GeneCropTooltipProvider, CropStandBlock::class.java)
         registration.registerEntityComponent(

@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.Tesselator
 import com.mojang.blaze3d.vertex.VertexFormat
 import com.y271727uy.farmerstales.FTMod
+import com.y271727uy.farmerstales.gameplay.common.Rgb
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.resources.ResourceLocation
 import net.minecraftforge.api.distmarker.Dist
@@ -30,14 +31,11 @@ object MoonPhaseClientVisuals {
     fun drawMoonHalo(poseStack: PoseStack) {
         val halo = activeEvent()?.haloColor ?: return
         val matrix = poseStack.last().pose()
-        val r = ((halo shr 16) and 0xFF) / 255f
-        val g = ((halo shr 8) and 0xFF) / 255f
-        val b = (halo and 0xFF) / 255f
         val size = 30.0f
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader)
         RenderSystem.setShaderTexture(0, MOON_HALO)
-        RenderSystem.setShaderColor(r, g, b, 0.4f)
+        RenderSystem.setShaderColor(Rgb.red(halo), Rgb.green(halo), Rgb.blue(halo), 0.4f)
         val builder = Tesselator.getInstance().builder
         builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX)
         builder.vertex(matrix, -size, -100.0f, size).uv(0.0f, 0.0f).endVertex()
@@ -52,15 +50,17 @@ object MoonPhaseClientVisuals {
     @SubscribeEvent
     fun onFogColor(event: ViewportEvent.ComputeFogColor) {
         val color = activeEvent()?.fogColor ?: return
-        event.red = ((color shr 16) and 0xFF) / 255f
-        event.green = ((color shr 8) and 0xFF) / 255f
-        event.blue = (color and 0xFF) / 255f
+        event.red = Rgb.red(color)
+        event.green = Rgb.green(color)
+        event.blue = Rgb.blue(color)
     }
 
     @JvmStatic
     @SubscribeEvent
     fun onLogout(event: ClientPlayerNetworkEvent.LoggingOut) {
         MoonPhaseClientState.winnerId = ""
+        MoonPhaseClientState.forecastId = ""
+        MoonPhaseClientState.forecastDay = Long.MIN_VALUE
     }
 
     private fun activeEvent(): MoonPhaseEvent? {

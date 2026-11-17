@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "farmerstales:resin_bricks",
+    "farmerstales:resin_brick_stairs",
+    "farmerstales:resin_brick_slab",
+    "farmerstales:resin_brick_wall",
+    "farmerstales:chiseled_resin_bricks"
+  ]
+}

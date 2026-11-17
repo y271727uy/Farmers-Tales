@@ -2,6 +2,8 @@ package com.y271727uy.farmerstales.all;
 
 import com.tterrag.registrate.providers.ProviderType;
 import com.y271727uy.farmerstales.FTMod;
+import com.y271727uy.farmerstales.backport.Backport;
+import com.y271727uy.farmerstales.backport.BackportFeature;
 import com.y271727uy.farmerstales.registrate.ModRegistrate;
 import com.y271727uy.farmerstales.gameplay.environment.SpringPlants;
 import com.y271727uy.farmerstales.gameplay.environment.SpringNatureEffects;
@@ -30,7 +32,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import java.util.function.Supplier;
 
-/** Small plants from Spring to Life, adapted to the 1.20.1 plant APIs. */
+/** Small plants from Spring to Life (1.21.5), adapted to the 1.20.1 plant APIs. */
+@Backport(BackportFeature.SPRING_PLANTS)
 public final class NaturalEnvironmentBlocks {
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, FTMod.MODID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, FTMod.MODID);
@@ -40,6 +43,12 @@ public final class NaturalEnvironmentBlocks {
     public static final RegistryObject<Block> FIREFLY_BUSH = simplePlant("firefly_bush", SpringPlants.FireflyBush::new);
     public static final RegistryObject<Block> WILDFLOWERS = simplePlant("wildflowers", () -> new PinkPetalsBlock(BlockBehaviour.Properties.copy(Blocks.PINK_PETALS)));
     public static final RegistryObject<Block> CACTUS_FLOWER = simplePlant("cactus_flower", SpringPlants.CactusFlower::new);
+    public static final RegistryObject<Block> LEAF_LITTER = BLOCKS.register("leaf_litter", com.y271727uy.farmerstales.gameplay.environment.forest.ForestPlants.LeafLitter::new);
+    static {
+        ITEMS.register("leaf_litter", () -> new BlockItem(LEAF_LITTER.get(), new Item.Properties()) {
+            @Override public int getBurnTime(ItemStack stack, RecipeType<?> recipeType) { return 100; }
+        });
+    }
 
     private NaturalEnvironmentBlocks() {}
 
@@ -62,6 +71,7 @@ public final class NaturalEnvironmentBlocks {
         return block;
     }
 
+    /** Called by BackportLoader when {@link BackportFeature#SPRING_PLANTS} is enabled. */
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);
         ITEMS.register(bus);
@@ -74,6 +84,7 @@ public final class NaturalEnvironmentBlocks {
             provider.add("block.farmerstales.firefly_bush", "Firefly Bush");
             provider.add("block.farmerstales.wildflowers", "Wildflowers");
             provider.add("block.farmerstales.cactus_flower", "Cactus Flower");
+            provider.add("block.farmerstales.leaf_litter", "Leaf Litter");
             provider.add("subtitles.farmerstales.block.firefly_bush.idle", "Fireflies buzz");
         });
     }
@@ -86,11 +97,12 @@ public final class NaturalEnvironmentBlocks {
             ComposterBlock.COMPOSTABLES.put(FIREFLY_BUSH.get().asItem(), 0.3F);
             ComposterBlock.COMPOSTABLES.put(WILDFLOWERS.get().asItem(), 0.65F);
             ComposterBlock.COMPOSTABLES.put(CACTUS_FLOWER.get().asItem(), 0.3F);
+            ComposterBlock.COMPOSTABLES.put(LEAF_LITTER.get().asItem(), 0.3F);
         });
     }
 
     public static boolean isDryGrass(BlockState state) {
-        return state.is(SHORT_DRY_GRASS.get()) || state.is(TALL_DRY_GRASS.get());
+        return SHORT_DRY_GRASS.isPresent() && (state.is(SHORT_DRY_GRASS.get()) || state.is(TALL_DRY_GRASS.get()));
     }
 
     private static final class EnvironmentPlant extends BushBlock implements BonemealableBlock, IForgeShearable {

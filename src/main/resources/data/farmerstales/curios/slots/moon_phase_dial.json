@@ -1,0 +1,7 @@
+{
+  "size": 1,
+  "order": 211,
+  "icon": "farmerstales:item/hud/moon_hud",
+  "validators": ["curios:tag"],
+  "add_cosmetic": false
+}

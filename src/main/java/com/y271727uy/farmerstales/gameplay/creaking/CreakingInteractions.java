@@ -1,4 +1,6 @@
 package com.y271727uy.farmerstales.gameplay.creaking;
+import com.y271727uy.farmerstales.backport.Backport;
+import com.y271727uy.farmerstales.backport.BackportFeature;
 
 import com.y271727uy.farmerstales.FTMod;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
@@ -8,7 +10,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 /** Attach to both newly spawned and existing illagers when their chunks load. */
-@Mod.EventBusSubscriber(modid = FTMod.MODID)
+@Backport(value=BackportFeature.PALE_GARDEN,subscribe=Backport.Bus.FORGE)
 public final class CreakingInteractions {
     private CreakingInteractions() {}
     public static final class FleeCreakingGoal extends AvoidEntityGoal<CreakingEntity> {

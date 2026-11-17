@@ -1,4 +1,5 @@
 package com.y271727uy.farmerstales.gameplay.creaking;
+import com.y271727uy.farmerstales.all.PaleGardenBlocks;
 
 import com.y271727uy.farmerstales.all.ForestBlocks;
 import net.minecraft.core.BlockPos;
@@ -134,7 +135,7 @@ public final class CreakingHeartBlockEntity extends BlockEntity {
                 var neighbor = log.relative(direction);
                 if (!server.hasChunkAt(neighbor)) continue;
                 var current = server.getBlockState(neighbor);
-                if (current.is(ForestBlocks.PALE_OAK_LOG.get()) && neighbor.distManhattan(worldPosition) <= 3 && visited.add(neighbor)) queue.add(neighbor);
+                if (current.is(PaleGardenBlocks.PALE_OAK_LOG.get()) && neighbor.distManhattan(worldPosition) <= 3 && visited.add(neighbor)) queue.add(neighbor);
             }
             if (log.equals(worldPosition)) continue;
             int shift = server.random.nextInt(6);

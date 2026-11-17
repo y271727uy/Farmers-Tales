@@ -1,6 +1,7 @@
 package com.y271727uy.farmerstales.gameplay.fish_group.entity
 
 import com.y271727uy.farmerstales.FTMod
+import com.y271727uy.farmerstales.gameplay.fish_group.FishingHookEnchantments
 import com.y271727uy.farmerstales.gameplay.fish_group.pool.FishKingCooldownSavedData
 import com.y271727uy.farmerstales.gameplay.advancements.FarmersTalesAdvancements
 import com.y271727uy.farmerstales.gameplay.special_event.crimson_moon.CrimsonMoonEvents
@@ -16,6 +17,7 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.stats.Stats
 import net.minecraft.tags.ItemTags
 import net.minecraft.util.Mth
+import net.minecraft.world.entity.AnimationState
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.ExperienceOrb
 import net.minecraft.world.entity.item.ItemEntity
@@ -33,6 +35,19 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
     private var currentFishCount = 0
     private var currentMaxFishCount = 0
     private var fishKingAwarded = false
+
+    /** Client-side looping idle animation, restarted every 200 ticks. */
+    val idleAnimationState = AnimationState()
+    private var idleAnimationTimeout = 0
+
+    private fun updateIdleAnimation() {
+        if (idleAnimationTimeout <= 0) {
+            idleAnimationTimeout = 200
+            idleAnimationState.start(tickCount)
+        } else {
+            idleAnimationTimeout--
+        }
+    }
 
     protected abstract val environment: FishPoolDefinition.Environment
     protected abstract val defaultFishPoolId: ResourceLocation
@@ -90,7 +105,11 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
 
     override fun tick() {
         super.tick()
-        if (level().isClientSide || isRemoved || isDestroying) return
+        if (level().isClientSide) {
+            updateIdleAnimation()
+            return
+        }
+        if (isRemoved || isDestroying) return
         val serverLevel = level() as? ServerLevel ?: return
         if (!fishPoolDefinition.matchesCurrentConditions(serverLevel)) removeWithEffects(serverLevel)
     }
@@ -199,8 +218,10 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
         val fishKingId = definition.fishKing ?: return
         if (fishKingAwarded) return
         val cooldownData = FishKingCooldownSavedData.get(serverLevel)
-        val kingRoll = if (CrimsonMoonEvents.isActive(serverLevel)) CRIMSON_FISH_KING_ROLL else FISH_KING_ROLL
-        if (!cooldownData.canAward(player, serverLevel.gameTime) || serverLevel.random.nextInt(kingRoll) != 0) return
+        if (!cooldownData.canAward(player, serverLevel.gameTime)) return
+        val baseChance = if (CrimsonMoonEvents.isActive(serverLevel)) 2.5 else 1.0
+        val enchantmentBonus = (hook as FishingHookEnchantments).`farmerstales$getFishKingCatcherLevel`()
+        if (serverLevel.random.nextDouble() * 100 >= baseChance + enchantmentBonus) return
 
         val fishKingItem = ForgeRegistries.ITEMS.getValue(fishKingId)
         if (fishKingItem == null || fishKingItem == Items.AIR) {
@@ -240,7 +261,5 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
         private const val FISH_COUNT_TAG = "FishCount"
         private const val MAX_FISH_COUNT_TAG = "MaxFishCount"
         private const val FISH_KING_AWARDED_TAG = "FishKingAwarded"
-        private const val FISH_KING_ROLL = 100
-        private const val CRIMSON_FISH_KING_ROLL = 40
     }
 }

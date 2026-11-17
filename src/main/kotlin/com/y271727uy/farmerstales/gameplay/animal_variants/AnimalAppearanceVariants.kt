@@ -1,6 +1,7 @@
 package com.y271727uy.farmerstales.gameplay.animal_variants
 
 import com.y271727uy.farmerstales.FTMod
+import com.y271727uy.farmerstales.backport.BackportFeature
 import com.y271727uy.farmerstales.variant.AnimalAppearanceVariantHolder
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.Registries
@@ -25,7 +26,11 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
 
-/** Recreates the biome-based cosmetic animal variants introduced in 1.20.5 and 1.21.5. */
+/**
+ * Recreates the biome-based cosmetic animal variants introduced in 1.20.5 (wolves, see
+ * [BackportFeature.WOLF_VARIANTS]) and 1.21.5 (cows, pigs, chickens, see
+ * [BackportFeature.FARM_ANIMAL_VARIANTS]). Quark/MobVariants compatibility variants are not backports.
+ */
 @Mod.EventBusSubscriber(modid = FTMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 object AnimalAppearanceVariants {
     private const val PALE_WOLF = "pale"
@@ -57,6 +62,9 @@ object AnimalAppearanceVariants {
         "pale", "ashen", "black", "chestnut", "rusty", "snowy", "spotted", "striped", "woods",
     )
     private val wolfVariants = vanillaWolfVariants + mobVariantsDogVariants
+    // Disabled backports fall back to "" which keeps the vanilla 1.20.1 texture and model.
+    private val wolfVariantsEnabled get() = BackportFeature.WOLF_VARIANTS.isEnabled
+    private val farmVariantsEnabled get() = BackportFeature.FARM_ANIMAL_VARIANTS.isEnabled
     private val wolfBiomeVariants = listOf(
         "ashen" to biomeTag("spawns_ashen_wolves"),
         "black" to biomeTag("spawns_black_wolves"),
@@ -142,33 +150,37 @@ object AnimalAppearanceVariants {
     private fun variantForBiome(mob: Mob, level: ServerLevelAccessor, x: Double, y: Double, z: Double): String {
         val biome = level.getBiome(BlockPos.containing(x, y, z))
         return when (mob) {
-            is Wolf -> wolfBiomeVariants.firstOrNull { (_, tag) -> biome.`is`(tag) }?.first
+            is Wolf -> if (!wolfVariantsEnabled) (listOf("") + mobVariantsDogVariants).randomOrNull(mob.random)!!
+            else wolfBiomeVariants.firstOrNull { (_, tag) -> biome.`is`(tag) }?.first
                 ?: (listOf(PALE_WOLF) + mobVariantsDogVariants).randomOrNull(mob.random)!!
             is Cat -> catVariants.randomOrNull(mob.random)!!
             is Cow, is Pig, is Chicken -> when {
-                biome.`is`(coldFarmAnimalBiomes) -> COLD
-                biome.`is`(warmFarmAnimalBiomes) -> WARM
-                else -> temperateVariants(mob).randomOrNull(mob.random) ?: TEMPERATE
+                farmVariantsEnabled && biome.`is`(coldFarmAnimalBiomes) -> COLD
+                farmVariantsEnabled && biome.`is`(warmFarmAnimalBiomes) -> WARM
+                else -> temperateVariants(mob).randomOrNull(mob.random) ?: temperate()
             }
             else -> ""
         }
     }
 
     private fun randomVariant(mob: Mob, random: RandomSource): String = when (mob) {
-        is Wolf -> wolfVariants[random.nextInt(wolfVariants.size)]
+        is Wolf -> (if (wolfVariantsEnabled) wolfVariants else listOf("") + mobVariantsDogVariants).let { it[random.nextInt(it.size)] }
         is Cat -> catVariants[random.nextInt(catVariants.size)]
         is Cow, is Pig, is Chicken -> allFarmAnimalVariants(mob).let { variants -> variants[random.nextInt(variants.size)] }
         else -> ""
     }
 
     private fun temperateVariants(mob: Mob): List<String> = when (mob) {
-        is Cow -> listOf(TEMPERATE) + quarkCowVariants
-        is Pig -> listOf(TEMPERATE) + quarkPigVariants + mobVariantsPigVariants
-        is Chicken -> listOf(TEMPERATE) + quarkChickenVariants
+        is Cow -> listOf(temperate()) + quarkCowVariants
+        is Pig -> listOf(temperate()) + quarkPigVariants + mobVariantsPigVariants
+        is Chicken -> listOf(temperate()) + quarkChickenVariants
         else -> emptyList()
     }
 
-    private fun allFarmAnimalVariants(mob: Mob): List<String> = listOf(COLD, TEMPERATE, WARM) + temperateVariants(mob).drop(1)
+    private fun temperate(): String = if (farmVariantsEnabled) TEMPERATE else ""
+
+    private fun allFarmAnimalVariants(mob: Mob): List<String> =
+        if (farmVariantsEnabled) listOf(COLD, TEMPERATE, WARM) + temperateVariants(mob).drop(1) else temperateVariants(mob)
 
     private fun isSupported(mob: Mob): Boolean = mob is Wolf || mob is Cat || mob is Cow || mob is Pig || mob is Chicken
 

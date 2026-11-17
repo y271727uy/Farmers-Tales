@@ -1,4 +1,7 @@
 package com.y271727uy.farmerstales.gameplay.environment.forest;
+import com.y271727uy.farmerstales.all.NaturalEnvironmentBlocks;
+import com.y271727uy.farmerstales.backport.Backport;
+import com.y271727uy.farmerstales.backport.BackportFeature;
 
 import com.y271727uy.farmerstales.FTMod;
 import com.y271727uy.farmerstales.all.ForestBlocks;
@@ -7,7 +10,7 @@ import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = FTMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@Backport(value=BackportFeature.SPRING_PLANTS,subscribe=Backport.Bus.MOD,clientOnly=true)
 public final class ForestClientEvents {
     @SubscribeEvent
     public static void resolvers(RegisterColorHandlersEvent.ColorResolvers event) {
@@ -23,11 +26,11 @@ public final class ForestClientEvents {
     public static void blocks(RegisterColorHandlersEvent.Block event) {
         event.register((state, level, pos, tint) -> {
             return level == null || pos == null ? DryFoliageColors.DEFAULT : level.getBlockTint(pos, DryFoliageColors.RESOLVER);
-        }, ForestBlocks.LEAF_LITTER.get());
+        }, NaturalEnvironmentBlocks.LEAF_LITTER.get());
     }
 
     @SubscribeEvent
     public static void items(RegisterColorHandlersEvent.Item event) {
-        event.register((stack, tint) -> DryFoliageColors.DEFAULT, ForestBlocks.LEAF_LITTER.get());
+        event.register((stack, tint) -> DryFoliageColors.DEFAULT, NaturalEnvironmentBlocks.LEAF_LITTER.get());
     }
 }

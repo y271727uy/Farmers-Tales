@@ -31,6 +31,12 @@ object FishPoolLootManager : SimpleJsonResourceReloadListener(
     @Volatile
     private var lootTables: Map<ResourceLocation, FishPoolLootTable> = emptyMap()
 
+    fun isFishKing(item: Item): Boolean {
+        val itemId = ForgeRegistries.ITEMS.getKey(item) ?: return false
+        return lootTables.values.any { it.fishKing == itemId } ||
+            FishPoolFactory.getAll().any { it.fishKing == itemId }
+    }
+
     override fun apply(
         jsonEntries: Map<ResourceLocation, JsonElement>,
         resourceManager: ResourceManager,

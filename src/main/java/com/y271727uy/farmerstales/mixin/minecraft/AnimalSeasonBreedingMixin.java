@@ -1,5 +1,6 @@
 package com.y271727uy.farmerstales.mixin.minecraft;
 
+import com.y271727uy.farmerstales.gameplay.animal_husbandry.AnimalEmotion;
 import com.y271727uy.farmerstales.gameplay.season_breeding.SeasonBreedingEvents;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
@@ -14,6 +15,13 @@ public abstract class AnimalSeasonBreedingMixin {
     @Inject(method = "setInLove(Lnet/minecraft/world/entity/player/Player;)V", at = @At("HEAD"), cancellable = true)
     private void farmerstales$blockOutOfSeasonLove(Player player, CallbackInfo ci) {
         Animal animal = (Animal) (Object) this;
+        if (!animal.level().isClientSide && AnimalEmotion.isTerrified(animal)) {
+            if (player != null) {
+                AnimalEmotion.sendRefusal(animal, player, "breeding");
+            }
+            ci.cancel();
+            return;
+        }
         if (animal.level().isClientSide || !SeasonBreedingEvents.isLoveBlocked(animal)) {
             return;
         }

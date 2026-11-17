@@ -2,6 +2,7 @@ package com.y271727uy.farmerstales.integration.xaero
 
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.gameplay.clock.client.ClockHud
+import com.y271727uy.farmerstales.gameplay.clock.client.HudItemAccess
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.item.ItemProperties
 import net.minecraft.network.chat.Component
@@ -51,6 +52,14 @@ object XaeroClockIntegration {
                 val player = minecraft.player
                 if (display.effectiveState && level != null && player != null) {
                     ClockHud.environmentLines(level, player.blockPosition()).forEach { compiler.addLine(it) }
+                    ClockHud.moonPhaseLine(level, player)?.let { compiler.addLine(it) }
+                    compiler.addLine(ClockHud.weatherLine(level, player.blockPosition()))
+                    if (HudItemAccess.canShowRealTime(player)) {
+                        val realTime = ClockHud.realTimeLines()
+                        val realTimeWidth = maxOf(minecraft.font.width(realTime.dateTime), minecraft.font.width(realTime.zone))
+                        compiler.addLine(centeredLine(realTime.dateTime, realTimeWidth))
+                        compiler.addLine(centeredLine(realTime.zone, realTimeWidth))
+                    }
                     val time = ItemProperties.getProperty(Items.CLOCK, timeProperty)
                         ?.call(clock, level, player, 0) ?: 0.0F
                     // Match vanilla clock.json's half-frame thresholds and wraparound.
@@ -60,6 +69,7 @@ object XaeroClockIntegration {
                     val lines = ClockHud.calendarLines(level)
                     val dateLine = Component.empty().append(icon).append(" ").append(lines.date)
                     compiler.addLine(dateLine)
+                     lines.seasonalTime?.let { compiler.addLine(it) }
                     // Give both lines the same width so the time stays centered
                     // under the date for every Xaero information-text alignment.
                     val padding = (minecraft.font.width(dateLine) - minecraft.font.width(lines.time))
@@ -73,5 +83,13 @@ object XaeroClockIntegration {
             .setDestination { displays.add(it) }
             .build()
         ClockHud.onMinimapDisplayRegistered()
+    }
+
+    private fun centeredLine(line: Component, width: Int): Component {
+        val padding = (width - Minecraft.getInstance().font.width(line)).coerceAtLeast(0)
+        if (padding == 0) return line
+        val left = Component.literal("\uE100".repeat(padding / 2)).setStyle(iconStyle)
+        val right = Component.literal("\uE100".repeat(padding - padding / 2)).setStyle(iconStyle)
+        return Component.empty().append(left).append(line).append(right)
     }
 }

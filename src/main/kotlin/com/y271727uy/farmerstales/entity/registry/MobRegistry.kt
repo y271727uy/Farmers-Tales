@@ -1,6 +1,9 @@
 package com.y271727uy.farmerstales.entity.registry
 
 import com.tterrag.registrate.providers.RegistrateItemModelProvider
+import com.y271727uy.farmerstales.backport.Backport
+import com.y271727uy.farmerstales.backport.BackportFeature
+import java.lang.reflect.Modifier
 import com.tterrag.registrate.providers.RegistrateLangProvider
 import com.y271727uy.farmerstales.entity.ai.MobAiBuilder
 import com.y271727uy.farmerstales.entity.ai.PassiveAnimalAiDefinition
@@ -30,27 +33,50 @@ import net.minecraftforge.registries.DeferredRegister
 import net.minecraftforge.registries.ForgeRegistries
 import net.minecraftforge.registries.RegistryObject
 
-/** Reusable backing registry for a mod's mob DSL. */
+/**
+ * Reusable backing registry for a mod's mob DSL.
+ *
+ * A mob field annotated with [Backport] (use `@field:Backport(...)` next to `@JvmField`) is only
+ * registered when that backport feature is enabled; its type and spawn egg handles stay absent
+ * otherwise, so check `type.isPresent` before using them from shared code.
+ */
 open class MobRegistry(private val modId: String) {
     private val entityTypes = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, modId)
     private val items = DeferredRegister.create(ForgeRegistries.ITEMS, modId)
     private val registeredMobs = mutableListOf<RegisteredMob<*>>()
+    private val enabledMobs: List<RegisteredMob<*>>
+        get() = registeredMobs.filter { it.enabled }
 
     fun register(bus: IEventBus) {
+        resolveBackports()
+        enabledMobs.forEach { it.registerEntries() }
         entityTypes.register(bus)
         items.register(bus)
     }
 
+    /** Reads `@Backport` from this registry's mob fields and disables mobs of disabled features. */
+    private fun resolveBackports() {
+        javaClass.declaredFields
+            .filter { RegisteredMob::class.java.isAssignableFrom(it.type) }
+            .forEach { field ->
+                val backport = field.getAnnotation(Backport::class.java) ?: return@forEach
+                field.isAccessible = true
+                val mob = field.get(if (Modifier.isStatic(field.modifiers)) null else this) as? RegisteredMob<*> ?: return@forEach
+                mob.feature = backport.value
+                mob.enabled = backport.value.isEnabled
+            }
+    }
+
     fun registerAttributes(event: EntityAttributeCreationEvent) {
-        registeredMobs.forEach { mob -> mob.attributeRegistration?.invoke(event) }
+        enabledMobs.forEach { mob -> mob.attributeRegistration?.invoke(event) }
     }
 
     fun registerSpawnPlacements() {
-        registeredMobs.forEach { mob -> mob.spawnPlacementRegistration?.invoke() }
+        enabledMobs.forEach { mob -> mob.spawnPlacementRegistration?.invoke() }
     }
 
     fun generateLang(provider: RegistrateLangProvider) {
-        registeredMobs.forEach { mob ->
+        enabledMobs.forEach { mob ->
             provider.add("entity.$modId.${mob.id}", mob.displayName)
             provider.add("item.$modId.${mob.spawnEggId}", mob.spawnEggName)
         }
@@ -60,7 +86,7 @@ open class MobRegistry(private val modId: String) {
         val spawnEggTemplate = ModelFile.UncheckedModelFile(
             ResourceLocation.fromNamespaceAndPath("minecraft", "item/template_spawn_egg"),
         )
-        registeredMobs.forEach { mob ->
+        enabledMobs.forEach { mob ->
             if (mob.id == "armadillo") {
                 provider.getBuilder(mob.spawnEggId)
                     .parent(ModelFile.UncheckedModelFile(ResourceLocation.fromNamespaceAndPath("minecraft", "item/generated")))
@@ -69,11 +95,11 @@ open class MobRegistry(private val modId: String) {
         }
     }
 
-    fun biomeSpawns(): List<BiomeSpawnEntry> = registeredMobs.mapNotNull { mob ->
-        mob.naturalSpawn?.let { spawn -> BiomeSpawnEntry(mob.id, spawn) }
+    fun biomeSpawns(): List<BiomeSpawnEntry> = enabledMobs.mapNotNull { mob ->
+        mob.naturalSpawn?.let { spawn -> BiomeSpawnEntry(mob.id, spawn, mob.feature) }
     }
 
-    fun lootTables(): List<MobLootEntry> = registeredMobs.map { mob ->
+    fun lootTables(): List<MobLootEntry> = enabledMobs.map { mob ->
         MobLootEntry(mob.type.get(), mob.loot)
     }
 
@@ -83,19 +109,27 @@ open class MobRegistry(private val modId: String) {
         configure: MobBuilder<T>.() -> Unit,
     ): RegisteredMob<T> {
         val definition = MobBuilder<T>().apply(configure)
-        val type = entityTypes.register(id) {
-            EntityType.Builder.of(factory, definition.category)
-                .sized(definition.width, definition.height)
-                .clientTrackingRange(8)
-                .build("$modId:$id")
-        }
-        val spawnEgg = items.register<Item>("${id}_spawn_egg") {
-            ForgeSpawnEggItem(
-                { type.get() },
-                definition.primaryEggColor,
-                definition.secondaryEggColor,
-                Item.Properties(),
-            )
+        // Lookup handles: filled once the entries below are registered (see register()).
+        val type: RegistryObject<EntityType<T>> =
+            RegistryObject.create(ResourceLocation.fromNamespaceAndPath(modId, id), ForgeRegistries.ENTITY_TYPES)
+        val spawnEgg: RegistryObject<Item> =
+            RegistryObject.create(ResourceLocation.fromNamespaceAndPath(modId, "${id}_spawn_egg"), ForgeRegistries.ITEMS)
+        val registerEntries = {
+            entityTypes.register(id) {
+                EntityType.Builder.of(factory, definition.category)
+                    .sized(definition.width, definition.height)
+                    .clientTrackingRange(8)
+                    .build("$modId:$id")
+            }
+            items.register<Item>("${id}_spawn_egg") {
+                ForgeSpawnEggItem(
+                    { type.get() },
+                    definition.primaryEggColor,
+                    definition.secondaryEggColor,
+                    Item.Properties(),
+                )
+            }
+            Unit
         }
         return RegisteredMob(
             id = id,
@@ -121,6 +155,7 @@ open class MobRegistry(private val modId: String) {
                     )
                 }
             },
+            registerEntries = registerEntries,
         ).also(registeredMobs::add)
     }
 
@@ -234,7 +269,16 @@ open class MobRegistry(private val modId: String) {
         val loot: MobLootDefinition,
         val attributeRegistration: ((EntityAttributeCreationEvent) -> Unit)?,
         val spawnPlacementRegistration: (() -> Unit)?,
+        internal val registerEntries: () -> Unit,
     ) {
+        /** Backport feature from the field's `@Backport`, or null for original content. */
+        var feature: BackportFeature? = null
+            internal set
+
+        /** False when this mob belongs to a disabled backport feature and was never registered. */
+        var enabled: Boolean = true
+            internal set
+
         val spawnEggId: String
             get() = "${id}_spawn_egg"
 
@@ -380,6 +424,7 @@ open class MobRegistry(private val modId: String) {
     data class BiomeSpawnEntry(
         val entityId: String,
         val spawn: NaturalSpawnDefinition,
+        val feature: BackportFeature? = null,
     )
 
     data class MobLootEntry(

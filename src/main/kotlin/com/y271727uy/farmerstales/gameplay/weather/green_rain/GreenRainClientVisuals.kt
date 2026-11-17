@@ -1,8 +1,8 @@
 package com.y271727uy.farmerstales.gameplay.weather.green_rain
 
 import com.y271727uy.farmerstales.FTMod
+import com.y271727uy.farmerstales.gameplay.common.client.SkyTint
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.util.Mth
 import net.minecraft.world.phys.Vec3
 import net.minecraftforge.api.distmarker.Dist
 import net.minecraftforge.client.event.ViewportEvent
@@ -24,10 +24,7 @@ object GreenRainClientVisuals {
         "textures/environment/green_rain.png",
     )
 
-    private const val TINT_R = 0.42f
-    private const val TINT_G = 0.62f
-    private const val TINT_B = 0.22f
-    private val TINT = Vec3(TINT_R.toDouble(), TINT_G.toDouble(), TINT_B.toDouble())
+    private val TINT = SkyTint(0.42f, 0.62f, 0.22f)
 
     @JvmStatic
     fun activeRainTexture(): ResourceLocation? =
@@ -35,18 +32,16 @@ object GreenRainClientVisuals {
 
     @JvmStatic
     fun tintSky(original: Vec3): Vec3 =
-        if (GreenRainClientState.active) original.lerp(TINT, 0.45) else original
+        if (GreenRainClientState.active) TINT.mix(original, 0.45) else original
 
     @JvmStatic
     fun tintClouds(original: Vec3): Vec3 =
-        if (GreenRainClientState.active) original.lerp(TINT, 0.40) else original
+        if (GreenRainClientState.active) TINT.mix(original, 0.40) else original
 
     @JvmStatic
     @SubscribeEvent(priority = EventPriority.LOW)
     fun onFogColor(event: ViewportEvent.ComputeFogColor) {
         if (!GreenRainClientState.active) return
-        event.red = Mth.lerp(0.55f, event.red, TINT_R)
-        event.green = Mth.lerp(0.55f, event.green, TINT_G)
-        event.blue = Mth.lerp(0.55f, event.blue, TINT_B)
+        TINT.mixFog(event, 0.55f)
     }
 }

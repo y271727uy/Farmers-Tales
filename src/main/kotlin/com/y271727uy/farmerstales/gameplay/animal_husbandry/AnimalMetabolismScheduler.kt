@@ -1,5 +1,6 @@
 package com.y271727uy.farmerstales.gameplay.animal_husbandry
 
+import com.y271727uy.farmerstales.gameplay.common.dayIndex
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.config.Config
 import net.minecraft.server.level.ServerLevel
@@ -100,7 +101,7 @@ object AnimalMetabolismScheduler {
     }
 
     private fun enqueueDailySettlements(level: ServerLevel) {
-        val currentDay = level.dayTime / 24_000L
+        val currentDay = level.dayIndex
         val previousDay = lastDayByLevel.put(level, currentDay)
         if (previousDay == null || currentDay <= previousDay) {
             return

@@ -9,7 +9,7 @@ object GeneCropItems {
     @JvmField
     val CROP_POLLEN: ItemEntry<CropPollenItem> = ModRegistrate.REGISTRATE
         .item("crop_pollen", ::CropPollenItem)
-        .model { context, provider -> provider.generated(context, provider.mcLoc("item/glowstone_dust")) }
+        .model { context, provider -> provider.generated(context, provider.modLoc("item/pollen_fertile")) }
         .register()
 
     @JvmField

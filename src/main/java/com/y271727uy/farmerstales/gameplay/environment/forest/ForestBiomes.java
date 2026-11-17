@@ -48,9 +48,11 @@ public final class ForestBiomes {
     public static Climate.ParameterList<Holder<Biome>> addForests(
             Climate.ParameterList<Holder<Biome>> original, Registry<Biome> biomes) {
         List<Pair<Climate.ParameterPoint, Holder<Biome>>> result = new ArrayList<>(original.values());
-        for (var region : List.of(
-                new ForestRegion(window(-0.05F, 0.2F, 0.3F, 1.0F), biomes.getHolderOrThrow(PALE_GARDEN)),
-                new ForestRegion(window(-0.45F, -0.15F, -0.1F, 0.3F), biomes.getHolderOrThrow(DAPPLED_FOREST)))) {
+        List<ForestRegion> regions = new ArrayList<>();
+        // These biomes only exist while their back-port data packs are loaded.
+        biomes.getHolder(PALE_GARDEN).ifPresent(biome -> regions.add(new ForestRegion(window(-0.05F, 0.2F, 0.3F, 1.0F), biome)));
+        biomes.getHolder(DAPPLED_FOREST).ifPresent(biome -> regions.add(new ForestRegion(window(-0.45F, -0.15F, -0.1F, 0.3F), biome)));
+        for (var region : regions) {
             List<Pair<Climate.ParameterPoint, Holder<Biome>>> next = new ArrayList<>();
             for (var entry : result) {
                 if (!isForestLand(entry.getSecond())) {

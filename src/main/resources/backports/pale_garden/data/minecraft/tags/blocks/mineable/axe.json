@@ -1,0 +1,23 @@
+{
+  "replace": false,
+  "values": [
+    "farmerstales:pale_oak_log",
+    "farmerstales:stripped_pale_oak_log",
+    "farmerstales:pale_oak_wood",
+    "farmerstales:stripped_pale_oak_wood",
+    "farmerstales:pale_oak_planks",
+    "farmerstales:creaking_heart",
+    "farmerstales:pale_oak_stairs",
+    "farmerstales:pale_oak_slab",
+    "farmerstales:pale_oak_fence",
+    "farmerstales:pale_oak_fence_gate",
+    "farmerstales:pale_oak_door",
+    "farmerstales:pale_oak_trapdoor",
+    "farmerstales:pale_oak_button",
+    "farmerstales:pale_oak_pressure_plate",
+    "farmerstales:pale_oak_sign",
+    "farmerstales:pale_oak_wall_sign",
+    "farmerstales:pale_oak_hanging_sign",
+    "farmerstales:pale_oak_wall_hanging_sign"
+  ]
+}

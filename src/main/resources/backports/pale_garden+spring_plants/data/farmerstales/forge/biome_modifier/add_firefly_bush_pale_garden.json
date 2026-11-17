@@ -1,0 +1,10 @@
+{
+  "type": "forge:add_features",
+  "biomes": [
+    "farmerstales:pale_garden"
+  ],
+  "features": [
+    "farmerstales:patch_firefly_bush"
+  ],
+  "step": "vegetal_decoration"
+}

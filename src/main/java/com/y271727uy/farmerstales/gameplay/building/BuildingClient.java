@@ -1,4 +1,6 @@
 package com.y271727uy.farmerstales.gameplay.building;
+import com.y271727uy.farmerstales.backport.Backport;
+import com.y271727uy.farmerstales.backport.BackportFeature;
 import com.y271727uy.farmerstales.FTMod;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
@@ -6,7 +8,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-@Mod.EventBusSubscriber(modid=FTMod.MODID,bus=Mod.EventBusSubscriber.Bus.MOD,value=Dist.CLIENT)
+@Backport(value=BackportFeature.GOLDEN_DANDELION,subscribe=Backport.Bus.MOD,clientOnly=true)
 public final class BuildingClient {
     @SubscribeEvent public static void particles(RegisterParticleProvidersEvent event){
         event.registerSpriteSet(BuildingContent.PAUSE.get(),sprites->(type,level,x,y,z,dx,dy,dz)->new GrowthParticle(level,x,y,z,dx,dy,dz,sprites,false));

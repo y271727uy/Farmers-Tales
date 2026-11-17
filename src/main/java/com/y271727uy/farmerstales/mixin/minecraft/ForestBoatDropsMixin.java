@@ -8,5 +8,5 @@ import org.spongepowered.asm.mixin.injection.*;
 @Mixin(Boat.class)
 public abstract class ForestBoatDropsMixin {
     @ModifyArg(method="checkFallDamage",at=@At(value="INVOKE",target="Lnet/minecraft/world/entity/vehicle/Boat;spawnAtLocation(Lnet/minecraft/world/level/ItemLike;)Lnet/minecraft/world/entity/item/ItemEntity;"),index=0)
-    private ItemLike ownPlanks(ItemLike original){return original==net.minecraft.world.level.block.Blocks.OAK_PLANKS&&(Object)this instanceof ForestBoatWood boat?ForestBlocks.ALL.get(boat.wood()+"_planks").get():original;}
+    private ItemLike ownPlanks(ItemLike original){return original==net.minecraft.world.level.block.Blocks.OAK_PLANKS&&(Object)this instanceof ForestBoatWood boat?ForestBlocks.planks(boat.wood()):original;}
 }

@@ -1,4 +1,5 @@
 package com.y271727uy.farmerstales.gameplay.environment.forest;
+import com.y271727uy.farmerstales.all.NaturalEnvironmentBlocks;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -86,7 +87,7 @@ public final class FallenTreeFeature extends Feature<FallenTreeFeature.Configura
                 for(int y=2;y>=-2;y--) {
                     var ground=column.offset(0,y-1,0);var above=ground.above();
                     if(!context.level().isStateAtPosition(ground,s->s.is(BlockTags.DIRT)) || !context.isAir(above))continue;
-                    context.setBlock(above,ForestBlocks.LEAF_LITTER.get().defaultBlockState()
+                    context.setBlock(above,NaturalEnvironmentBlocks.LEAF_LITTER.get().defaultBlockState()
                             .setValue(PinkPetalsBlock.AMOUNT,1+context.random().nextInt(pass==0?3:4))
                             .setValue(PinkPetalsBlock.FACING,Direction.Plane.HORIZONTAL.getRandomDirection(context.random())));
                     break;

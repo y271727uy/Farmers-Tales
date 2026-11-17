@@ -112,7 +112,8 @@ public abstract class BlockQualityDropMixin {
     )
     private static ItemStack farmerstales$applyHarvestQualityAtBlockPos(ItemStack stack) {
         QualityHarvestContext.Context context = QualityHarvestContext.current();
-        if (context == null) {
+        // Native scythe picks are handled once, in the common popResource overload.
+        if (context == null || context.scythePick()) {
             return GeneCropDrop.apply(stack);
         }
         ItemStack processed = QualityDropProcessor.applyPlayerDestroy(stack, context);

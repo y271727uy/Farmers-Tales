@@ -3,7 +3,10 @@ package com.y271727uy.farmerstales.all.items
 import com.y271727uy.farmerstales.gameplay.gene_crop.block.entity.CropStandBlockEntity
 import com.y271727uy.farmerstales.gameplay.gene_crop.pollen.CropPollenSample
 import net.minecraft.ChatFormatting
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.Tag
 import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
@@ -19,8 +22,9 @@ class CropPollenItem(properties: Properties) : Item(properties) {
     }
 
     override fun appendHoverText(stack: ItemStack, level: Level?, tooltip: MutableList<Component>, flag: TooltipFlag) {
-        val key = if (sample(stack)?.isViable() == true) "ready" else "display"
-        tooltip.add(Component.translatable("tooltip.farmerstales.crop_pollen.$key").withStyle(ChatFormatting.GRAY))
+        if (sample(stack)?.isViable() == true) {
+            tooltip.add(Component.translatable("tooltip.farmerstales.crop_pollen.ready").withStyle(ChatFormatting.GRAY))
+        }
     }
 
     override fun useOn(context: UseOnContext): InteractionResult {
@@ -43,9 +47,14 @@ class CropPollenItem(properties: Properties) : Item(properties) {
         }
 
         @JvmStatic
-        fun sample(stack: ItemStack): CropPollenSample? {
-            if (stack.item !is CropPollenItem || stack.tag?.contains(SAMPLE, 10) != true) return null
-            return CropPollenSample.read(stack.tag!!.getCompound(SAMPLE))
+        fun sample(stack: ItemStack): CropPollenSample? = sampleTag(stack)?.let(CropPollenSample::read)
+
+        fun seedId(stack: ItemStack): ResourceLocation? = sampleTag(stack)?.let(CropPollenSample::readSeedId)
+
+        private fun sampleTag(stack: ItemStack): CompoundTag? {
+            if (stack.item !is CropPollenItem) return null
+            val tag = stack.tag ?: return null
+            return if (tag.contains(SAMPLE, Tag.TAG_COMPOUND.toInt())) tag.getCompound(SAMPLE) else null
         }
     }
 }

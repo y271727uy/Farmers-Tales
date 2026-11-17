@@ -20,6 +20,7 @@ object FloatingPoolsSpawnerHelper {
 
     private fun attemptSpawn(level: ServerLevel) {
         if (level.players().isEmpty()) return
+        if (!com.y271727uy.farmerstales.gameplay.weather.area_weather.AreaWeatherEffects.allowFishPoolSpawn(level)) return
         val random = level.random
         val player = level.players()[random.nextInt(level.players().size)]
         val dimension = level.dimension()

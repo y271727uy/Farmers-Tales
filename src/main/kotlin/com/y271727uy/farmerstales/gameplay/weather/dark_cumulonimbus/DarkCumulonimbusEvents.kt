@@ -2,8 +2,12 @@ package com.y271727uy.farmerstales.gameplay.weather.dark_cumulonimbus
 
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.config.Config
+import com.y271727uy.farmerstales.gameplay.common.PlayerLevelSync
+import com.y271727uy.farmerstales.gameplay.common.announce
+import com.y271727uy.farmerstales.gameplay.common.dayIndex
+import com.y271727uy.farmerstales.gameplay.common.sendPacket
+import com.y271727uy.farmerstales.gameplay.common.sendToDimension
 import com.y271727uy.farmerstales.network.DarkCumulonimbusSyncPacket
-import com.y271727uy.farmerstales.network.FarmerstalesNetwork
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
@@ -13,11 +17,8 @@ import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
 import net.minecraft.world.level.saveddata.SavedData
 import net.minecraftforge.event.TickEvent
-import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.network.PacketDistributor
-import java.util.function.Supplier
 
 /**
  * Dimension-wide dry overcast. It never sets vanilla raining, so rain-gated
@@ -29,6 +30,10 @@ object DarkCumulonimbusEvents {
     private const val ACTIVE_TAG = "Active"
     private const val REMAINING_TAG = "RemainingTicks"
     private const val ROLLED_DAY_TAG = "RolledDay"
+
+    init {
+        PlayerLevelSync.register(::syncPlayer)
+    }
 
     fun isActive(level: ServerLevel): Boolean = data(level).active
 
@@ -76,7 +81,7 @@ object DarkCumulonimbusEvents {
             return
         }
 
-        val day = level.dayTime / 24_000L
+        val day = level.dayIndex
         if (state.rolledDay == day) return
         state.rolledDay = day
         state.setDirty()
@@ -88,24 +93,6 @@ object DarkCumulonimbusEvents {
         state.setDirty()
         announce(level)
         syncAll(level)
-    }
-
-    @JvmStatic
-    @SubscribeEvent
-    fun onPlayerLogin(event: PlayerEvent.PlayerLoggedInEvent) {
-        syncPlayer(event.entity as? ServerPlayer ?: return)
-    }
-
-    @JvmStatic
-    @SubscribeEvent
-    fun onPlayerChangedDimension(event: PlayerEvent.PlayerChangedDimensionEvent) {
-        syncPlayer(event.entity as? ServerPlayer ?: return)
-    }
-
-    @JvmStatic
-    @SubscribeEvent
-    fun onPlayerRespawn(event: PlayerEvent.PlayerRespawnEvent) {
-        syncPlayer(event.entity as? ServerPlayer ?: return)
     }
 
     private fun rollThunder(level: ServerLevel) {
@@ -138,22 +125,15 @@ object DarkCumulonimbusEvents {
     }
 
     private fun announce(level: ServerLevel) {
-        val message = Component.translatable("message.${FTMod.MODID}.dark_cumulonimbus.started")
-        level.players().filterIsInstance<ServerPlayer>().forEach { it.sendSystemMessage(message) }
+        level.announce(Component.translatable("message.${FTMod.MODID}.dark_cumulonimbus.started"))
     }
 
     private fun syncAll(level: ServerLevel) {
-        FarmerstalesNetwork.CHANNEL.send(
-            PacketDistributor.DIMENSION.with(Supplier { level.dimension() }),
-            DarkCumulonimbusSyncPacket(data(level).active),
-        )
+        level.sendToDimension(DarkCumulonimbusSyncPacket(data(level).active))
     }
 
     private fun syncPlayer(player: ServerPlayer) {
-        FarmerstalesNetwork.CHANNEL.send(
-            PacketDistributor.PLAYER.with(Supplier { player }),
-            DarkCumulonimbusSyncPacket(data(player.serverLevel()).active),
-        )
+        player.sendPacket(DarkCumulonimbusSyncPacket(data(player.serverLevel()).active))
     }
 
     private fun data(level: ServerLevel): DarkCumulonimbusData =

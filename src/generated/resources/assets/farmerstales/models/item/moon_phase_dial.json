@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "farmerstales:item/moon_phase_dial"
+  }
+}

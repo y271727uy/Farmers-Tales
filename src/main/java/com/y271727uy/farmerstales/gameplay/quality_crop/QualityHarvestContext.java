@@ -4,7 +4,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-/** Context shared by Block.playerDestroy and the resulting Block.popResource calls. */
+/** Associates block drops with the player who broke or picked the crop. */
 public final class QualityHarvestContext {
     private static final ThreadLocal<Context> CURRENT = new ThreadLocal<>();
 
@@ -15,7 +15,11 @@ public final class QualityHarvestContext {
         if (level.isClientSide()) {
             return;
         }
-        CURRENT.set(new Context(level, player, state));
+        CURRENT.set(new Context(level, player, state, false));
+    }
+
+    public static void captureScythe(Level level, Player player, BlockState state) {
+        CURRENT.set(new Context(level, player, state, true));
     }
 
     public static Context current() {
@@ -26,6 +30,6 @@ public final class QualityHarvestContext {
         CURRENT.remove();
     }
 
-    public record Context(Level level, Player player, BlockState state) {
+    public record Context(Level level, Player player, BlockState state, boolean scythePick) {
     }
 }

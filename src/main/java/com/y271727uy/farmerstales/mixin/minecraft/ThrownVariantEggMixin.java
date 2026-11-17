@@ -1,4 +1,6 @@
 package com.y271727uy.farmerstales.mixin.minecraft;
+import com.y271727uy.farmerstales.backport.Backport;
+import com.y271727uy.farmerstales.backport.BackportFeature;
 
 import com.y271727uy.farmerstales.gameplay.animal_variants.VariantEggs;
 import net.minecraft.world.entity.Entity;
@@ -8,6 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
+@Backport(BackportFeature.FARM_ANIMAL_VARIANTS)
 @Mixin(ThrownEgg.class)
 public abstract class ThrownVariantEggMixin {
     @Redirect(method = "onHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z"))

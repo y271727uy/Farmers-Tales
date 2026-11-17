@@ -1,5 +1,7 @@
 package com.y271727uy.farmerstales.gameplay.special_event.crimson_moon
 
+import com.y271727uy.farmerstales.gameplay.common.DayClock
+import com.y271727uy.farmerstales.gameplay.common.dayIndex
 import com.mojang.datafixers.util.Either
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.all.ModSounds
@@ -40,7 +42,7 @@ object CrimsonMoonSleep {
     @JvmStatic
     fun tryWarnFirstAttempt(player: ServerPlayer): Either<Player.BedSleepingProblem, McUnit>? {
         if (!CrimsonMoonEvents.isActive(player.serverLevel())) return null
-        val day = player.serverLevel().dayTime / 24_000L
+        val day = player.serverLevel().dayIndex
         val state = confirmByPlayer.getOrPut(player.uuid, ::ConfirmState)
         if (state.day != day) {
             state.day = day
@@ -76,7 +78,7 @@ object CrimsonMoonSleep {
         if (!CrimsonMoonEvents.isActive(level)) return
         if (!skipsToDay(event.newTime)) return
 
-        val nightDay = level.dayTime / 24_000L
+        val nightDay = level.dayIndex
         val settled = settledPenaltyDays.getOrPut(level, ::HashSet)
         if (!settled.add(nightDay)) return
         settled.removeIf { it < nightDay }
@@ -109,8 +111,7 @@ object CrimsonMoonSleep {
     }
 
     private fun skipsToDay(newTime: Long): Boolean {
-        val timeOfDay = newTime % 24_000L
-        return timeOfDay !in 13_000L..23_999L
+        return !DayClock.isNight(DayClock.tickOf(newTime))
     }
 
     private fun killNearbyDomesticSheep(level: ServerLevel, sources: List<ServerPlayer>): Int {

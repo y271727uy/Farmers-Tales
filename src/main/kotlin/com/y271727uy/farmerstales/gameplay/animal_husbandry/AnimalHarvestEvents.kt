@@ -50,6 +50,13 @@ object AnimalHarvestEvents {
             return
         }
 
+        if (AnimalEmotion.isTerrified(cow)) {
+            AnimalEmotion.sendRefusal(cow, event.entity, "milking")
+            event.setCancellationResult(InteractionResult.FAIL)
+            event.isCanceled = true
+            return
+        }
+
         val now = cow.level().gameTime
         val cooldownUntil = cow.persistentData.getLong(MILKING_COOLDOWN_KEY)
         if (cooldownUntil > now || !AnimalMetabolism.consumeHungerFromFullyFed(cow, MILKING_HUNGER_COST)) {

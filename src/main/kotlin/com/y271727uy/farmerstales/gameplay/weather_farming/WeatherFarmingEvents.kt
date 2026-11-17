@@ -2,6 +2,7 @@ package com.y271727uy.farmerstales.gameplay.weather_farming
 
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.config.Config
+import com.y271727uy.farmerstales.gameplay.common.BonusGrowthTick
 import com.y271727uy.farmerstales.gameplay.weather.heavy_rain.HeavyRainEvents
 import com.y271727uy.farmerstales.gameplay.weather.heavy_rain.RainIntensity
 import net.minecraft.core.BlockPos
@@ -14,7 +15,7 @@ import net.minecraftforge.fml.common.Mod
 @Mod.EventBusSubscriber(modid = FTMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 @Suppress("unused")
 object WeatherFarmingEvents {
-    private val applyingRainBonus = ThreadLocal.withInitial { false }
+    private val rainBonus = BonusGrowthTick()
 
     @JvmStatic
     @SubscribeEvent
@@ -33,7 +34,7 @@ object WeatherFarmingEvents {
     @SubscribeEvent
     fun onCropGrowPost(event: BlockEvent.CropGrowEvent.Post) {
         val level = event.level as? ServerLevel ?: return
-        if (!Config.weatherAffectsCropGrowth || applyingRainBonus.get() || Config.rainGrowthBonusChance <= 0.0) {
+        if (!Config.weatherAffectsCropGrowth || rainBonus.isApplying || Config.rainGrowthBonusChance <= 0.0) {
             return
         }
         if (event.originalState == event.state || isSnowFallingOn(level, event.pos) || !isRainFallingOn(level, event.pos)) {
@@ -44,17 +45,7 @@ object WeatherFarmingEvents {
             return
         }
 
-        val state = level.getBlockState(event.pos)
-        if (!state.isRandomlyTicking) {
-            return
-        }
-
-        applyingRainBonus.set(true)
-        try {
-            state.randomTick(level, event.pos, level.random)
-        } finally {
-            applyingRainBonus.set(false)
-        }
+        rainBonus.apply(level, event.pos)
     }
 
     private fun isRainFallingOn(level: ServerLevel, cropPos: BlockPos): Boolean = level.isRainingAt(cropPos.above())

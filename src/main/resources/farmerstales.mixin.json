@@ -6,6 +6,9 @@
   "refmap": "farmerstales.refmap.json",
   "plugin": "com.y271727uy.farmerstales.mixin.FarmersTalesMixinPlugin",
   "mixins": [
+    "minecraft.FishingRodItemMixin",
+    "minecraft.FishingHookMixin",
+    "minecraft.FishingTreasureLootMixin",
     "minecraft.ChickenVariantEggMixin",
     "minecraft.ThrownVariantEggMixin",
     "minecraft.CactusFlowerGrowthMixin",
@@ -33,6 +36,7 @@
     "farmandcharm.FeedingTroughBlockEntityMixin",
     "farmandcharm.ApproachFeedingTroughGoalMixin",
     "forestry.InventoryAnalyzerMixin",
+    "forestry.AreaWeatherMutationMixin",
     "forestry.ItemInventoryAlyzerMixin",
     "forestry.TileAnalyzerMixin",
     "forestry.TreeSpeciesTooltipMixin",

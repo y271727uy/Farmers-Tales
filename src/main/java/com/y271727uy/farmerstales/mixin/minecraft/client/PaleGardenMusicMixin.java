@@ -1,4 +1,6 @@
 package com.y271727uy.farmerstales.mixin.minecraft.client;
+import com.y271727uy.farmerstales.backport.Backport;
+import com.y271727uy.farmerstales.backport.BackportFeature;
 
 import com.y271727uy.farmerstales.gameplay.environment.forest.ForestBiomes;
 import net.minecraft.client.Minecraft;
@@ -10,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /** Pale Garden has no background music, including vanilla's fallback game music. */
+@Backport(BackportFeature.PALE_GARDEN)
 @Mixin(MusicManager.class)
 public abstract class PaleGardenMusicMixin {
     @Shadow public abstract void stopPlaying();

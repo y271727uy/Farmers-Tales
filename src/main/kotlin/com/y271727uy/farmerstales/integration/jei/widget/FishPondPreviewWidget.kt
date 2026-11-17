@@ -40,7 +40,7 @@ class FishPondPreviewWidget private constructor(private val index: Int) : Widget
 
         sceneWidget = SceneWidget(3, 12, 150, SCENE_HEIGHT, world)
             .setRenderFacing(false)
-            .setHoverTips(true)
+            .setHoverTips(false)
         addWidget(sceneWidget)
 
         addWidget(

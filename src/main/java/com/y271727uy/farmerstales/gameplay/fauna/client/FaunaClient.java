@@ -1,4 +1,6 @@
 package com.y271727uy.farmerstales.gameplay.fauna.client;
+import com.y271727uy.farmerstales.backport.Backport;
+import com.y271727uy.farmerstales.backport.BackportFeature;
 import com.y271727uy.farmerstales.FTMod;
 import com.y271727uy.farmerstales.gameplay.fauna.*;
 import com.y271727uy.farmerstales.variant.WolfArmorHolder;
@@ -17,7 +19,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-@Mod.EventBusSubscriber(modid=FTMod.MODID,bus=Mod.EventBusSubscriber.Bus.MOD,value=Dist.CLIENT)
+@Backport(value=BackportFeature.ARMORED_PAWS,subscribe=Backport.Bus.MOD,clientOnly=true)
 public final class FaunaClient {
     public static final ModelLayerLocation ARMADILLO=new ModelLayerLocation(id("armadillo"),"main"),ARMOR=new ModelLayerLocation(id("wolf_armor"),"main");
     private static ResourceLocation id(String path){return ResourceLocation.fromNamespaceAndPath(FTMod.MODID,path);}

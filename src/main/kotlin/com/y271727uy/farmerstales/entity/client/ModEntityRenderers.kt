@@ -16,8 +16,10 @@ object ModEntityRenderers {
     @JvmStatic
     @SubscribeEvent
     fun registerRenderers(event: EntityRenderersEvent.RegisterRenderers) {
-        event.registerEntityRenderer(ModEntities.NAUTILUS.type.get(), ::NautilusRenderer)
-        event.registerEntityRenderer(ModEntities.ZOMBIE_NAUTILUS.type.get(), ::ZombieNautilusRenderer)
+        if (ModEntities.NAUTILUS.enabled) {
+            event.registerEntityRenderer(ModEntities.NAUTILUS.type.get(), ::NautilusRenderer)
+            event.registerEntityRenderer(ModEntities.ZOMBIE_NAUTILUS.type.get(), ::ZombieNautilusRenderer)
+        }
         event.registerEntityRenderer(ModEntities.BAMBOO_RAT.type.get(), ::BambooRatRenderer)
         event.registerEntityRenderer(ModEntities.RAT.type.get(), ::RatRenderer)
     }

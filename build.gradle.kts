@@ -31,6 +31,10 @@ repositories {
     flatDir {
         dirs("mods")
     }
+    // Plain (non-mod) Java libraries that are shipped inside our jar via jarJar.
+    flatDir {
+        dirs("libs")
+    }
     mavenLocal()
     mavenCentral()
     maven {
@@ -93,6 +97,7 @@ val libModFiles = listOf(
     file("lib/seasonhud-forge-1.20.1-2.0.11.jar"),
     file("lib/xaerominimap-forge-1.20.1-26.6.0.jar"),
     file("lib/xaeroworldmap-forge-1.20.1-1.47.0.jar"),
+    file("lib/curios-forge-5.12.1+1.20.1.jar"),
 
 ).filter(File::exists)
 // Temporary test mods. Their coordinates are derived from each file name and
@@ -194,6 +199,11 @@ val extractXaeroLibApi = tasks.register<Sync>("extractXaeroLibApi") {
 
 dependencies {
     jarJar(modApi(libs.registrate.get())!!)
+
+    // computatio: plain Java 17 library (not a mod). Compiled against, embedded
+    // into META-INF/jarjar of the built mod, and put on the dev-run module path.
+    jarJar(implementation("local:computatio:0.1.0")!!)
+    add("additionalRuntimeClasspath", "local:computatio:0.1.0")
     modImplementation("thedarkcolour:kotlinforforge:4.12.0")
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     compileOnly("io.github.llamalad7:mixinextras-common:0.5.0")
@@ -216,6 +226,7 @@ dependencies {
     add("compileOnly", files("lib/CraftTweaker-forge-1.20.1-14.0.60.jar"))
     add("compileOnly", files("lib/StellarView-1.20.1-0.5.3-Forge.jar"))
     add("compileOnly", files("lib/forestry-1.20.1-2.11.1.jar"))
+    add("compileOnly", files("lib/curios-forge-5.12.1+1.20.1.jar"))
     add("compileOnly", files(xaeroMinimapApi))
     add("compileOnly", files(fileTree(layout.buildDirectory.dir("xaeroLibApi")) {
         include("**/*.jar")

@@ -1,6 +1,10 @@
 package com.y271727uy.farmerstales.integration.jade
 
 import com.y271727uy.farmerstales.FTMod
+import com.y271727uy.farmerstales.gameplay.animal_husbandry.AnimalCondition
+import com.y271727uy.farmerstales.gameplay.animal_husbandry.AnimalConditions
+import com.y271727uy.farmerstales.gameplay.animal_husbandry.AnimalEmotion
+import com.y271727uy.farmerstales.gameplay.animal_husbandry.AnimalEmotionState
 import com.y271727uy.farmerstales.gameplay.animal_husbandry.AnimalHusbandryRules
 import com.y271727uy.farmerstales.gameplay.animal_husbandry.AnimalMetabolism
 import com.y271727uy.farmerstales.gameplay.animal_husbandry.AnimalHusbandryState
@@ -27,6 +31,8 @@ object AnimalHusbandryTooltipProvider : IEntityComponentProvider, IServerDataPro
     private const val MAX_WEIGHT_KEY = "maxWeight"
     private const val MILKING_COOLDOWN_KEY = "milkingCooldown"
     private const val MILKING_READY_KEY = "milkingReady"
+    private const val EMOTION_KEY = "emotion"
+    private const val CONDITIONS_KEY = "conditions"
     private val uid = ResourceLocation.fromNamespaceAndPath(FTMod.MODID, "animal_husbandry")
 
     override fun getUid(): ResourceLocation = uid
@@ -41,7 +47,13 @@ object AnimalHusbandryTooltipProvider : IEntityComponentProvider, IServerDataPro
         if (status != AnimalHusbandryStatus.UNMANAGED) {
             tag.putString(STATUS_KEY, status.serializedName)
         }
-        AnimalMetabolism.inspect(animal)?.let { vitals ->
+        val vitals = AnimalMetabolism.inspect(animal)
+        val emotion = AnimalEmotion.evaluate(animal, vitals)
+        emotion?.let { tag.putString(EMOTION_KEY, it.serializedName) }
+        AnimalConditions.evaluate(animal, vitals, emotion).takeIf { it.isNotEmpty() }?.let { conditions ->
+            tag.putInt(CONDITIONS_KEY, conditions.fold(0) { bits, condition -> bits or condition.bit })
+        }
+        vitals?.let { vitals ->
             val plan = AnimalHusbandryRules.metabolismFor(animal) ?: return@let
             tag.putInt(HUNGER_KEY, vitals.hunger)
             tag.putInt(AFFECTION_KEY, vitals.affection)
@@ -65,6 +77,25 @@ object AnimalHusbandryTooltipProvider : IEntityComponentProvider, IServerDataPro
                 tooltip.add(Component.translatable("tooltip.${FTMod.MODID}.animal_husbandry.wild"))
             AnimalHusbandryStatus.DOMESTICATED.serializedName ->
                 tooltip.add(Component.translatable("tooltip.${FTMod.MODID}.animal_husbandry.domesticated"))
+        }
+        AnimalEmotionState.fromSerializedName(accessor.serverData.getString(EMOTION_KEY))?.let { emotion ->
+            tooltip.add(
+                Component.translatable(
+                    "tooltip.${FTMod.MODID}.animal_husbandry.emotion",
+                    Component.translatable(emotion.translationKey),
+                ),
+            )
+        }
+        AnimalCondition.fromBits(accessor.serverData.getInt(CONDITIONS_KEY))
+            .take(AnimalConditions.MAX_DISPLAYED)
+            .takeIf { it.isNotEmpty() }?.let { conditions ->
+            val separator = Component.translatable("tooltip.${FTMod.MODID}.animal_husbandry.condition.separator")
+            val joined = Component.empty()
+            conditions.forEachIndexed { index, condition ->
+                if (index > 0) joined.append(separator)
+                joined.append(Component.translatable(condition.translationKey))
+            }
+            tooltip.add(Component.translatable("tooltip.${FTMod.MODID}.animal_husbandry.condition", joined))
         }
         if (accessor.serverData.contains(HUNGER_KEY)) {
             tooltip.add(Component.translatable("tooltip.${FTMod.MODID}.animal_husbandry.hunger", accessor.serverData.getInt(HUNGER_KEY), accessor.serverData.getInt(MAX_HUNGER_KEY)))

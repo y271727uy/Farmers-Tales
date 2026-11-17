@@ -31,6 +31,7 @@ public final class ForestTravel {
     public static final RegistryObject<BlockEntityType<HangingSignBlockEntity>> HANGING_SIGN=BES.register("forest_hanging_sign",()->BlockEntityType.Builder.of((pos,state)->new HangingSignBlockEntity(ForestTravel.HANGING_SIGN.get(),pos,state),signBlocks(true)).build(null));
     static {
         for(String tree:new String[]{"pale_oak","poplar"}) {
+            if(!(tree.equals("pale_oak")?com.y271727uy.farmerstales.backport.BackportFeature.PALE_GARDEN:com.y271727uy.farmerstales.backport.BackportFeature.POPLAR).isEnabled())continue;
             var wood=WoodType.register(new WoodType("farmerstales:"+tree,BlockSetType.OAK));WOODS.put(tree,wood);
             var standing=BLOCKS.register(tree+"_sign",()->new StandingSignBlock(BlockBehaviour.Properties.copy(Blocks.OAK_SIGN),wood){
                 @Override public BlockEntity newBlockEntity(BlockPos pos,BlockState state){return new SignBlockEntity(SIGN.get(),pos,state);}

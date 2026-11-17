@@ -5,6 +5,7 @@ import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.tags.TagKey
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 
 /** Tags remain authoritative and are read live, including after datapack reloads. */
 object CropPollenDefinitions {
@@ -14,7 +15,9 @@ object CropPollenDefinitions {
     }
 
     data class Family(val name: String, val seedTags: Set<TagKey<Item>>) {
-        fun supports(seed: ItemStack): Boolean = !seed.isEmpty && seedTags.any { seed.`is`(it) }
+        fun supports(seed: ItemStack): Boolean = !seed.isEmpty && supports(seed.item)
+
+        fun supports(seed: Item): Boolean = seed != Items.AIR && seedTags.any { seed.builtInRegistryHolder().`is`(it) }
     }
 
     private fun pollen(name: String, define: FamilyBuilder.() -> Unit): Family {
@@ -30,6 +33,8 @@ object CropPollenDefinitions {
     )
 
     fun supports(seed: ItemStack): Boolean = families.any { it.supports(seed) }
+
+    fun supports(seed: Item): Boolean = families.any { it.supports(seed) }
 
     /** One display variant per tagged seed, without assigning it a random genome. */
     fun displaySeeds(): List<ItemStack> = BuiltInRegistries.ITEM.map(::ItemStack).filter(::supports)

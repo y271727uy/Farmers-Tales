@@ -10,6 +10,14 @@ import net.minecraftforge.fml.event.config.ModConfigEvent
 object Config {
     private val builder = ForgeConfigSpec.Builder()
 
+    private val realTimeRequiresPocketWatchValue = builder
+        .comment("Require a pocket watch in the player inventory or equipped in Curios to display real-world time and time zone. False always shows these two HUD lines. Curios is optional.")
+        .define("realTimeRequiresPocketWatch", true)
+
+    private val moonPhaseRequiresDialValue = builder
+        .comment("Require a moon phase dial in the player inventory or equipped in Curios to display the moon phase HUD line. False shows the line without the item. Curios is optional.")
+        .define("moonPhaseRequiresDial", true)
+
     private val restrictAnimalBreedingValue = builder
         .comment("Whether animal breeding is blocked outside each animal's breeding season")
         .define("restrictAnimalBreeding", true)
@@ -81,6 +89,14 @@ object Config {
     private val tropicalClimateEventsEnabledValue = builder
         .comment("Whether tropical season transitions can trigger monsoons and droughts")
         .define("tropicalClimateEventsEnabled", true)
+
+    private val summerDaylightEnabledValue = builder
+        .comment("Whether temperate summer extends daylight by delaying sunset by one Minecraft hour; world time and tick speed are unchanged")
+        .define("summerDaylightEnabled", false)
+
+    private val summerDaylightExtensionTicksValue = builder
+        .comment("Additional daylight ticks during temperate summer; 1 Minecraft hour is 1,000 ticks")
+        .defineInRange("summerDaylightExtensionTicks", 1_000, 0, 12_000)
 
     private val tropicalMonsoonChanceValue = builder
         .comment("Chance for a wet-season transition to trigger a monsoon")
@@ -181,6 +197,10 @@ object Config {
     @JvmField
     val SPEC: ForgeConfigSpec = builder.build()
 
+    var realTimeRequiresPocketWatch: Boolean = true
+        private set
+    var moonPhaseRequiresDial: Boolean = true
+        private set
     var restrictAnimalBreeding: Boolean = true
         private set
     var animalBreedingLoveChance: Double = 0.125
@@ -214,6 +234,10 @@ object Config {
     var metabolismSettlementsPerTick: Int = 64
         private set
     var wildAnimalAvoidanceScanIntervalTicks: Int = 5
+        private set
+    var summerDaylightEnabled: Boolean = false
+        private set
+    var summerDaylightExtensionTicks: Int = 1_000
         private set
     var tropicalClimateEventsEnabled: Boolean = true
         private set
@@ -269,10 +293,12 @@ object Config {
     @JvmStatic
     @SubscribeEvent
     fun onLoad(event: ModConfigEvent) {
+        realTimeRequiresPocketWatch = realTimeRequiresPocketWatchValue.get()
         if (event.config.getSpec() !== SPEC) {
             return
         }
 
+        moonPhaseRequiresDial = moonPhaseRequiresDialValue.get()
         restrictAnimalBreeding = restrictAnimalBreedingValue.get()
         animalBreedingLoveChance = animalBreedingLoveChanceValue.get()
         pigExtraBabyChance = pigExtraBabyChanceValue.get()
@@ -291,6 +317,8 @@ object Config {
         metabolismSettlementsPerTick = metabolismSettlementsPerTickValue.get()
         wildAnimalAvoidanceScanIntervalTicks = wildAnimalAvoidanceScanIntervalTicksValue.get()
         tropicalClimateEventsEnabled = tropicalClimateEventsEnabledValue.get()
+        summerDaylightEnabled = summerDaylightEnabledValue.get()
+        summerDaylightExtensionTicks = summerDaylightExtensionTicksValue.get()
         tropicalMonsoonChance = tropicalMonsoonChanceValue.get()
         tropicalDroughtChance = tropicalDroughtChanceValue.get()
         tropicalDroughtTreeWaterMultiplier = tropicalDroughtTreeWaterMultiplierValue.get()

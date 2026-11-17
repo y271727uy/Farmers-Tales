@@ -1,6 +1,8 @@
 package com.y271727uy.farmerstales.entity
 
 import com.y271727uy.farmerstales.FTMod
+import com.y271727uy.farmerstales.backport.Backport
+import com.y271727uy.farmerstales.backport.BackportFeature
 import com.y271727uy.farmerstales.entity.mobs.BambooRatEntity
 import com.y271727uy.farmerstales.entity.mobs.ArmadilloEntity
 import com.y271727uy.farmerstales.entity.mobs.NautilusEntity
@@ -19,6 +21,7 @@ import net.minecraftforge.fml.common.Mod
 @Mod.EventBusSubscriber(modid = FTMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 object ModEntities : MobRegistry(FTMod.MODID) {
     @JvmField
+    @field:Backport(BackportFeature.ARMORED_PAWS)
     val ARMADILLO = mob("armadillo", ::ArmadilloEntity) {
         category = MobCategory.CREATURE
         size(0.7F, 0.65F)
@@ -39,6 +42,7 @@ object ModEntities : MobRegistry(FTMod.MODID) {
     }
 
     @JvmField
+    @field:Backport(BackportFeature.NAUTILUS)
     val NAUTILUS = mob("nautilus", ::NautilusEntity) {
         category = MobCategory.WATER_CREATURE
         size(1.15F, 0.9F)
@@ -54,6 +58,7 @@ object ModEntities : MobRegistry(FTMod.MODID) {
     }
 
     @JvmField
+    @field:Backport(BackportFeature.NAUTILUS)
     val ZOMBIE_NAUTILUS = mob("zombie_nautilus", ::ZombieNautilusEntity) {
         category = MobCategory.MONSTER
         size(1.15F, 0.9F)

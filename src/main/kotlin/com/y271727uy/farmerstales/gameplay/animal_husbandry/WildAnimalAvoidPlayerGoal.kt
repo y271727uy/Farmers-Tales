@@ -1,5 +1,6 @@
 package com.y271727uy.farmerstales.gameplay.animal_husbandry
 
+import com.y271727uy.farmerstales.gameplay.pathfinding.FastPathNavigation
 import net.minecraft.world.entity.ai.goal.Goal
 import net.minecraft.world.entity.animal.Animal
 import java.util.EnumSet
@@ -31,10 +32,10 @@ class WildAnimalAvoidPlayerGoal(private val animal: Animal) : Goal() {
 
     override fun stop() {
         request = null
-        animal.navigation.stop()
+        FastPathNavigation.stop(animal)
     }
 
     private fun moveToRequest(request: WildAnimalAvoidance.EscapeRequest) {
-        animal.navigation.moveTo(request.targetX, request.targetY, request.targetZ, 1.8)
+        FastPathNavigation.moveTo(animal, request.targetX, request.targetY, request.targetZ, 1.8)
     }
 }

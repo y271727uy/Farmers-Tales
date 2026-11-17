@@ -1,4 +1,5 @@
 package com.y271727uy.farmerstales.gameplay.environment.forest;
+import com.y271727uy.farmerstales.all.PaleGardenBlocks;
 
 import com.y271727uy.farmerstales.all.ForestBlocks;
 import net.minecraft.core.BlockPos;
@@ -91,7 +92,7 @@ public final class ForestPlants {
 
         public boolean change(BlockState state,ServerLevel level,BlockPos pos,RandomSource random,boolean propagated) {
             if(!level.dimensionType().natural()||level.isNight()==open)return false;
-            level.setBlockAndUpdate(pos,(open?ForestBlocks.CLOSED_EYEBLOSSOM:ForestBlocks.OPEN_EYEBLOSSOM).get().defaultBlockState());
+            level.setBlockAndUpdate(pos,(open?PaleGardenBlocks.CLOSED_EYEBLOSSOM:PaleGardenBlocks.OPEN_EYEBLOSSOM).get().defaultBlockState());
             level.playSound(null,pos,NatureSounds.get("block.eyeblossom."+(open?"close":"open")+(propagated?"":"_long")),net.minecraft.sounds.SoundSource.BLOCKS,1,1);
             level.gameEvent(net.minecraft.world.level.gameevent.GameEvent.BLOCK_CHANGE,pos,net.minecraft.world.level.gameevent.GameEvent.Context.of(state));
             var color=new org.joml.Vector3f(open?0.62F:1F,open?0.68F:0.52F,open?0.7F:0.1F);

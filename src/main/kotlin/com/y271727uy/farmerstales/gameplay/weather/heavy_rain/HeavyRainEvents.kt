@@ -2,9 +2,11 @@ package com.y271727uy.farmerstales.gameplay.weather.heavy_rain
 
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.config.Config
+import com.y271727uy.farmerstales.gameplay.common.PlayerLevelSync
+import com.y271727uy.farmerstales.gameplay.common.sendPacket
+import com.y271727uy.farmerstales.gameplay.common.sendToDimension
 import com.y271727uy.farmerstales.gameplay.weather.green_rain.GreenRainEvents
 import com.y271727uy.farmerstales.integration.IntegrationManager
-import com.y271727uy.farmerstales.network.FarmerstalesNetwork
 import com.y271727uy.farmerstales.network.RainIntensitySyncPacket
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
@@ -12,19 +14,29 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.level.saveddata.SavedData
 import net.minecraftforge.event.TickEvent
-import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.network.PacketDistributor
-import java.util.function.Supplier
 
 /** One roll and two calendar-specific results per dimension's storm, with no region tracking. */
 @Mod.EventBusSubscriber(modid = FTMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 object HeavyRainEvents {
+    init {
+        PlayerLevelSync.register(::syncPlayer)
+    }
+
     fun intensityAt(level: ServerLevel, pos: BlockPos): RainIntensity {
         if (!Config.heavyRainEnabled || !level.isRaining || GreenRainEvents.isActive(level)) return RainIntensity.NORMAL
         val state = update(level)
         return if (IntegrationManager.usesTropicalSeasons(level, pos)) state.tropical else state.temperate
+    }
+
+    fun clear(level: ServerLevel) {
+        val state = data(level)
+        state.wasRaining = false
+        state.temperate = RainIntensity.NORMAL
+        state.tropical = RainIntensity.NORMAL
+        state.setDirty()
+        syncAll(level, state)
     }
 
     /** Debug override for this storm, applied equally to both climate calendars. */
@@ -69,36 +81,12 @@ object HeavyRainEvents {
     }
 
     private fun syncAll(level: ServerLevel, state: RainData) {
-        FarmerstalesNetwork.CHANNEL.send(
-            PacketDistributor.DIMENSION.with(Supplier { level.dimension() }),
-            RainIntensitySyncPacket(state.temperate, state.tropical),
-        )
+        level.sendToDimension(RainIntensitySyncPacket(state.temperate, state.tropical))
     }
 
     private fun syncPlayer(player: ServerPlayer) {
         val state = update(player.serverLevel())
-        FarmerstalesNetwork.CHANNEL.send(
-            PacketDistributor.PLAYER.with(Supplier { player }),
-            RainIntensitySyncPacket(state.temperate, state.tropical),
-        )
-    }
-
-    @JvmStatic
-    @SubscribeEvent
-    fun onLogin(event: PlayerEvent.PlayerLoggedInEvent) {
-        (event.entity as? ServerPlayer)?.let(::syncPlayer)
-    }
-
-    @JvmStatic
-    @SubscribeEvent
-    fun onDimensionChange(event: PlayerEvent.PlayerChangedDimensionEvent) {
-        (event.entity as? ServerPlayer)?.let(::syncPlayer)
-    }
-
-    @JvmStatic
-    @SubscribeEvent
-    fun onRespawn(event: PlayerEvent.PlayerRespawnEvent) {
-        (event.entity as? ServerPlayer)?.let(::syncPlayer)
+        player.sendPacket(RainIntensitySyncPacket(state.temperate, state.tropical))
     }
 
     private fun data(level: ServerLevel): RainData =

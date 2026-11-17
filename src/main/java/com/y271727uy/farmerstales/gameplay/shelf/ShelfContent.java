@@ -13,7 +13,11 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.*;
 import java.util.*;
+import com.y271727uy.farmerstales.backport.Backport;
+import com.y271727uy.farmerstales.backport.BackportFeature;
 
+/** Copper Age (1.21.9) shelves. The pale oak shelf additionally needs the Pale Garden backport. */
+@Backport(BackportFeature.SHELF)
 public final class ShelfContent {
     private static final DeferredRegister<Block> BLOCKS=DeferredRegister.create(ForgeRegistries.BLOCKS,FTMod.MODID);
     private static final DeferredRegister<Item> ITEMS=DeferredRegister.create(ForgeRegistries.ITEMS,FTMod.MODID);
@@ -24,6 +28,8 @@ public final class ShelfContent {
     public static final RegistryObject<BlockEntityType<ShelfBlockEntity>> SHELF=BLOCK_ENTITIES.register("shelf",()->BlockEntityType.Builder.of(ShelfBlockEntity::new,SHELVES.values().stream().map(RegistryObject::get).toArray(Block[]::new)).build(null));
     static {
         for(String wood:new String[]{"oak","spruce","birch","jungle","acacia","dark_oak","mangrove","cherry","bamboo","crimson","warped","pale_oak","poplar"}){
+            if(wood.equals("pale_oak")&&!BackportFeature.PALE_GARDEN.isEnabled())continue;
+            if(wood.equals("poplar")&&!BackportFeature.POPLAR.isEnabled())continue;
             var shelf=BLOCKS.register(wood+"_shelf",()->new ShelfBlock(BlockBehaviour.Properties.copy(planks(wood)).strength(2,3).sound(shelfSound()).noOcclusion(),!wood.equals("crimson")&&!wood.equals("warped")));
             SHELVES.put(wood,shelf);ITEMS.register(wood+"_shelf",()->new BlockItem(shelf.get(),new Item.Properties()){
                 @Override public int getBurnTime(ItemStack stack,net.minecraft.world.item.crafting.RecipeType<?> type){return wood.equals("crimson")||wood.equals("warped")?0:300;}
@@ -35,9 +41,10 @@ public final class ShelfContent {
     }
     private static SoundType shelfSound(){return new net.minecraftforge.common.util.ForgeSoundType(1,1,()->SOUNDS_BY_NAME.get("break").get(),()->SOUNDS_BY_NAME.get("step").get(),()->SOUNDS_BY_NAME.get("place").get(),()->SOUNDS_BY_NAME.get("hit").get(),()->SOUNDS_BY_NAME.get("fall").get());}
     private static Block planks(String wood){
-        if(wood.equals("pale_oak")||wood.equals("poplar"))return ForestBlocks.ALL.get(wood+"_planks").get();
+        if(wood.equals("pale_oak")||wood.equals("poplar")){var planks=ForestBlocks.planks(wood);return planks==Blocks.AIR?Blocks.OAK_PLANKS:planks;}
         return ForgeRegistries.BLOCKS.getValue(ResourceLocation.fromNamespaceAndPath("minecraft",wood+"_planks"));
     }
+    /** Called by BackportLoader when {@link BackportFeature#SHELF} is enabled. */
     public static void register(IEventBus bus){
         BLOCKS.register(bus);ITEMS.register(bus);BLOCK_ENTITIES.register(bus);SOUNDS.register(bus);
         ModRegistrate.REGISTRATE.addDataGenerator(ProviderType.LANG,p->SHELVES.keySet().forEach(wood->p.add("block.farmerstales."+wood+"_shelf",Arrays.stream(wood.split("_")).map(s->Character.toUpperCase(s.charAt(0))+s.substring(1)).collect(java.util.stream.Collectors.joining(" "))+" Shelf")));

@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "farmerstales:leaf_litter",
+    "farmerstales:short_dry_grass",
+    "farmerstales:tall_dry_grass",
+    "farmerstales:bush",
+    "farmerstales:firefly_bush",
+    "farmerstales:wildflowers",
+    "farmerstales:cactus_flower"
+  ]
+}

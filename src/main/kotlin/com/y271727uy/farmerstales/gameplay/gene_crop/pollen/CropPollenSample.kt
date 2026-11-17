@@ -17,7 +17,7 @@ class CropPollenSample(seed: ItemStack, val source: BlockPos? = null, val dimens
     fun isViable(): Boolean = CropPollenDefinitions.supports(parent) && GeneCropGenome.isIdentified(parent)
 
     fun write(): CompoundTag = CompoundTag().also { tag ->
-        tag.put("Seed", parent.save(CompoundTag()))
+        tag.put(SEED, parent.save(CompoundTag()))
         if (source != null && dimension != null) {
             tag.putLong("Source", source.asLong())
             tag.putString("Dimension", dimension.toString())
@@ -25,9 +25,16 @@ class CropPollenSample(seed: ItemStack, val source: BlockPos? = null, val dimens
     }
 
     companion object {
+        private const val SEED = "Seed"
+
+        internal fun readSeedId(tag: CompoundTag): ResourceLocation? {
+            val id = tag.getCompound(SEED).getString("id")
+            return if (id.isEmpty()) null else ResourceLocation.tryParse(id)
+        }
+
         fun read(tag: CompoundTag): CropPollenSample {
             val source = if (tag.contains("Source", Tag.TAG_LONG.toInt())) BlockPos.of(tag.getLong("Source")) else null
-            return CropPollenSample(ItemStack.of(tag.getCompound("Seed")), source, ResourceLocation.tryParse(tag.getString("Dimension")))
+            return CropPollenSample(ItemStack.of(tag.getCompound(SEED)), source, ResourceLocation.tryParse(tag.getString("Dimension")))
         }
     }
 }

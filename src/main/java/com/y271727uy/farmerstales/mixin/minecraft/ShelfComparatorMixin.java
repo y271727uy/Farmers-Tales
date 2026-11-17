@@ -1,4 +1,6 @@
 package com.y271727uy.farmerstales.mixin.minecraft;
+import com.y271727uy.farmerstales.backport.Backport;
+import com.y271727uy.farmerstales.backport.BackportFeature;
 import com.y271727uy.farmerstales.gameplay.shelf.ShelfBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -6,6 +8,7 @@ import net.minecraft.world.level.block.ComparatorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
+@Backport(BackportFeature.SHELF)
 @Mixin(ComparatorBlock.class)
 public abstract class ShelfComparatorMixin {
     @Redirect(method="getInputSignal",at=@At(value="INVOKE",target="Lnet/minecraft/world/level/block/state/BlockState;getAnalogOutputSignal(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;)I"))

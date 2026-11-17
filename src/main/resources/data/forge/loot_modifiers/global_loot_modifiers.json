@@ -1,6 +1,7 @@
 {
   "replace": false,
   "entries": [
+    "farmerstales:area_weather_harvest",
     "farmerstales:animal_fat_from_chicken",
     "farmerstales:animal_fat_from_cow",
     "farmerstales:animal_fat_from_sheep",
@@ -20,6 +21,7 @@
     "farmerstales:bone_from_camel",
     "farmerstales:bone_from_llama",
     "farmerstales:bone_from_horse",
-    "farmerstales:bone_from_donkey"
+    "farmerstales:bone_from_donkey",
+    "farmerstales:fish_king_catcher_book"
   ]
 }

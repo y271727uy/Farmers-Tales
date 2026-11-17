@@ -1,5 +1,6 @@
 package com.y271727uy.farmerstales.gameplay.animal_husbandry.raid
 
+import com.y271727uy.farmerstales.gameplay.pathfinding.FastPathNavigation
 import com.y271727uy.farmerstales.gameplay.animal_husbandry.shepherd.ShepherdingRules
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.BlockParticleOption
@@ -58,7 +59,7 @@ class CrimsonWolfBreakFenceGoal(private val wolf: Wolf) : Goal() {
         fencePos = null
         breakTicks = 0
         searchCooldown = SEARCH_INTERVAL_TICKS
-        wolf.navigation.stop()
+        FastPathNavigation.stop(wolf)
     }
 
     override fun tick() {
@@ -69,11 +70,21 @@ class CrimsonWolfBreakFenceGoal(private val wolf: Wolf) : Goal() {
         val z = pos.z + 0.5
         wolf.lookControl.setLookAt(x, y, z)
         if (wolf.distanceToSqr(x, y, z) > REACH_DISTANCE_SQR) {
-            wolf.navigation.moveTo(x, pos.y.toDouble(), z, APPROACH_SPEED)
+            // Aim just in front of the fence on the wolf's side, never at the blocked fence cell itself.
+            val dx = wolf.x - x
+            val dz = wolf.z - z
+            val length = hypot(dx, dz).coerceAtLeast(0.001)
+            FastPathNavigation.moveTo(
+                wolf,
+                x + dx / length * APPROACH_OFFSET,
+                pos.y.toDouble(),
+                z + dz / length * APPROACH_OFFSET,
+                APPROACH_SPEED,
+            )
             return
         }
 
-        wolf.navigation.stop()
+        FastPathNavigation.stop(wolf)
         breakTicks++
         if (breakTicks % HIT_INTERVAL_TICKS == 0) {
             wolf.swing(InteractionHand.MAIN_HAND)
@@ -161,6 +172,7 @@ class CrimsonWolfBreakFenceGoal(private val wolf: Wolf) : Goal() {
         private const val HIT_INTERVAL_TICKS = 5
         private const val REACH_DISTANCE_SQR = 2.25 * 2.25
         private const val APPROACH_SPEED = 1.2
+        private const val APPROACH_OFFSET = 1.0
         private const val SCAN_STEPS = 12
     }
 }

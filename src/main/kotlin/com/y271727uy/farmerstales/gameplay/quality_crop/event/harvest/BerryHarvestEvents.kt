@@ -4,7 +4,7 @@ import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.all.items.ScytheItem
 import com.y271727uy.farmerstales.gameplay.quality_crop.QualityHarvestRules
 import com.y271727uy.farmerstales.gameplay.quality_crop.QualityNbt
-import com.y271727uy.farmerstales.gameplay.quality_crop.QualityRoller
+import com.y271727uy.farmerstales.gameplay.quality_crop.QualityDropProcessor
 import com.y271727uy.farmerstales.gameplay.advancements.FarmersTalesAdvancements
 import com.y271727uy.farmerstales.gameplay.quality_crop.util.BerryFruitHarvestWhitelist
 import net.minecraft.server.level.ServerLevel
@@ -87,9 +87,7 @@ object BerryHarvestEvents {
 			}
 
 			if (shouldApplyQuality) {
-				QualityRoller.roll(level.random)?.let { quality ->
-					QualityNbt.write(stack, quality, harvester)
-				}
+				QualityDropProcessor.rollInto(stack, harvester, level.random)
 			}
 
 			Block.popResource(level, pos, stack)

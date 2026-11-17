@@ -1,4 +1,6 @@
 package com.y271727uy.farmerstales.gameplay.fauna;
+import com.y271727uy.farmerstales.backport.Backport;
+import com.y271727uy.farmerstales.backport.BackportFeature;
 import com.y271727uy.farmerstales.FTMod;
 import com.y271727uy.farmerstales.variant.WolfArmorHolder;
 import net.minecraft.core.registries.Registries;
@@ -13,7 +15,7 @@ import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.*;
 import net.minecraftforge.fml.common.Mod;
-@Mod.EventBusSubscriber(modid=FTMod.MODID)
+@Backport(value=BackportFeature.ARMORED_PAWS,subscribe=Backport.Bus.FORGE)
 public final class WolfArmorEvents {
     public static final TagKey<net.minecraft.world.damagesource.DamageType> BYPASS=TagKey.create(Registries.DAMAGE_TYPE,ResourceLocation.fromNamespaceAndPath(FTMod.MODID,"bypasses_wolf_armor"));
     @SubscribeEvent public static void interact(PlayerInteractEvent.EntityInteract event){

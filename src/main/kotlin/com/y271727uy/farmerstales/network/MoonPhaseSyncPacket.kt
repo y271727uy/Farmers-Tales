@@ -5,15 +5,17 @@ import net.minecraft.network.FriendlyByteBuf
 import net.minecraftforge.network.NetworkEvent
 import java.util.function.Supplier
 
-/** Current dimension's moon-event winner. Empty string means no event. */
-class MoonPhaseSyncPacket(val winnerId: String) {
+/** Keep the daytime forecast separate from the currently active visuals and gameplay. */
+class MoonPhaseSyncPacket(val winnerId: String, val forecastId: String, val forecastDay: Long) {
     fun encode(buf: FriendlyByteBuf) {
         buf.writeUtf(winnerId, 64)
+        buf.writeUtf(forecastId, 64)
+        buf.writeLong(forecastDay)
     }
 
     companion object {
         @JvmStatic
-        fun decode(buf: FriendlyByteBuf) = MoonPhaseSyncPacket(buf.readUtf(64))
+        fun decode(buf: FriendlyByteBuf) = MoonPhaseSyncPacket(buf.readUtf(64), buf.readUtf(64), buf.readLong())
 
         @JvmStatic
         fun handle(packet: MoonPhaseSyncPacket, ctx: Supplier<NetworkEvent.Context>) {
@@ -21,6 +23,8 @@ class MoonPhaseSyncPacket(val winnerId: String) {
             if (context.direction.receptionSide.isClient) {
                 context.enqueueWork {
                     MoonPhaseClientState.winnerId = packet.winnerId
+                    MoonPhaseClientState.forecastId = packet.forecastId
+                    MoonPhaseClientState.forecastDay = packet.forecastDay
                 }
             }
             context.packetHandled = true

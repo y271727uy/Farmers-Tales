@@ -1,4 +1,5 @@
 package com.y271727uy.farmerstales.gameplay.creaking;
+import com.y271727uy.farmerstales.all.PaleGardenBlocks;
 
 import com.y271727uy.farmerstales.all.ForestBlocks;
 import net.minecraft.core.BlockPos;
@@ -46,7 +47,7 @@ public final class CreakingHeartBlock extends BaseEntityBlock {
         var axis = state.getValue(AXIS);
         for (var sign : Direction.AxisDirection.values()) {
             var log = level.getBlockState(pos.relative(Direction.get(sign, axis)));
-            if (!log.is(ForestBlocks.PALE_OAK_LOG.get()) || log.getValue(RotatedPillarBlock.AXIS) != axis) return false;
+            if (!log.is(PaleGardenBlocks.PALE_OAK_LOG.get()) || log.getValue(RotatedPillarBlock.AXIS) != axis) return false;
         }
         return true;
     }

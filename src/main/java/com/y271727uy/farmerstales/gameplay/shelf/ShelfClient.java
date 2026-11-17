@@ -1,4 +1,6 @@
 package com.y271727uy.farmerstales.gameplay.shelf;
+import com.y271727uy.farmerstales.backport.Backport;
+import com.y271727uy.farmerstales.backport.BackportFeature;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
@@ -13,7 +15,7 @@ import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid=FTMod.MODID,bus=Mod.EventBusSubscriber.Bus.MOD,value=Dist.CLIENT)
+@Backport(value=BackportFeature.SHELF,subscribe=Backport.Bus.MOD,clientOnly=true)
 public final class ShelfClient {
     @SubscribeEvent public static void renderers(EntityRenderersEvent.RegisterRenderers event){event.registerBlockEntityRenderer(ShelfContent.SHELF.get(),Renderer::new);}
     private static final class Renderer implements BlockEntityRenderer<ShelfBlockEntity> {

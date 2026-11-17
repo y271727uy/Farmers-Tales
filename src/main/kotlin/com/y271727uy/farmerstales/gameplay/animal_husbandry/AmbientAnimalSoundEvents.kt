@@ -2,6 +2,9 @@ package com.y271727uy.farmerstales.gameplay.animal_husbandry
 
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.all.ModSounds
+import com.y271727uy.farmerstales.gameplay.common.DayClock
+import com.y271727uy.farmerstales.gameplay.common.dayIndex
+import com.y271727uy.farmerstales.gameplay.common.tickOfDay
 import com.y271727uy.farmerstales.gameplay.special_event.crimson_moon.CrimsonMoonEvents
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -22,8 +25,8 @@ import kotlin.math.sin
 object AmbientAnimalSoundEvents {
     private const val DAWN_START = 0L
     private const val DAWN_END = 1_000L
-    private const val NIGHT_START = 13_000L
-    private const val NIGHT_END = 23_999L
+    private const val NIGHT_START = DayClock.NIGHT_START
+    private const val NIGHT_END = DayClock.NIGHT_END
     private const val SCAN_INTERVAL_TICKS = 20
     private const val SEARCH_RANGE = 48.0
     private const val WOLF_NIGHT_CHANCE = 0.20
@@ -54,10 +57,10 @@ object AmbientAnimalSoundEvents {
         val level = player.serverLevel()
         if (!level.dimensionType().hasSkyLight()) return
 
-        val timeOfDay = level.dayTime % 24_000L
+        val timeOfDay = level.tickOfDay
         if (timeOfDay !in DAWN_START..DAWN_END) return
 
-        val currentDay = level.dayTime / 24_000L
+        val currentDay = level.dayIndex
         if (roosterCrowedDayByPlayer[player.uuid] == currentDay) return
 
         val chickens = level.getEntitiesOfClass(
@@ -92,10 +95,10 @@ object AmbientAnimalSoundEvents {
     private fun tryWolfHowl(level: ServerLevel) {
         if (!level.dimensionType().hasSkyLight()) return
 
-        val timeOfDay = level.dayTime % 24_000L
+        val timeOfDay = level.tickOfDay
         if (timeOfDay !in NIGHT_START..NIGHT_END) return
 
-        val currentDay = level.dayTime / 24_000L
+        val currentDay = level.dayIndex
         val state = howlByLevel.getOrPut(level, ::NightHowlState)
         if (state.rolledDay != currentDay) {
             state.rolledDay = currentDay

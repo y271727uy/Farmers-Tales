@@ -1,5 +1,8 @@
 package com.y271727uy.farmerstales.gameplay.animal_husbandry.raid
 
+import com.y271727uy.farmerstales.gameplay.common.dayIndex
+import com.y271727uy.farmerstales.gameplay.common.tickOfDay
+import com.y271727uy.farmerstales.gameplay.pathfinding.FastPathNavigation
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.all.ModSounds
 import com.y271727uy.farmerstales.config.Config
@@ -189,8 +192,8 @@ object PredatorRaidEvents {
     }
 
     private fun trySpawnCrimsonWolfWaves(level: ServerLevel) {
-        val currentDay = level.dayTime / 24_000L
-        val timeOfDay = level.dayTime % 24_000L
+        val currentDay = level.dayIndex
+        val timeOfDay = level.tickOfDay
         val state = crimsonWolfNights.getOrPut(level, ::CrimsonWolfNightState)
         if (state.rolledDay != currentDay) {
             state.rolledDay = currentDay
@@ -368,7 +371,7 @@ object PredatorRaidEvents {
             val dx = raider.x - nearest.x
             val dz = raider.z - nearest.z
             val length = hypot(dx, dz).coerceAtLeast(0.001)
-            raider.navigation.moveTo(
+            FastPathNavigation.moveTo(raider, 
                 raider.x + dx / length * FLEE_DISTANCE,
                 raider.y,
                 raider.z + dz / length * FLEE_DISTANCE,
@@ -431,7 +434,7 @@ object PredatorRaidEvents {
         x: Double,
         z: Double,
     ): Boolean {
-        val currentDay = level.dayTime / 24_000L
+        val currentDay = level.dayIndex
         val key = cellKey(x, z)
         val cells = attempts.getOrPut(level, ::HashMap)
         if (cells[key] == currentDay) return false
@@ -472,7 +475,7 @@ object PredatorRaidEvents {
     )
 
     private fun isRaidNight(level: ServerLevel): Boolean {
-        val timeOfDay = level.dayTime % 24_000L
+        val timeOfDay = level.tickOfDay
         return timeOfDay in NIGHT_START..NIGHT_END
     }
 

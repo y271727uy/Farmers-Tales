@@ -1,4 +1,6 @@
 package com.y271727uy.farmerstales.gameplay.environment.forest;
+import com.y271727uy.farmerstales.all.NaturalEnvironmentBlocks;
+import com.y271727uy.farmerstales.all.PaleGardenBlocks;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -125,9 +127,9 @@ public final class ForestWorldgen {
                 // Only natural-tree configurations include this decorator; saplings never grow hearts.
                 if (random.nextFloat() < 0.1F) {
                     var candidates = context.logs().stream().filter(pos ->
-                            context.level().isStateAtPosition(pos.above(), state -> state.is(ForestBlocks.PALE_OAK_LOG.get())
+                            context.level().isStateAtPosition(pos.above(), state -> state.is(PaleGardenBlocks.PALE_OAK_LOG.get())
                                     && state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y)
-                            && context.level().isStateAtPosition(pos.below(), state -> state.is(ForestBlocks.PALE_OAK_LOG.get())
+                            && context.level().isStateAtPosition(pos.below(), state -> state.is(PaleGardenBlocks.PALE_OAK_LOG.get())
                                     && state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y)).toList();
                     if (!candidates.isEmpty()) context.setBlock(candidates.get(random.nextInt(candidates.size())),
                             com.y271727uy.farmerstales.gameplay.creaking.CreakingContent.HEART.get().defaultBlockState()
@@ -138,10 +140,10 @@ public final class ForestWorldgen {
                     int length = 1 + random.nextInt(4);
                     for (int i = 1; i <= length && context.isAir(leaf.below(i)); i++) {
                         boolean tip = i == length || !context.isAir(leaf.below(i + 1));
-                        context.setBlock(leaf.below(i), ForestBlocks.PALE_HANGING_MOSS.get().defaultBlockState().setValue(ForestPlants.HangingMoss.TIP, tip));
+                        context.setBlock(leaf.below(i), PaleGardenBlocks.PALE_HANGING_MOSS.get().defaultBlockState().setValue(ForestPlants.HangingMoss.TIP, tip));
                     }
                 }
-            } else {
+            } else if (ForestBlocks.SHELF_MUSHROOM.isPresent()) {
                 for (var log : context.logs()) {
                     if (log.getY() < base.getY() + 1 || log.getY() > base.getY() + 5 || random.nextFloat() >= 0.4F) continue;
                     var direction = Direction.from2DDataValue(random.nextInt(4));
@@ -155,12 +157,13 @@ public final class ForestWorldgen {
                 for (int y = 1; y >= -3; y--) {
                     var ground = base.offset(x, y, z);
                     if (context.level().isStateAtPosition(ground, state -> state.is(BlockTags.DIRT)) && context.isAir(ground.above())) {
-                        if (pale) context.setBlock(ground, ForestBlocks.PALE_MOSS_BLOCK.get().defaultBlockState());
-                        var cover = pale ? ForestBlocks.PALE_MOSS_CARPET.get().defaultBlockState()
-                                : ForestBlocks.LEAF_LITTER.get().defaultBlockState().setValue(PinkPetalsBlock.AMOUNT, 1 + random.nextInt(4))
+                        if (pale) context.setBlock(ground, PaleGardenBlocks.PALE_MOSS_BLOCK.get().defaultBlockState());
+                        var cover = pale ? PaleGardenBlocks.PALE_MOSS_CARPET.get().defaultBlockState()
+                                : NaturalEnvironmentBlocks.LEAF_LITTER.get().defaultBlockState().setValue(PinkPetalsBlock.AMOUNT, 1 + random.nextInt(4))
                                         .setValue(PinkPetalsBlock.FACING, Direction.from2DDataValue(random.nextInt(4)));
+                        if (!pale && !NaturalEnvironmentBlocks.LEAF_LITTER.isPresent()) break;
                         if (pale && context.level() instanceof net.minecraft.world.level.LevelAccessor mossLevel) {
-                            ((PaleMossCarpet)ForestBlocks.PALE_MOSS_CARPET.get()).placeAt(mossLevel,ground.above(),random,context::setBlock);
+                            ((PaleMossCarpet)PaleGardenBlocks.PALE_MOSS_CARPET.get()).placeAt(mossLevel,ground.above(),random,context::setBlock);
                         } else context.setBlock(ground.above(), cover);
                         break;
                     }
@@ -173,6 +176,7 @@ public final class ForestWorldgen {
         public FallenPoplar() { super(NoneFeatureConfiguration.CODEC); }
         @Override
         public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
+            if (!ForestBlocks.POPLAR_LOG.isPresent()) return false;
             var level = context.level();
             var random = context.random();
             var origin = context.origin();

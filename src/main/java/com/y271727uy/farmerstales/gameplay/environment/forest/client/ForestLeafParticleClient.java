@@ -1,4 +1,5 @@
 package com.y271727uy.farmerstales.gameplay.environment.forest.client;
+import com.y271727uy.farmerstales.all.PaleGardenBlocks;
 
 import com.y271727uy.farmerstales.FTMod;
 import com.y271727uy.farmerstales.all.ForestBlocks;
@@ -23,18 +24,23 @@ public final class ForestLeafParticleClient {
 
     @SubscribeEvent
     public static void providers(RegisterParticleProvidersEvent event) {
-        event.registerSpriteSet(ForestLeafParticles.TINTED.get(), sprites -> new FallingLeafParticle.Provider(sprites, true));
-        event.registerSpriteSet(ForestLeafParticles.PALE_OAK.get(), sprites -> new FallingLeafParticle.Provider(sprites, false));
-        event.registerSpriteSet(ForestLeafParticles.RED_POPLAR.get(), sprites -> new FallingLeafParticle.Provider(sprites, false));
-        event.registerSpriteSet(ForestLeafParticles.ORANGE_POPLAR.get(), sprites -> new FallingLeafParticle.Provider(sprites, false));
-        event.registerSpriteSet(ForestLeafParticles.YELLOW_POPLAR.get(), sprites -> new FallingLeafParticle.Provider(sprites, false));
+        if (ForestLeafParticles.TINTED.isPresent()) event.registerSpriteSet(ForestLeafParticles.TINTED.get(), sprites -> new FallingLeafParticle.Provider(sprites, true));
+        if (ForestLeafParticles.PALE_OAK.isPresent()) event.registerSpriteSet(ForestLeafParticles.PALE_OAK.get(), sprites -> new FallingLeafParticle.Provider(sprites, false));
+        if (ForestLeafParticles.RED_POPLAR.isPresent()) {
+            event.registerSpriteSet(ForestLeafParticles.RED_POPLAR.get(), sprites -> new FallingLeafParticle.Provider(sprites, false));
+            event.registerSpriteSet(ForestLeafParticles.ORANGE_POPLAR.get(), sprites -> new FallingLeafParticle.Provider(sprites, false));
+            event.registerSpriteSet(ForestLeafParticles.YELLOW_POPLAR.get(), sprites -> new FallingLeafParticle.Provider(sprites, false));
+        }
     }
 
     private static SimpleParticleType particle(BlockState state) {
-        if (state.is(ForestBlocks.PALE_OAK_LEAVES.get())) return ForestLeafParticles.PALE_OAK.get();
-        if (state.is(ForestBlocks.RED_POPLAR_LEAVES.get())) return ForestLeafParticles.RED_POPLAR.get();
-        if (state.is(ForestBlocks.ORANGE_POPLAR_LEAVES.get())) return ForestLeafParticles.ORANGE_POPLAR.get();
-        if (state.is(ForestBlocks.YELLOW_POPLAR_LEAVES.get())) return ForestLeafParticles.YELLOW_POPLAR.get();
+        if (ForestLeafParticles.PALE_OAK.isPresent() && state.is(PaleGardenBlocks.PALE_OAK_LEAVES.get())) return ForestLeafParticles.PALE_OAK.get();
+        if (ForestBlocks.RED_POPLAR_LEAVES.isPresent()) {
+            if (state.is(ForestBlocks.RED_POPLAR_LEAVES.get())) return ForestLeafParticles.RED_POPLAR.get();
+            if (state.is(ForestBlocks.ORANGE_POPLAR_LEAVES.get())) return ForestLeafParticles.ORANGE_POPLAR.get();
+            if (state.is(ForestBlocks.YELLOW_POPLAR_LEAVES.get())) return ForestLeafParticles.YELLOW_POPLAR.get();
+        }
+        if (!ForestLeafParticles.TINTED.isPresent()) return null;
         if (state.is(Blocks.OAK_LEAVES) || state.is(Blocks.BIRCH_LEAVES) || state.is(Blocks.JUNGLE_LEAVES)
                 || state.is(Blocks.ACACIA_LEAVES) || state.is(Blocks.DARK_OAK_LEAVES) || state.is(Blocks.MANGROVE_LEAVES)
                 || state.is(Blocks.AZALEA_LEAVES) || state.is(Blocks.FLOWERING_AZALEA_LEAVES)) return ForestLeafParticles.TINTED.get();

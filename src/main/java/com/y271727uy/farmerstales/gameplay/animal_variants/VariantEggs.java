@@ -23,6 +23,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+/** Spring to Life (1.21.5): blue and brown eggs laid by cold and warm chickens. */
+@com.y271727uy.farmerstales.backport.Backport(com.y271727uy.farmerstales.backport.BackportFeature.FARM_ANIMAL_VARIANTS)
 public final class VariantEggs {
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, FTMod.MODID);
     public static final RegistryObject<Item> BLUE_EGG = ITEMS.register("blue_egg", () -> new EggItem(new Item.Properties().stacksTo(16)));
@@ -43,6 +45,7 @@ public final class VariantEggs {
         }
     }
 
+    /** Called by BackportLoader when FARM_ANIMAL_VARIANTS is enabled. */
     public static void register(IEventBus bus) {
         ITEMS.register(bus);
         bus.addListener(VariantEggs::setup);

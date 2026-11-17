@@ -24,6 +24,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+/** The Garden Awakens (1.21.4): creaking, creaking heart and resin. */
+@com.y271727uy.farmerstales.backport.Backport(com.y271727uy.farmerstales.backport.BackportFeature.PALE_GARDEN)
 public final class CreakingContent {
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, FTMod.MODID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, FTMod.MODID);
@@ -73,6 +75,7 @@ public final class CreakingContent {
     }
     public static SoundEvent sound(String name) { return ALL_SOUNDS.get(name).get(); }
 
+    /** Called by BackportLoader when PALE_GARDEN is enabled. */
     public static void register(IEventBus bus) {
         BLOCKS.register(bus); ITEMS.register(bus); ENTITIES.register(bus); BLOCK_ENTITIES.register(bus); SOUNDS.register(bus);
         bus.addListener((EntityAttributeCreationEvent event) -> event.put(CREAKING.get(), CreakingEntity.attributes().build()));

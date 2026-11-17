@@ -18,12 +18,20 @@ import net.minecraft.world.level.block.state.BlockState
  * block/item references are intentionally not changed by the harvest refactor.
  */
 object QualityDropProcessor {
+    /** Rolls a tier and writes it to [stack]. Returns whether a quality was applied. */
+    @JvmStatic
+    fun rollInto(stack: ItemStack, player: Player?, random: RandomSource): Boolean {
+        val quality = QualityRoller.roll(random) ?: return false
+        QualityNbt.write(stack, quality, player)
+        return true
+    }
+
     @JvmStatic
     fun applyStandard(stack: ItemStack, player: Player?, random: RandomSource): ItemStack {
         if (stack.isEmpty || QualityNbt.hasValidQuality(stack) || !StandardCropWhitelist.matches(stack)) {
             return stack
         }
-        QualityRoller.roll(random)?.let { quality -> QualityNbt.write(stack, quality, player) }
+        rollInto(stack, player, random)
         return stack
     }
 
@@ -32,7 +40,7 @@ object QualityDropProcessor {
         if (stack.isEmpty || QualityNbt.hasValidQuality(stack) || !NonStandardCropWhitelist.matches(stack, block)) {
             return stack
         }
-        QualityRoller.roll(random)?.let { quality -> QualityNbt.write(stack, quality, player) }
+        rollInto(stack, player, random)
         return stack
     }
     @JvmStatic
@@ -46,31 +54,39 @@ object QualityDropProcessor {
         ) {
             return stack
         }
-        QualityRoller.roll(random)?.let { quality -> QualityNbt.write(stack, quality, player) }
+        rollInto(stack, player, random)
         return stack
     }
 
     @JvmStatic
     fun applyPlayerDestroy(stack: ItemStack, context: QualityHarvestContext.Context): ItemStack {
         val state = context.state()
+        if (!QualityHarvestRules.canReceiveQuality(context.player())) {
+            return stack
+        }
+        if (context.scythePick()) {
+            return applyScytheHarvest(stack, state.block, context.player(), context.level().random)
+        }
         if (state.block is CropBlock) {
             val crop = state.block as CropBlock
-            if (!crop.isMaxAge(state) || !QualityHarvestRules.canReceiveQuality(context.player())) {
+            if (!crop.isMaxAge(state)) {
                 return stack
             }
             return applyStandard(stack, context.player(), context.level().random)
         }
-        if (!QualityHarvestRules.canReceiveQuality(context.player())) {
-            return stack
-        }
         return applyMapped(stack, state.block, context.player(), context.level().random)
     }
+
+    fun applyScytheHarvest(stack: ItemStack, block: Block, player: Player?, random: RandomSource): ItemStack =
+        if (StandardCropWhitelist.matches(stack)) applyStandard(stack, player, random)
+        else applyMapped(stack, block, player, random)
+
     @JvmStatic
     fun applyManorsBounty(stack: ItemStack, player: Player?, random: RandomSource): ItemStack {
         if (stack.isEmpty || QualityNbt.hasValidQuality(stack) || !MDWhiteList.matches(stack)) {
             return stack
         }
-        QualityRoller.roll(random)?.let { quality -> QualityNbt.write(stack, quality, player) }
+        rollInto(stack, player, random)
         return stack
     }
 }

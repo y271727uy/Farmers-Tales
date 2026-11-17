@@ -31,6 +31,7 @@ object GeneCropEvents {
             neighbor.breedingSeed()?.takeIf { it.`is`(mother.item) }
         }
         val father = candidates.takeIf { it.isNotEmpty() }?.let { it[level.random.nextInt(it.size)] }
+            ?: com.y271727uy.farmerstales.gameplay.weather.area_weather.AreaWeatherEffects.windFather(level, pos, mother)
         return GeneCropGenome.inherit(mother, father, level.random)
     }
 

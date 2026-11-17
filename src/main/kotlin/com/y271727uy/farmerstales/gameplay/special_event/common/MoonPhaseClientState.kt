@@ -8,4 +8,8 @@ object MoonPhaseClientState {
     @JvmField
     @Volatile
     var winnerId: String = ""
+    @JvmField @Volatile
+    var forecastId: String = ""
+    @JvmField @Volatile
+    var forecastDay: Long = Long.MIN_VALUE
 }

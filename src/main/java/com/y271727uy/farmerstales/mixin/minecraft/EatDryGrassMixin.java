@@ -1,4 +1,6 @@
 package com.y271727uy.farmerstales.mixin.minecraft;
+import com.y271727uy.farmerstales.backport.Backport;
+import com.y271727uy.farmerstales.backport.BackportFeature;
 
 import com.y271727uy.farmerstales.all.NaturalEnvironmentBlocks;
 import net.minecraft.world.entity.ai.goal.EatBlockGoal;
@@ -10,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import java.util.function.Predicate;
 
 /** Keep vanilla eating animation, wool regrowth and Forge mobGriefing handling. */
+@Backport(BackportFeature.SPRING_PLANTS)
 @Mixin(EatBlockGoal.class)
 public abstract class EatDryGrassMixin {
     @Redirect(method = {"canUse", "tick"}, at = @At(value = "INVOKE",

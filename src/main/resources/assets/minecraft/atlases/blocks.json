@@ -1,6 +1,14 @@
 {
   "sources": [
     {
+      "type": "single",
+      "resource": "farmerstales:item/hud/pocket_watch_hud"
+    },
+    {
+      "type": "single",
+      "resource": "farmerstales:item/hud/moon_hud"
+    },
+    {
       "type": "paletted_permutations",
       "textures": [
         "trims/items/leggings_trim",

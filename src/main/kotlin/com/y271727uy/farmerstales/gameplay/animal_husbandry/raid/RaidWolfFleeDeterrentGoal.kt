@@ -1,5 +1,6 @@
 package com.y271727uy.farmerstales.gameplay.animal_husbandry.raid
 
+import com.y271727uy.farmerstales.gameplay.pathfinding.FastPathNavigation
 import net.minecraft.world.entity.ai.goal.Goal
 import net.minecraft.world.entity.animal.Wolf
 import java.util.EnumSet
@@ -18,11 +19,11 @@ class RaidWolfFleeDeterrentGoal(private val wolf: Wolf) : Goal() {
     override fun start() {
         wolf.target = null
         wolf.lastHurtByMob = null
-        wolf.navigation.stop()
+        FastPathNavigation.stop(wolf)
     }
 
     override fun stop() {
-        wolf.navigation.stop()
+        FastPathNavigation.stop(wolf)
     }
 
     override fun tick() {
@@ -32,7 +33,7 @@ class RaidWolfFleeDeterrentGoal(private val wolf: Wolf) : Goal() {
         val dx = wolf.x - origin.x
         val dz = wolf.z - origin.z
         val length = hypot(dx, dz).coerceAtLeast(0.001)
-        wolf.navigation.moveTo(
+        FastPathNavigation.moveTo(wolf, 
             wolf.x + dx / length * FLEE_DISTANCE,
             wolf.y,
             wolf.z + dz / length * FLEE_DISTANCE,

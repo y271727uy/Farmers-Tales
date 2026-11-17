@@ -1,8 +1,15 @@
 package com.y271727uy.farmerstales.gameplay.special_event.common
 
 import com.y271727uy.farmerstales.FTMod
+import com.y271727uy.farmerstales.gameplay.common.DayClock
+import com.y271727uy.farmerstales.gameplay.common.PlayerLevelSync
+import com.y271727uy.farmerstales.gameplay.common.announce
+import com.y271727uy.farmerstales.gameplay.common.dayIndex
+import com.y271727uy.farmerstales.gameplay.common.isNightTime
+import com.y271727uy.farmerstales.gameplay.common.sendPacket
+import com.y271727uy.farmerstales.gameplay.common.sendToDimension
+import com.y271727uy.farmerstales.gameplay.common.tickOfDay
 import com.y271727uy.farmerstales.integration.IntegrationManager
-import com.y271727uy.farmerstales.network.FarmerstalesNetwork
 import com.y271727uy.farmerstales.network.MoonPhaseSyncPacket
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
@@ -12,32 +19,35 @@ import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.saveddata.SavedData
 import net.minecraftforge.event.TickEvent
-import net.minecraftforge.event.entity.player.PlayerEvent
+import net.minecraftforge.event.level.LevelEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.network.PacketDistributor
 import java.util.Locale
-import java.util.function.Supplier
+import java.util.WeakHashMap
 
 /**
- * Shared per-dimension moon-event lottery. Eligible events on a night are
- * drawn once; at most one winner is active.
+ * Shared per-dimension moon-event lottery. Tonight's result is drawn once at dawn;
+ * effects and the start announcement remain gated to the night.
  *
  * The world winner is synced on its own packet. The marker effect is HUD-only
  * and is reapplied if something strips it mid-night.
  */
 @Mod.EventBusSubscriber(modid = FTMod.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 object MoonPhaseEvents {
-    private const val NIGHT_START = 13_000L
-    private const val NIGHT_END = 23_999L
     private const val DATA_NAME = "${FTMod.MODID}_moon_phase_lottery"
     private const val WINNER_ID_TAG = "WinnerId"
     private const val ROLLED_DAY_TAG = "RolledDay"
     private const val FORCED_TAG = "Forced"
     private const val FORCED_DAY_TAG = "ForcedDay"
+    private const val ANNOUNCED_DAY_TAG = "AnnouncedDay"
     private const val NONE_ID = ""
 
     private val events = linkedMapOf<String, MoonPhaseEvent>()
+    private val cache = WeakHashMap<ServerLevel, MoonPhaseLotteryData>()
+
+    init {
+        PlayerLevelSync.register(::syncPlayer)
+    }
 
     fun register(event: MoonPhaseEvent) {
         check(events.put(event.id, event) == null) { "Duplicate moon-phase event: ${event.id}" }
@@ -62,13 +72,14 @@ object MoonPhaseEvents {
     fun forceForCurrentNight(id: String, level: ServerLevel) {
         if (id !in events) return
         val state = data(level)
-        val currentDay = level.dayTime / 24_000L
+        val currentDay = level.dayIndex
+        if (state.rolledDay != currentDay || state.winnerId != id) state.announcedDay = Long.MIN_VALUE
         state.winnerId = id
         state.forced = true
         state.forcedDay = currentDay
         state.rolledDay = currentDay
         state.setDirty()
-        if (level.dayTime % 24_000L in NIGHT_START..NIGHT_END) {
+        if (level.isNightTime) {
             applyToAll(level, state, currentDay)
         } else {
             state.appliedDay = Long.MIN_VALUE
@@ -83,66 +94,31 @@ object MoonPhaseEvents {
         event.server.allLevels.forEach(::tickLevel)
     }
 
-    @JvmStatic
-    @SubscribeEvent
-    fun onPlayerLogin(event: PlayerEvent.PlayerLoggedInEvent) {
-        val player = event.entity as? ServerPlayer ?: return
-        syncPlayer(player)
-    }
-
-    @JvmStatic
-    @SubscribeEvent
-    fun onPlayerChangedDimension(event: PlayerEvent.PlayerChangedDimensionEvent) {
-        val player = event.entity as? ServerPlayer ?: return
-        syncPlayer(player)
-    }
-
-    @JvmStatic
-    @SubscribeEvent
-    fun onPlayerRespawn(event: PlayerEvent.PlayerRespawnEvent) {
-        val player = event.entity as? ServerPlayer ?: return
-        syncPlayer(player)
-    }
-
     private fun tickLevel(level: ServerLevel) {
-        val time = level.dayTime % 24_000L
         val state = data(level)
-        val currentDay = level.dayTime / 24_000L
+        val currentDay = level.dayIndex
+        val changed = rollForDay(level, state, currentDay)
 
-        if (time !in NIGHT_START..NIGHT_END) {
-            if (state.winnerId.isNotEmpty() && (!state.forced || state.forcedDay != currentDay)) {
-                state.winnerId = NONE_ID
-                state.forced = false
+        if (!level.isNightTime) {
+            if (changed || state.appliedDay != Long.MIN_VALUE) {
                 state.appliedDay = Long.MIN_VALUE
-                state.setDirty()
                 syncAll(level)
             }
             return
         }
 
-        if (state.forced && state.forcedDay == currentDay) {
-            ensureNight(level, state, currentDay)
-            return
-        }
+        ensureNight(level, state, currentDay)
+    }
 
-        if (state.rolledDay == currentDay) {
-            ensureNight(level, state, currentDay)
-            return
-        }
-
+    private fun rollForDay(level: ServerLevel, state: MoonPhaseLotteryData, currentDay: Long): Boolean {
+        if (state.rolledDay == currentDay) return false
         val winner = rollWinner(level)
         state.rolledDay = currentDay
         state.forced = false
         state.winnerId = winner?.id ?: NONE_ID
+        state.appliedDay = Long.MIN_VALUE
         state.setDirty()
-        if (winner != null) {
-            level.players().filterIsInstance<ServerPlayer>().forEach { player ->
-                player.sendSystemMessage(Component.translatable(winner.startedMessage))
-            }
-            applyToAll(level, state, currentDay)
-        } else {
-            syncAll(level)
-        }
+        return true
     }
 
     private fun rollWinner(level: ServerLevel): MoonPhaseEvent? {
@@ -165,41 +141,53 @@ object MoonPhaseEvents {
     }
 
     private fun ensureNight(level: ServerLevel, state: MoonPhaseLotteryData, currentDay: Long) {
-        if (state.winnerId.isEmpty()) return
         if (state.appliedDay != currentDay) {
             applyToAll(level, state, currentDay)
-        } else {
+        } else if (level.gameTime % 20L == 0L) {
             ensureHud(level)
         }
     }
 
     private fun applyToAll(level: ServerLevel, state: MoonPhaseLotteryData, currentDay: Long) {
         state.appliedDay = currentDay
+        val winner = events[currentWinnerId(level)]
+        if (winner != null && state.announcedDay != currentDay) {
+            state.announcedDay = currentDay
+            state.setDirty()
+            level.announce(Component.translatable(winner.startedMessage))
+        }
         syncAll(level)
     }
 
     private fun syncAll(level: ServerLevel) {
         val id = currentWinnerId(level)
-        FarmerstalesNetwork.CHANNEL.send(
-            PacketDistributor.DIMENSION.with(Supplier { level.dimension() }),
-            MoonPhaseSyncPacket(id),
-        )
-        level.players().filterIsInstance<ServerPlayer>().forEach { applyHud(it, id) }
+        level.sendToDimension(packet(level, id))
+        level.players().forEach { applyHud(it, id) }
     }
 
     private fun syncPlayer(player: ServerPlayer) {
-        val id = currentWinnerId(player.serverLevel())
-        FarmerstalesNetwork.CHANNEL.send(
-            PacketDistributor.PLAYER.with(Supplier { player }),
-            MoonPhaseSyncPacket(id),
-        )
+        val level = player.serverLevel()
+        val state = data(level)
+        if (rollForDay(level, state, level.dayIndex)) {
+            // Also update anyone already here if a login arrives before the first tick of a new day.
+            syncAll(level)
+            return
+        }
+        val id = currentWinnerId(level)
+        player.sendPacket(packet(level, id))
         applyHud(player, id)
+    }
+
+    private fun packet(level: ServerLevel, activeId: String): MoonPhaseSyncPacket {
+        val state = data(level)
+        val forecastId = state.winnerId.takeIf { it in events } ?: NONE_ID
+        return MoonPhaseSyncPacket(activeId, forecastId, state.rolledDay)
     }
 
     private fun ensureHud(level: ServerLevel) {
         val id = currentWinnerId(level)
         if (id.isEmpty()) return
-        level.players().filterIsInstance<ServerPlayer>().forEach { applyHud(it, id) }
+        level.players().forEach { applyHud(it, id) }
     }
 
     private fun applyHud(player: ServerPlayer, winnerId: String) {
@@ -223,16 +211,15 @@ object MoonPhaseEvents {
     }
 
     private fun remainingNightTicks(level: ServerLevel): Int {
-        val time = level.dayTime % 24_000L
-        return (NIGHT_END - time + 1L).coerceIn(1L, NIGHT_END - NIGHT_START + 1L).toInt()
+        return (DayClock.NIGHT_END - level.tickOfDay + 1L)
+            .coerceIn(1L, DayClock.NIGHT_END - DayClock.NIGHT_START + 1L).toInt()
     }
 
     private fun isActiveNow(event: MoonPhaseEvent, level: ServerLevel): Boolean {
-        val time = level.dayTime % 24_000L
-        if (time !in NIGHT_START..NIGHT_END) return false
+        if (!level.isNightTime) return false
         val state = data(level)
-        if (state.winnerId != event.id) return false
-        return state.forced || (matchesPhase(event, level) && matchesSeason(event, level))
+        // Eligibility was decided when this day's forecast was drawn. Never re-roll at night.
+        return state.rolledDay == level.dayIndex && state.winnerId == event.id
     }
 
     private fun matchesPhase(event: MoonPhaseEvent, level: ServerLevel): Boolean =
@@ -244,14 +231,21 @@ object MoonPhaseEvents {
         return IntegrationManager.currentSeasonName(level) == season.name.lowercase(Locale.ROOT)
     }
 
-    private fun data(level: ServerLevel): MoonPhaseLotteryData =
+    private fun data(level: ServerLevel): MoonPhaseLotteryData = cache.getOrPut(level) {
         level.dataStorage.computeIfAbsent(::load, ::MoonPhaseLotteryData, DATA_NAME)
+    }
+
+    @JvmStatic @SubscribeEvent
+    fun onUnload(event: LevelEvent.Unload) { (event.level as? ServerLevel)?.let { cache.remove(it) } }
 
     private fun load(tag: CompoundTag): MoonPhaseLotteryData = MoonPhaseLotteryData().apply {
         winnerId = tag.getString(WINNER_ID_TAG)
         rolledDay = if (tag.contains(ROLLED_DAY_TAG)) tag.getLong(ROLLED_DAY_TAG) else Long.MIN_VALUE
         forced = tag.getBoolean(FORCED_TAG)
         forcedDay = if (tag.contains(FORCED_DAY_TAG)) tag.getLong(FORCED_DAY_TAG) else Long.MIN_VALUE
+        // Old saves drew natural winners only after announcing them at night.
+        announcedDay = if (tag.contains(ANNOUNCED_DAY_TAG)) tag.getLong(ANNOUNCED_DAY_TAG)
+            else if (!forced) rolledDay else Long.MIN_VALUE
     }
 
     private class MoonPhaseLotteryData : SavedData() {
@@ -259,6 +253,7 @@ object MoonPhaseEvents {
         var rolledDay = Long.MIN_VALUE
         var forced = false
         var forcedDay = Long.MIN_VALUE
+        var announcedDay = Long.MIN_VALUE
         /** In-memory only: the day whose night packet was already sent to online players. */
         var appliedDay = Long.MIN_VALUE
 
@@ -267,6 +262,7 @@ object MoonPhaseEvents {
             putLong(ROLLED_DAY_TAG, rolledDay)
             putBoolean(FORCED_TAG, forced)
             putLong(FORCED_DAY_TAG, forcedDay)
+            putLong(ANNOUNCED_DAY_TAG, announcedDay)
         }
     }
 }

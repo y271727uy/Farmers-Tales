@@ -1,12 +1,13 @@
 package com.y271727uy.farmerstales.network
 
 import com.y271727uy.farmerstales.FTMod
+import com.y271727uy.farmerstales.gameplay.weather.area_weather.AreaWeatherSyncPacket
 import net.minecraft.resources.ResourceLocation
 import net.minecraftforge.network.NetworkRegistry
 import net.minecraftforge.network.simple.SimpleChannel
 
 object FarmerstalesNetwork {
-    private const val PROTOCOL = "3"
+    private const val PROTOCOL = "5"
 
     val CHANNEL: SimpleChannel = NetworkRegistry.newSimpleChannel(
         ResourceLocation.fromNamespaceAndPath(FTMod.MODID, "main"),
@@ -18,6 +19,11 @@ object FarmerstalesNetwork {
     private var nextId = 0
 
     fun register() {
+        CHANNEL.messageBuilder(AreaWeatherSyncPacket::class.java, nextId++, net.minecraftforge.network.NetworkDirection.PLAY_TO_CLIENT)
+            .encoder(AreaWeatherSyncPacket::encode)
+            .decoder(AreaWeatherSyncPacket::decode)
+            .consumerMainThread(AreaWeatherSyncPacket::handle)
+            .add()
         CHANNEL.messageBuilder(MoonPhaseSyncPacket::class.java, nextId++)
             .encoder(MoonPhaseSyncPacket::encode)
             .decoder(MoonPhaseSyncPacket::decode)

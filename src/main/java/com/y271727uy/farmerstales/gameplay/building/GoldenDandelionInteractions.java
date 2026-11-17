@@ -1,4 +1,6 @@
 package com.y271727uy.farmerstales.gameplay.building;
+import com.y271727uy.farmerstales.backport.Backport;
+import com.y271727uy.farmerstales.backport.BackportFeature;
 import com.y271727uy.farmerstales.FTMod;
 import com.y271727uy.farmerstales.variant.AgeLockHolder;
 import net.minecraft.core.registries.Registries;
@@ -12,7 +14,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.*;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid=FTMod.MODID)
+@Backport(value=BackportFeature.GOLDEN_DANDELION,subscribe=Backport.Bus.FORGE)
 public final class GoldenDandelionInteractions {
     public static final TagKey<EntityType<?>> CANNOT_BE_AGE_LOCKED=TagKey.create(Registries.ENTITY_TYPE,ResourceLocation.fromNamespaceAndPath(FTMod.MODID,"cannot_be_age_locked"));
     @SubscribeEvent(priority=EventPriority.HIGHEST)

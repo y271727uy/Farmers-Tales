@@ -1,5 +1,6 @@
 package com.y271727uy.farmerstales.gameplay.animal_husbandry
 
+import com.y271727uy.farmerstales.gameplay.common.dayIndex
 import com.y271727uy.farmerstales.integration.IntegrationManager
 import com.y271727uy.farmerstales.integration.sereneseasons.SeasonSupport
 import net.minecraft.nbt.CompoundTag
@@ -95,30 +96,30 @@ object AnimalMetabolism {
         if (AnimalHusbandryState.status(animal) != AnimalHusbandryStatus.DOMESTICATED) {
             return false
         }
-        val plan = AnimalHusbandryRules.metabolismFor(animal) ?: return false
-        val currentDay = animal.level().dayTime / 24_000L
-        val vitals = if (animal.isBaby) {
-            read(animal, plan) ?: AnimalVitals(
-                hunger = plan.maxHunger,
-                affection = 0,
-                weight = plan.initialWeight,
-                overflowNutrition = 0,
-                lastSettledDay = currentDay,
-            )
-        } else {
-            refresh(animal) ?: return false
-        }
-        val data = animal.persistentData.getCompound(DATA_KEY)
-        if (data.contains(LAST_PETTED_DAY_KEY, Tag.TAG_LONG.toInt()) &&
-            data.getLong(LAST_PETTED_DAY_KEY) == currentDay
-        ) {
+        if (AnimalHusbandryRules.metabolismFor(animal) == null || wasPettedToday(animal)) {
             return false
         }
+        val currentDay = animal.level().dayIndex
+        if (animal.isBaby) {
+            // Juveniles only bank affection. Writing full vitals here would start the metabolism clock
+            // early and charge the juvenile days as hunger loss once the animal grows up.
+            val data = metabolismData(animal)
+            data.putInt(AFFECTION_KEY, (data.getInt(AFFECTION_KEY) + PET_AFFECTION_GAIN).coerceAtMost(MAX_AFFECTION))
+            data.putLong(LAST_PETTED_DAY_KEY, currentDay)
+            return true
+        }
 
+        val vitals = refresh(animal) ?: return false
         vitals.affection = (vitals.affection + PET_AFFECTION_GAIN).coerceAtMost(MAX_AFFECTION)
         write(animal, vitals)
-        data.putLong(LAST_PETTED_DAY_KEY, currentDay)
+        metabolismData(animal).putLong(LAST_PETTED_DAY_KEY, currentDay)
         return true
+    }
+
+    fun wasPettedToday(animal: Animal): Boolean {
+        val data = animal.persistentData.getCompound(DATA_KEY)
+        return data.contains(LAST_PETTED_DAY_KEY, Tag.TAG_LONG.toInt()) &&
+            data.getLong(LAST_PETTED_DAY_KEY) == animal.level().dayIndex
     }
 
     fun refresh(animal: Animal, applyStarvationDamage: Boolean = true): AnimalVitals? {
@@ -142,10 +143,10 @@ object AnimalMetabolism {
         plan: MetabolismPlan,
         applyStarvationDamage: Boolean = true,
     ): RefreshResult {
-        val currentDay = animal.level().dayTime / 24_000L
+        val currentDay = animal.level().dayIndex
         val vitals = read(animal, plan) ?: AnimalVitals(
             hunger = plan.maxHunger,
-            affection = 0,
+            affection = bankedAffection(animal),
             weight = plan.initialWeight,
             overflowNutrition = 0,
             lastSettledDay = currentDay,
@@ -199,6 +200,10 @@ object AnimalMetabolism {
             return null
         }
         val data = animalData.getCompound(DATA_KEY)
+        // Only affection banked as a juvenile: metabolism has not started yet.
+        if (!data.contains(LAST_SETTLED_DAY_KEY, Tag.TAG_LONG.toInt())) {
+            return null
+        }
         return AnimalVitals(
             hunger = data.getInt(HUNGER_KEY).coerceIn(0, plan.maxHunger),
             affection = data.getInt(AFFECTION_KEY).coerceIn(0, MAX_AFFECTION),
@@ -208,13 +213,26 @@ object AnimalMetabolism {
         )
     }
 
-    private fun write(animal: Animal, vitals: AnimalVitals) {
+    /** Affection petted into a juvenile before its metabolism started. */
+    private fun bankedAffection(animal: Animal): Int {
         val animalData = animal.persistentData
-        val data = if (animalData.contains(DATA_KEY, Tag.TAG_COMPOUND.toInt())) {
+        if (!animalData.contains(DATA_KEY, Tag.TAG_COMPOUND.toInt())) {
+            return 0
+        }
+        return animalData.getCompound(DATA_KEY).getInt(AFFECTION_KEY).coerceIn(0, MAX_AFFECTION)
+    }
+
+    private fun metabolismData(animal: Animal): CompoundTag {
+        val animalData = animal.persistentData
+        return if (animalData.contains(DATA_KEY, Tag.TAG_COMPOUND.toInt())) {
             animalData.getCompound(DATA_KEY)
         } else {
             CompoundTag().also { animalData.put(DATA_KEY, it) }
         }
+    }
+
+    private fun write(animal: Animal, vitals: AnimalVitals) {
+        val data = metabolismData(animal)
         data.putInt(HUNGER_KEY, vitals.hunger)
         data.putInt(AFFECTION_KEY, vitals.affection)
         data.putInt(WEIGHT_KEY, vitals.weight)

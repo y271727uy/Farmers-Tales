@@ -4,6 +4,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import com.y271727uy.farmerstales.FTMod
+import com.y271727uy.farmerstales.backport.BackportLoader
 import com.y271727uy.farmerstales.entity.ModEntities
 import net.minecraft.data.CachedOutput
 import net.minecraft.data.DataProvider
@@ -26,8 +27,11 @@ class ModEntityBiomeModifierProvider(private val output: PackOutput) : DataProvi
                     })
                 })
             }
+            // Spawns of back-ported mobs go into that feature's built-in data pack, so a disabled
+            // feature never references an unregistered entity type.
+            val root = entry.feature?.let { "${BackportLoader.PACK_ROOT}/${it.id()}/" } ?: ""
             val path = output.outputFolder.resolve(
-                "data/${FTMod.MODID}/forge/biome_modifier/add_${entry.entityId}_spawns.json",
+                "${root}data/${FTMod.MODID}/forge/biome_modifier/add_${entry.entityId}_spawns.json",
             )
             DataProvider.saveStable(cache, json, path)
         }

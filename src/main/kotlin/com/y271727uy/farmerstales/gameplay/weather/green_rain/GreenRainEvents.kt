@@ -2,8 +2,11 @@ package com.y271727uy.farmerstales.gameplay.weather.green_rain
 
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.config.Config
+import com.y271727uy.farmerstales.gameplay.common.PlayerLevelSync
+import com.y271727uy.farmerstales.gameplay.common.announce
+import com.y271727uy.farmerstales.gameplay.common.sendPacket
+import com.y271727uy.farmerstales.gameplay.common.sendToDimension
 import com.y271727uy.farmerstales.integration.IntegrationManager
-import com.y271727uy.farmerstales.network.FarmerstalesNetwork
 import com.y271727uy.farmerstales.network.GreenRainSyncPacket
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.chat.Component
@@ -11,11 +14,8 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.level.saveddata.SavedData
 import net.minecraftforge.event.TickEvent
-import net.minecraftforge.event.entity.player.PlayerEvent
 import net.minecraftforge.eventbus.api.SubscribeEvent
 import net.minecraftforge.fml.common.Mod
-import net.minecraftforge.network.PacketDistributor
-import java.util.function.Supplier
 
 /**
  * Dimension-wide fork of vanilla rain. Each summer storm rolls once on the
@@ -27,7 +27,19 @@ object GreenRainEvents {
     private const val ACTIVE_TAG = "Active"
     private const val WAS_RAINING_TAG = "WasRaining"
 
+    init {
+        PlayerLevelSync.register(::syncPlayer)
+    }
+
     fun isActive(level: ServerLevel): Boolean = data(level).active
+
+    fun clear(level: ServerLevel) {
+        val state = data(level)
+        state.active = false
+        state.wasRaining = false
+        state.setDirty()
+        syncAll(level)
+    }
 
     /** A debug rain-type override must also suppress another green roll in this storm. */
     fun clearForStorm(level: ServerLevel) {
@@ -86,33 +98,10 @@ object GreenRainEvents {
         state.wasRaining = true
         if (canRoll(level) && level.random.nextDouble() < Config.greenRainChance) {
             state.active = true
-            level.players().filterIsInstance<ServerPlayer>().forEach { player ->
-                player.sendSystemMessage(Component.translatable("message.${FTMod.MODID}.green_rain.started"))
-            }
+            level.announce(Component.translatable("message.${FTMod.MODID}.green_rain.started"))
             syncAll(level)
         }
         state.setDirty()
-    }
-
-    @JvmStatic
-    @SubscribeEvent
-    fun onPlayerLogin(event: PlayerEvent.PlayerLoggedInEvent) {
-        val player = event.entity as? ServerPlayer ?: return
-        syncPlayer(player)
-    }
-
-    @JvmStatic
-    @SubscribeEvent
-    fun onPlayerChangedDimension(event: PlayerEvent.PlayerChangedDimensionEvent) {
-        val player = event.entity as? ServerPlayer ?: return
-        syncPlayer(player)
-    }
-
-    @JvmStatic
-    @SubscribeEvent
-    fun onPlayerRespawn(event: PlayerEvent.PlayerRespawnEvent) {
-        val player = event.entity as? ServerPlayer ?: return
-        syncPlayer(player)
     }
 
     private fun canRoll(level: ServerLevel): Boolean {
@@ -121,17 +110,11 @@ object GreenRainEvents {
     }
 
     private fun syncAll(level: ServerLevel) {
-        FarmerstalesNetwork.CHANNEL.send(
-            PacketDistributor.DIMENSION.with(Supplier { level.dimension() }),
-            GreenRainSyncPacket(data(level).active),
-        )
+        level.sendToDimension(GreenRainSyncPacket(data(level).active))
     }
 
     private fun syncPlayer(player: ServerPlayer) {
-        FarmerstalesNetwork.CHANNEL.send(
-            PacketDistributor.PLAYER.with(Supplier { player }),
-            GreenRainSyncPacket(data(player.serverLevel()).active),
-        )
+        player.sendPacket(GreenRainSyncPacket(data(player.serverLevel()).active))
     }
 
     private fun data(level: ServerLevel): GreenRainData =

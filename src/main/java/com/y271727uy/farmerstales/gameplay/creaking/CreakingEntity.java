@@ -89,7 +89,7 @@ public final class CreakingEntity extends Monster {
                 if (--teardownTicks <= 0) {
                     ((ServerLevel)level()).sendParticles(new net.minecraft.core.particles.BlockParticleOption(
                             net.minecraft.core.particles.ParticleTypes.BLOCK,
-                            com.y271727uy.farmerstales.all.ForestBlocks.PALE_OAK_WOOD.get().defaultBlockState()),
+                            com.y271727uy.farmerstales.all.PaleGardenBlocks.PALE_OAK_WOOD.get().defaultBlockState()),
                             getX(), getY() + getBbHeight() / 2, getZ(), 100, 0.3, 0.8, 0.3, 0.05);
                     discard(); return;
                 }
