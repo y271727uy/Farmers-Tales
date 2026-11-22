@@ -1,6 +1,7 @@
 package com.y271727uy.farmerstales.gameplay.heredity.beat
 
 import com.y271727uy.farmerstales.FTMod
+import com.y271727uy.farmerstales.gameplay.special_event.seasonal.WarmCurrent
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.core.particles.ParticleTypes
@@ -73,7 +74,7 @@ object TreeFruitKnockdownEvents {
         var harvested = false
         for (pos in fruitPositions) {
             val state = level.getBlockState(pos)
-            if (!isRipe(state)) continue
+            if (!isRipe(state) || !WarmCurrent.canPick(level, pos, state)) continue
             val drops = Block.getDrops(state, level, pos, level.getBlockEntity(pos))
             if (drops.isEmpty()) continue
             level.setBlock(pos, resetFruitState(state), 3)

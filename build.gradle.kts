@@ -98,6 +98,8 @@ val libModFiles = listOf(
     file("lib/xaerominimap-forge-1.20.1-26.6.0.jar"),
     file("lib/xaeroworldmap-forge-1.20.1-1.47.0.jar"),
     file("lib/curios-forge-5.12.1+1.20.1.jar"),
+    file("lib/geckolib-forge-1.20.1-4.8.2.jar"),
+    file("lib/untitledduckmod-1.7.0-fix-forge-1.20.1.jar"),
 
 ).filter(File::exists)
 // Temporary test mods. Their coordinates are derived from each file name and
@@ -227,6 +229,9 @@ dependencies {
     add("compileOnly", files("lib/StellarView-1.20.1-0.5.3-Forge.jar"))
     add("compileOnly", files("lib/forestry-1.20.1-2.11.1.jar"))
     add("compileOnly", files("lib/curios-forge-5.12.1+1.20.1.jar"))
+    // Photon: compile-time reference only. Deliberately absent from libModFiles,
+    // so it is never loaded into the development client run.
+    add("compileOnly", files("lib/photon-forge-1.20.1-1.1.17.jar"))
     add("compileOnly", files(xaeroMinimapApi))
     add("compileOnly", files(fileTree(layout.buildDirectory.dir("xaeroLibApi")) {
         include("**/*.jar")

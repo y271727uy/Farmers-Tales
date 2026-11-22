@@ -1,5 +1,6 @@
 package com.y271727uy.farmerstales.gameplay.animal_husbandry
 
+import com.y271727uy.farmerstales.integration.untitledduckmod.UntitledDuckIntegration
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.world.entity.animal.Animal
@@ -23,6 +24,9 @@ object AnimalHusbandryState {
     fun status(animal: Animal): AnimalHusbandryStatus {
         val data = animal.persistentData
         if (!data.contains(DATA_KEY, Tag.TAG_COMPOUND.toInt())) {
+            if (UntitledDuckIntegration.waterfowl(animal)?.isTame == true) {
+                return AnimalHusbandryStatus.DOMESTICATED
+            }
             return AnimalHusbandryStatus.UNMANAGED
         }
         return AnimalHusbandryStatus.fromSerializedName(data.getCompound(DATA_KEY).getString(STATUS_KEY))

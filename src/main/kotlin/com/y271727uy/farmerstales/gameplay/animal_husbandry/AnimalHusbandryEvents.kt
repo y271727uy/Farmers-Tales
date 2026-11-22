@@ -2,7 +2,9 @@ package com.y271727uy.farmerstales.gameplay.animal_husbandry
 
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.config.Config
+import com.y271727uy.farmerstales.entity.AnimalMutationEntities
 import com.y271727uy.farmerstales.gameplay.advancements.FarmersTalesAdvancements
+import com.y271727uy.farmerstales.integration.untitledduckmod.UntitledDuckIntegration
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
@@ -13,6 +15,7 @@ import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.MobSpawnType
 import net.minecraft.world.entity.animal.Animal
+import net.minecraft.world.entity.animal.Pig
 import net.minecraft.world.entity.animal.horse.AbstractHorse
 import net.minecraft.network.chat.Component
 import net.minecraftforge.event.entity.living.BabyEntitySpawnEvent
@@ -38,6 +41,16 @@ object AnimalHusbandryEvents {
     }
 
     @JvmStatic
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    fun onWaterfowlBreeding(event: BabyEntitySpawnEvent) {
+        if ((event.parentA as? Animal)?.let(UntitledDuckIntegration::isWildWaterfowl) == true ||
+            (event.parentB as? Animal)?.let(UntitledDuckIntegration::isWildWaterfowl) == true
+        ) {
+            event.isCanceled = true
+        }
+    }
+
+    @JvmStatic
     @SubscribeEvent
     fun onBabyEntitySpawn(event: BabyEntitySpawnEvent) {
         val child = event.child as? Animal ?: return
@@ -58,8 +71,10 @@ object AnimalHusbandryEvents {
     @JvmStatic
     @SubscribeEvent(priority = EventPriority.LOWEST)
     fun onPigBabyEntitySpawn(event: BabyEntitySpawnEvent) {
-        val firstPiglet = event.child ?: return
-        if (firstPiglet.type != EntityType.PIG) {
+        val firstPiglet = event.child as? Pig ?: return
+        if (firstPiglet.type != EntityType.PIG &&
+            AnimalMutationEntities.appearance(firstPiglet.type)?.baseType != EntityType.PIG
+        ) {
             return
         }
         val level = firstPiglet.level() as? ServerLevel ?: return
@@ -70,7 +85,7 @@ object AnimalHusbandryEvents {
             return
         }
 
-        val piglet = EntityType.PIG.create(level) ?: return
+        val piglet = firstPiglet.type.create(level) as? Pig ?: return
         piglet.setBaby(true)
         piglet.moveTo(
             firstPiglet.x + (parentA.random.nextDouble() - 0.5),
@@ -84,7 +99,8 @@ object AnimalHusbandryEvents {
     }
 
     private fun awardHusbandryAdvancement(player: ServerPlayer, id: String, animal: Animal) {
-        val criterion = ForgeRegistries.ENTITY_TYPES.getKey(animal.type)?.path ?: return
+        val species = AnimalMutationEntities.appearance(animal.type)?.baseType ?: animal.type
+        val criterion = ForgeRegistries.ENTITY_TYPES.getKey(species)?.path ?: return
         FarmersTalesAdvancements.award(player, id, criterion)
     }
 
@@ -113,9 +129,13 @@ object AnimalHusbandryEvents {
     }
 
     private fun handleAnimalInteract(event: PlayerInteractEvent, animal: Animal) {
-        if (event.level.isClientSide || event.hand != InteractionHand.MAIN_HAND) {
+        if (event.level.isClientSide) {
             return
         }
+        val waterfowl = UntitledDuckIntegration.waterfowl(animal)
+        if (event.hand != InteractionHand.MAIN_HAND && (waterfowl == null || event.itemStack.isEmpty)) return
+        // Sneaking owners open the waterfowl's mouth inventory.
+        if (waterfowl?.isOwnedBy(event.entity) == true && event.entity.isShiftKeyDown) return
 
         if (AnimalHusbandryRules.isSupported(animal) &&
             AnimalHusbandryState.status(animal) == AnimalHusbandryStatus.UNMANAGED
@@ -128,6 +148,9 @@ object AnimalHusbandryEvents {
             AnimalHusbandryStatus.WILD -> {
                 if (AnimalHusbandryRules.acceptsBait(animal, heldItem)) {
                     AnimalHusbandryState.markDomesticated(animal)
+                    if (waterfowl != null && !waterfowl.isTame) {
+                        waterfowl.tame(event.entity)
+                    }
                     awardHusbandryAdvancement(
                         event.entity as ServerPlayer,
                         "animal_husbandry/domesticate_animal",
@@ -155,9 +178,8 @@ object AnimalHusbandryEvents {
                         event.isCanceled = true
                         return
                     }
-                    // Feedback only, never cancelled: an empty hand also mounts horses, camels and llamas,
-                    // so mounts get no message at all to avoid nagging every time the player rides.
-                    if (animal !is AbstractHorse && AnimalMetabolism.wasPettedToday(animal)) {
+                    // Mounting and waterfowl commands also use the empty hand.
+                    if (waterfowl == null && animal !is AbstractHorse && AnimalMetabolism.wasPettedToday(animal)) {
                         event.entity.displayClientMessage(
                             Component.translatable("message.${FTMod.MODID}.animal_husbandry.already_petted", animal.displayName),
                             true,

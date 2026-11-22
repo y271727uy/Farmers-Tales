@@ -3,6 +3,7 @@ package com.y271727uy.farmerstales.mixin.minecraft.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.y271727uy.farmerstales.client.CowVariantModelHolder;
 import com.y271727uy.farmerstales.client.PigVariantModelHolder;
+import com.y271727uy.farmerstales.entity.AnimalMutationEntities;
 import com.y271727uy.farmerstales.gameplay.animal_variants.AnimalAppearanceVariants;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -38,6 +39,7 @@ public abstract class LivingEntityRendererAppearanceVariantMixin<T extends Livin
             int packedLight,
             CallbackInfo ci
     ) {
+        if (AnimalMutationEntities.appearance(entity.getType()) != null) return;
         String variant;
         if (entity instanceof Cow cow && (Object) this instanceof CowRenderer) {
             variant = AnimalAppearanceVariants.getVariant(cow);

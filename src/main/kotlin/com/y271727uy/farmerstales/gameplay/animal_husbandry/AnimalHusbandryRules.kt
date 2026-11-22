@@ -1,6 +1,8 @@
 package com.y271727uy.farmerstales.gameplay.animal_husbandry
 
 import com.y271727uy.farmerstales.all.ModItems
+import com.y271727uy.farmerstales.entity.AnimalMutationEntities
+import com.y271727uy.farmerstales.integration.untitledduckmod.UntitledDuckIntegration
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.animal.Animal
@@ -58,8 +60,12 @@ object AnimalHusbandryRules {
     private val entityRules = linkedMapOf<ResourceLocation, AnimalHusbandryRule>()
     private val resolvedRules: Map<EntityType<*>, AnimalHusbandryRule> by lazy {
         buildMap {
+            val registry = ForgeRegistries.ENTITY_TYPES
             entityRules.forEach { (entityId, rule) ->
-                ForgeRegistries.ENTITY_TYPES.getValue(entityId)?.let { put(it, rule) }
+                // Forge registries can return their default entry for a missing optional ID.
+                if (registry.containsKey(entityId)) {
+                    registry.getValue(entityId)?.let { put(it, rule) }
+                }
             }
         }
     }
@@ -75,16 +81,19 @@ object AnimalHusbandryRules {
             "minecraft:horse",
             "minecraft:donkey",
         )
-        omnivore("minecraft:chicken", "minecraft:pig")
+        herbivore(UntitledDuckIntegration.GOOSE)
+        omnivore("minecraft:chicken", "minecraft:pig", UntitledDuckIntegration.DUCK)
 
         meat("minecraft:chicken", "minecraft:chicken")
+        meat(UntitledDuckIntegration.DUCK, "untitledduckmod:raw_duck")
+        meat(UntitledDuckIntegration.GOOSE, "untitledduckmod:raw_goose")
         meat("minecraft:cow", "minecraft:beef")
         meat("minecraft:mooshroom", "minecraft:beef")
         meat("minecraft:sheep", "minecraft:mutton")
         meat("minecraft:pig", "minecraft:porkchop")
         meat("minecraft:rabbit", "minecraft:rabbit")
 
-        custom("minecraft:chicken") {
+        custom("minecraft:chicken", UntitledDuckIntegration.DUCK) {
             metabolism(maxHunger = 8, hungerLossPerDay = 4, initialWeight = 3, maxWeight = 12, overflowNutritionPerWeightGain = 6, weightGainPerOverflow = 3, mediumWeightThreshold = 4, highWeightThreshold = 8, starvationWeightLossPerDay = 3)
         }
         custom("minecraft:rabbit") {
@@ -106,7 +115,8 @@ object AnimalHusbandryRules {
 
     fun ruleFor(animal: Animal): AnimalHusbandryRule? = ruleFor(animal.type)
 
-    fun ruleFor(entityType: EntityType<*>): AnimalHusbandryRule? = resolvedRules[entityType]
+    fun ruleFor(entityType: EntityType<*>): AnimalHusbandryRule? =
+        resolvedRules[entityType] ?: AnimalMutationEntities.appearance(entityType)?.baseType?.let(resolvedRules::get)
 
     fun isSupported(animal: Animal): Boolean = ruleFor(animal) != null
 

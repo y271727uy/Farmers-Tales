@@ -1,6 +1,7 @@
 package com.y271727uy.farmerstales.gameplay.season_breeding
 
 import com.y271727uy.farmerstales.FTMod
+import com.y271727uy.farmerstales.entity.AnimalMutationEntities
 import com.y271727uy.farmerstales.integration.sereneseasons.SeasonSupport.SeasonWindow
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
@@ -17,12 +18,18 @@ object BreedingSeasonRules {
     )
     private val yearRoundTag = entityTypeTag("year_round_breeders")
 
-    fun hasRule(entityType: EntityType<*>): Boolean =
-        entityType.builtInRegistryHolder().`is`(yearRoundTag) || seasonTags.values.any { tag ->
-            entityType.builtInRegistryHolder().`is`(tag)
-        }
+    fun hasRule(entityType: EntityType<*>): Boolean = allowedSeasons(entityType).isNotEmpty()
 
     fun allowedSeasons(entityType: EntityType<*>): Collection<SeasonWindow> {
+        val directSeasons = taggedSeasons(entityType)
+        if (directSeasons.isNotEmpty()) return directSeasons
+
+        // Datapacks can give a mutation its own rule. Otherwise it follows its base animal's tags.
+        val baseType = AnimalMutationEntities.appearance(entityType)?.baseType ?: return emptySet()
+        return taggedSeasons(baseType)
+    }
+
+    private fun taggedSeasons(entityType: EntityType<*>): Set<SeasonWindow> {
         if (entityType.builtInRegistryHolder().`is`(yearRoundTag)) {
             return SeasonWindow.entries.toSet()
         }

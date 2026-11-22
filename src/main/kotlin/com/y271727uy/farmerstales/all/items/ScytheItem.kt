@@ -6,6 +6,7 @@ import com.y271727uy.farmerstales.gameplay.quality_crop.QualityHarvestContext
 import com.y271727uy.farmerstales.gameplay.quality_crop.QualityHarvestRules
 import com.y271727uy.farmerstales.gameplay.quality_crop.event.harvest.BerryHarvestEvents
 import com.y271727uy.farmerstales.gameplay.quality_crop.event.harvest.StandardCrop
+import com.y271727uy.farmerstales.gameplay.special_event.seasonal.WarmCurrent
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.resources.ResourceLocation
@@ -107,7 +108,7 @@ class ScytheItem(
         if (isStackedCrop(level, pos, state)) {
             return harvestStackedCrop(level, pos, state, player)
         }
-        if (!ScytheHarvest.isReady(state)) return false
+        if (!ScytheHarvest.isReady(state) || !WarmCurrent.canPick(level, pos, state)) return false
         if (blockId(state) == "farmersrespite:tea_bush") return harvestRespiteTea(level, pos, state, player)
         if (player != null && pick(level, pos, state, player, context)) return true
 

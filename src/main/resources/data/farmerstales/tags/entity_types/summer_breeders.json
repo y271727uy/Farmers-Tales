@@ -12,6 +12,8 @@
     "minecraft:axolotl",
     "minecraft:sniffer",
     "minecraft:cat",
-    "minecraft:ocelot"
+    "minecraft:ocelot",
+    { "id": "untitledduckmod:duck", "required": false },
+    { "id": "untitledduckmod:goose", "required": false }
   ]
 }

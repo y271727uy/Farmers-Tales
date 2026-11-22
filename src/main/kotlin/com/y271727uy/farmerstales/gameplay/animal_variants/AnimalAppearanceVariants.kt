@@ -2,7 +2,9 @@ package com.y271727uy.farmerstales.gameplay.animal_variants
 
 import com.y271727uy.farmerstales.FTMod
 import com.y271727uy.farmerstales.backport.BackportFeature
+import com.y271727uy.farmerstales.entity.AnimalMutationEntities
 import com.y271727uy.farmerstales.variant.AnimalAppearanceVariantHolder
+import net.minecraft.ChatFormatting
 import net.minecraft.core.BlockPos
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceLocation
@@ -16,6 +18,8 @@ import net.minecraft.world.entity.animal.Cat
 import net.minecraft.world.entity.animal.Chicken
 import net.minecraft.world.entity.animal.Cow
 import net.minecraft.world.entity.animal.Pig
+import net.minecraft.world.entity.animal.Rabbit
+import net.minecraft.world.entity.animal.Sheep
 import net.minecraft.world.entity.animal.Wolf
 import net.minecraft.world.level.ServerLevelAccessor
 import net.minecraft.server.level.ServerLevel
@@ -37,9 +41,15 @@ object AnimalAppearanceVariants {
     private const val TEMPERATE = "temperate"
     private const val COLD = "cold"
     private const val WARM = "warm"
+    private const val BLUE_RABBIT = "blue"
     private val quarkCowVariants = List(4) { "quark_${it + 1}" }
     private val quarkPigVariants = List(3) { "quark_${it + 1}" }
     private val quarkChickenVariants = List(6) { "quark_${it + 1}" }
+    private val sheepVariants = listOf("", "brown", "yellow", "black")
+    private val cowCoats = listOf("white", "golden", "black", "brown")
+    private val pigCoats = listOf("black", "brown")
+    private val chickenCoats = listOf("chestnut")
+    private val rabbitVariants = List(7) { "" } + BLUE_RABBIT
     private val mobVariantsPigVariants = listOf(
         "mobvariants_mottled", "mobvariants_piebald", "mobvariants_pink_footed",
         "mobvariants_sooty", "mobvariants_spotted",
@@ -101,8 +111,8 @@ object AnimalAppearanceVariants {
 
         // Carry On can add a freshly created entity before it has finished loading
         // the saved NBT. Defer the fallback assignment so a persisted variant wins.
-        // Cats use an empty value to intentionally preserve their vanilla skin.
-        if (mob is Cat) return
+        // Keep the native skin of existing cats and rabbits that predate our variants.
+        if (mob is Cat || mob is Rabbit) return
         val serverLevel = event.level as? ServerLevel ?: return
         serverLevel.server.execute {
             if (mob.isRemoved || mob.level() !== serverLevel ||
@@ -128,9 +138,20 @@ object AnimalAppearanceVariants {
         val child = event.child as? Animal ?: return
         if (!isSupported(child)) return
 
+        if (child is Rabbit) {
+            val parentCoats = listOf(getVariant(event.parentA), getVariant(event.parentB))
+            val variant = if (BLUE_RABBIT in parentCoats) {
+                parentCoats.randomOrNull(child.random).orEmpty().takeIf { it == BLUE_RABBIT }.orEmpty()
+            } else {
+                randomVariant(child, child.random)
+            }
+            setVariant(child, variant)
+            return
+        }
+
         val parentVariants = listOfNotNull(
-            (event.parentA as? Mob)?.let(::getVariant)?.takeIf { it.isNotEmpty() },
-            (event.parentB as? Mob)?.let(::getVariant)?.takeIf { it.isNotEmpty() },
+            getVariant(event.parentA).takeIf { it.isNotEmpty() },
+            getVariant(event.parentB).takeIf { it.isNotEmpty() },
         )
         val variant = parentVariants.randomOrNull(child.random) ?: randomVariant(child, child.random)
         setVariant(child, variant)
@@ -138,6 +159,17 @@ object AnimalAppearanceVariants {
 
     @JvmStatic
     fun getVariant(mob: Mob): String = (mob as? AnimalAppearanceVariantHolder)?.`farmerstales$getAppearanceVariant`().orEmpty()
+
+    @JvmStatic
+    fun getSheepCoat(sheep: Sheep): String? = getVariant(sheep).takeIf { it.isNotEmpty() && it in sheepVariants }
+
+    @JvmStatic
+    fun getRabbitCoat(rabbit: Rabbit): String? = getVariant(rabbit).takeIf {
+        it == BLUE_RABBIT && rabbit.variant != Rabbit.Variant.EVIL && !hasToastAppearance(rabbit)
+    }
+
+    fun hasToastAppearance(rabbit: Rabbit): Boolean =
+        ChatFormatting.stripFormatting(rabbit.name.string) == "Toast"
 
     /** Quark and MobVariants pig textures use the pre-1.21.5 cow/pig UV layout. */
     @JvmStatic
@@ -154,6 +186,7 @@ object AnimalAppearanceVariants {
             else wolfBiomeVariants.firstOrNull { (_, tag) -> biome.`is`(tag) }?.first
                 ?: (listOf(PALE_WOLF) + mobVariantsDogVariants).randomOrNull(mob.random)!!
             is Cat -> catVariants.randomOrNull(mob.random)!!
+            is Sheep, is Rabbit -> randomVariant(mob, mob.random)
             is Cow, is Pig, is Chicken -> when {
                 farmVariantsEnabled && biome.`is`(coldFarmAnimalBiomes) -> COLD
                 farmVariantsEnabled && biome.`is`(warmFarmAnimalBiomes) -> WARM
@@ -166,14 +199,16 @@ object AnimalAppearanceVariants {
     private fun randomVariant(mob: Mob, random: RandomSource): String = when (mob) {
         is Wolf -> (if (wolfVariantsEnabled) wolfVariants else listOf("") + mobVariantsDogVariants).let { it[random.nextInt(it.size)] }
         is Cat -> catVariants[random.nextInt(catVariants.size)]
+        is Sheep -> sheepVariants[random.nextInt(sheepVariants.size)]
+        is Rabbit -> rabbitVariants[random.nextInt(rabbitVariants.size)]
         is Cow, is Pig, is Chicken -> allFarmAnimalVariants(mob).let { variants -> variants[random.nextInt(variants.size)] }
         else -> ""
     }
 
     private fun temperateVariants(mob: Mob): List<String> = when (mob) {
-        is Cow -> listOf(temperate()) + quarkCowVariants
-        is Pig -> listOf(temperate()) + quarkPigVariants + mobVariantsPigVariants
-        is Chicken -> listOf(temperate()) + quarkChickenVariants
+        is Cow -> listOf(temperate()) + quarkCowVariants + cowCoats
+        is Pig -> listOf(temperate()) + quarkPigVariants + mobVariantsPigVariants + pigCoats
+        is Chicken -> listOf(temperate()) + quarkChickenVariants + chickenCoats
         else -> emptyList()
     }
 
@@ -182,7 +217,9 @@ object AnimalAppearanceVariants {
     private fun allFarmAnimalVariants(mob: Mob): List<String> =
         if (farmVariantsEnabled) listOf(COLD, TEMPERATE, WARM) + temperateVariants(mob).drop(1) else temperateVariants(mob)
 
-    private fun isSupported(mob: Mob): Boolean = mob is Wolf || mob is Cat || mob is Cow || mob is Pig || mob is Chicken
+    private fun isSupported(mob: Mob): Boolean =
+        AnimalMutationEntities.appearance(mob.type) == null &&
+            (mob is Wolf || mob is Cat || mob is Cow || mob is Pig || mob is Chicken || mob is Sheep || mob is Rabbit)
 
     private fun biomeTag(path: String): TagKey<Biome> = TagKey.create(
         Registries.BIOME,

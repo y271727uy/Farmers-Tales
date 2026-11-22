@@ -7,7 +7,9 @@ import com.y271727uy.farmerstales.integration.forestry.ForestryIntegration
 import com.y271727uy.farmerstales.integration.jei.JeiIntegration
 import com.y271727uy.farmerstales.integration.kubejs.KubeJsIntegration
 import com.y271727uy.farmerstales.integration.sereneseasons.SereneSeasonsIntegration
+import net.minecraft.core.BlockPos
 import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.state.BlockState
 import net.minecraftforge.fml.ModList
 
 data class SeasonCalendarDate(
@@ -65,6 +67,9 @@ object IntegrationManager {
 
     fun rainSeasonBoosts(level: Level): Pair<Boolean, Boolean> =
         if (isSereneSeasonsLoaded()) SereneSeasonsIntegration.rainSeasonBoosts(level) else false to false
+
+    fun isFruitInSeason(level: Level, pos: BlockPos, state: BlockState): Boolean =
+        !isSereneSeasonsLoaded() || SereneSeasonsIntegration.isFruitInSeason(level, pos, state)
 
     fun isSereneSeasonsLoaded(): Boolean {
         return ModList.get().isLoaded(SERENE_SEASONS)

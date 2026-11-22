@@ -12,6 +12,7 @@ import com.y271727uy.farmerstales.all.ModPotions
 import com.y271727uy.farmerstales.all.ModSounds
 import com.y271727uy.farmerstales.backport.BackportLoader
 import com.y271727uy.farmerstales.entity.ModEntities
+import com.y271727uy.farmerstales.entity.AnimalMutationEntities
 import com.y271727uy.farmerstales.integration.IntegrationManager
 import com.y271727uy.farmerstales.config.Config
 import com.y271727uy.farmerstales.config.ConfigFiles
@@ -53,6 +54,7 @@ class FTMod {
         ModBlocks.init()
         ModBlockEntities.init()
         ModEntities.register(modEventBus)
+        AnimalMutationEntities.register(modEventBus)
         FishGroupRegistry.register(modEventBus)
         FertileMoonEffects.register(modEventBus)
         CrimsonMoonEffects.register(modEventBus)

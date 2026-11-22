@@ -8,6 +8,7 @@ import com.y271727uy.farmerstales.gameplay.tree.block.TreeStumpBlock
 import net.minecraft.world.entity.animal.Wolf
 import com.y271727uy.farmerstales.gameplay.gene_crop.block.CropStandBlock
 import com.y271727uy.farmerstales.integration.IntegrationManager
+import net.minecraft.world.entity.animal.Animal
 import net.minecraft.world.level.block.Block
 import snownee.jade.api.IWailaCommonRegistration
 import snownee.jade.api.IWailaPlugin
@@ -43,6 +44,7 @@ class FarmerTalesJadePlugin : IWailaPlugin {
             AnimalHusbandryTooltipProvider,
             net.minecraft.world.entity.animal.Animal::class.java
         )
+        registration.registerEntityComponent(AnimalBreedTooltipProvider, Animal::class.java)
         registration.registerEntityComponent(ShepherdDogTooltipProvider, Wolf::class.java)
         registration.registerEntityComponent(FishPoolEntityProvider, RiverFishPoolEntity::class.java)
         registration.registerEntityComponent(FishPoolEntityProvider, OceanFishPoolEntity::class.java)

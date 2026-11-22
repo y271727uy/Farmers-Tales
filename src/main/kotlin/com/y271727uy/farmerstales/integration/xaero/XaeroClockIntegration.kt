@@ -82,7 +82,6 @@ object XaeroClockIntegration {
             // Append our own row; leave SeasonHUD's "season" entry and ordering intact.
             .setDestination { displays.add(it) }
             .build()
-        ClockHud.onMinimapDisplayRegistered()
     }
 
     private fun centeredLine(line: Component, width: Int): Component {

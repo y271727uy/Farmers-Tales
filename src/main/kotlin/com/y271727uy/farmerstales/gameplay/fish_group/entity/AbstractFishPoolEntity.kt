@@ -5,6 +5,8 @@ import com.y271727uy.farmerstales.gameplay.fish_group.FishingHookEnchantments
 import com.y271727uy.farmerstales.gameplay.fish_group.pool.FishKingCooldownSavedData
 import com.y271727uy.farmerstales.gameplay.advancements.FarmersTalesAdvancements
 import com.y271727uy.farmerstales.gameplay.special_event.crimson_moon.CrimsonMoonEvents
+import com.y271727uy.farmerstales.gameplay.special_event.seasonal.SeasonalEvent
+import com.y271727uy.farmerstales.gameplay.special_event.seasonal.SeasonalEvents
 import com.y271727uy.farmerstales.gameplay.fish_group.pool.FishPoolDefinition
 import com.y271727uy.farmerstales.gameplay.fish_group.pool.FishPoolFactory
 import com.y271727uy.farmerstales.gameplay.fish_group.pool.FishPoolLootManager
@@ -154,6 +156,9 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
             FTMod.LOGGER.warn("Fish pool {} produced no reward", fishPoolId)
             return
         }
+        if (SeasonalEvents.isActive(serverLevel, SeasonalEvent.FISH_TIDE)) {
+            launchReward(player, reward.copy(), hook)
+        }
         giveReward(player, reward, hook)
         (player as? net.minecraft.server.level.ServerPlayer)?.let { serverPlayer ->
             SeasonSupport.currentSeasonWindow(serverLevel)?.let { season ->
@@ -239,6 +244,14 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
     fun isFishKingAwarded(): Boolean = fishKingAwarded
 
     private fun giveReward(player: Player, stack: ItemStack, hook: FishingHook) {
+        launchReward(player, stack, hook)
+        level().addFreshEntity(
+            ExperienceOrb(level(), player.x, player.y + 0.5, player.z + 0.5, random.nextInt(6) + 1),
+        )
+        if (stack.`is`(ItemTags.FISHES)) player.awardStat(Stats.FISH_CAUGHT)
+    }
+
+    private fun launchReward(player: Player, stack: ItemStack, hook: FishingHook) {
         val itemEntity = ItemEntity(level(), hook.x, hook.y, hook.z, stack)
         val dx = player.x - hook.x
         val dy = player.y - hook.y
@@ -250,10 +263,6 @@ abstract class AbstractFishPoolEntity(type: EntityType<out FishPoolBaseEntity>, 
             dz * 0.1,
         )
         level().addFreshEntity(itemEntity)
-        level().addFreshEntity(
-            ExperienceOrb(level(), player.x, player.y + 0.5, player.z + 0.5, random.nextInt(6) + 1),
-        )
-        if (stack.`is`(ItemTags.FISHES)) player.awardStat(Stats.FISH_CAUGHT)
     }
 
     companion object {

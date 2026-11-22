@@ -21,26 +21,12 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.Items
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.biome.Biome
-import net.minecraftforge.api.distmarker.Dist
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent
-import net.minecraftforge.client.gui.overlay.IGuiOverlay
-import net.minecraftforge.eventbus.api.SubscribeEvent
-import net.minecraftforge.fml.common.Mod
 import java.util.Locale
 import kotlin.math.roundToInt
 
-@Mod.EventBusSubscriber(modid = FTMod.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
 object ClockHud {
-    private const val MARGIN = 6
-    private const val PADDING = 3
-    private const val ICON_SIZE = 16
-    private const val GAP = 4
-    private val clock = ItemStack(Items.CLOCK)
-    private var minimapDisplayRegistered = false
     private val environmentIconStyle = Style.EMPTY
         .withFont(ResourceLocation.fromNamespaceAndPath(FTMod.MODID, "clock"))
         .withColor(0xFFFFFF)
@@ -170,73 +156,5 @@ object ClockHud {
             } else null,
             Component.literal("$hour:$minute")
         )
-    }
-
-    @JvmStatic
-    fun onMinimapDisplayRegistered() {
-        minimapDisplayRegistered = true
-    }
-
-    private val overlay = IGuiOverlay { _, graphics, _, screenWidth, screenHeight ->
-        val minecraft = Minecraft.getInstance()
-        val level = minecraft.level
-        val player = minecraft.player
-        if (level != null && player != null && !minimapDisplayRegistered) {
-            val lines = calendarLines(level)
-            val pos = player.blockPosition()
-            val environment = buildList {
-                addAll(environmentLines(level, pos))
-                moonPhaseLine(level, player)?.let { add(it) }
-                add(weatherLine(level, pos))
-            }
-            val realTime = if (HudItemAccess.canShowRealTime(player)) realTimeLines() else null
-            val font = minecraft.font
-            val dateWidth = ICON_SIZE + GAP + font.width(lines.date)
-            val realTimeWidth = realTime?.let { maxOf(font.width(it.dateTime), font.width(it.zone)) } ?: 0
-            val seasonalTimeWidth = lines.seasonalTime?.let(font::width) ?: 0
-            val contentWidth = maxOf(dateWidth, realTimeWidth, seasonalTimeWidth, font.width(lines.time), environment.maxOf { font.width(it) })
-            val width = PADDING * 2 + contentWidth
-            val environmentHeight = environment.size * (font.lineHeight + 1)
-            val realTimeHeight = if (realTime != null) (font.lineHeight + 1) * 2 else 0
-            val seasonalTimeHeight = if (lines.seasonalTime != null) font.lineHeight + 1 else 0
-            val height = environmentHeight + ICON_SIZE + 2 + realTimeHeight + seasonalTimeHeight + font.lineHeight + PADDING * 2
-            val x = (screenWidth - MARGIN - width).coerceAtLeast(0)
-            val y = (screenHeight - MARGIN - height).coerceAtLeast(0)
-
-            graphics.fill(x, y, x + width, y + height, 0x80000000.toInt())
-            environment.forEachIndexed { index, text ->
-                graphics.drawString(font, text, x + PADDING, y + PADDING + index * (font.lineHeight + 1), 0xFFFFFF, true)
-            }
-            val realTimeY = y + PADDING + environmentHeight
-            if (realTime != null) {
-                graphics.drawString(font, realTime.dateTime,
-                    x + PADDING + (realTimeWidth - font.width(realTime.dateTime)) / 2, realTimeY, 0xFFFFFF, true)
-                graphics.drawString(font, realTime.zone,
-                    x + PADDING + (realTimeWidth - font.width(realTime.zone)) / 2, realTimeY + font.lineHeight + 1, 0xFFFFFF, true)
-            }
-            val dateY = realTimeY + realTimeHeight
-            graphics.renderItem(clock, x + PADDING, dateY)
-            graphics.drawString(
-                font, lines.date, x + PADDING + ICON_SIZE + GAP,
-                dateY + (ICON_SIZE - font.lineHeight) / 2, 0xFFFFFF, true
-            )
-            val seasonalTimeY = dateY + ICON_SIZE + 2
-            lines.seasonalTime?.let { seasonalTime ->
-                graphics.drawString(
-                    font, seasonalTime, x + PADDING + (dateWidth - font.width(seasonalTime)) / 2,
-                    seasonalTimeY, 0xFFFFFF, true
-                )
-            }
-            graphics.drawString(
-                font, lines.time, x + PADDING + (dateWidth - font.width(lines.time)) / 2,
-                seasonalTimeY + seasonalTimeHeight, 0xFFFFFF, true
-            )
-        }
-    }
-
-    @JvmStatic
-    @SubscribeEvent
-    fun registerOverlays(event: RegisterGuiOverlaysEvent) {
-        event.registerAboveAll("clock", overlay)
     }
 }

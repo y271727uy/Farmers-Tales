@@ -4,6 +4,7 @@ import com.google.common.base.Suppliers;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.y271727uy.farmerstales.FTMod;
+import com.y271727uy.farmerstales.gameplay.special_event.seasonal.SeasonalEventLootModifier;
 import com.y271727uy.farmerstales.gameplay.weather.area_weather.AreaWeatherHarvestModifier;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -32,6 +33,9 @@ public final class ModLootModifiers {
 
     public static final RegistryObject<Codec<? extends IGlobalLootModifier>> AREA_WEATHER_HARVEST =
             LOOT_MODIFIERS.register("area_weather_harvest", () -> AreaWeatherHarvestModifier.CODEC.get());
+
+    public static final RegistryObject<Codec<? extends IGlobalLootModifier>> SEASONAL_EVENT =
+            LOOT_MODIFIERS.register("seasonal_event", () -> SeasonalEventLootModifier.CODEC.get());
 
     private ModLootModifiers() {
     }

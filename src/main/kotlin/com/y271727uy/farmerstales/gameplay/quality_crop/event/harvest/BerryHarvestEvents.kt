@@ -7,6 +7,8 @@ import com.y271727uy.farmerstales.gameplay.quality_crop.QualityNbt
 import com.y271727uy.farmerstales.gameplay.quality_crop.QualityDropProcessor
 import com.y271727uy.farmerstales.gameplay.advancements.FarmersTalesAdvancements
 import com.y271727uy.farmerstales.gameplay.quality_crop.util.BerryFruitHarvestWhitelist
+import com.y271727uy.farmerstales.gameplay.special_event.seasonal.WarmCurrent
+import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
@@ -51,6 +53,13 @@ object BerryHarvestEvents {
 		val shouldApplyQuality = QualityHarvestRules.canReceiveQuality(event.entity)
 
 		if (!isHarvestReady(state)) {
+			return
+		}
+
+		if (!WarmCurrent.canPick(level, event.pos, state)) {
+			event.entity.displayClientMessage(Component.translatable("message.${FTMod.MODID}.fruit_out_of_season"), true)
+			event.setCancellationResult(InteractionResult.FAIL)
+			event.isCanceled = true
 			return
 		}
 

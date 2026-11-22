@@ -12,8 +12,12 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
 import net.minecraft.core.BlockPos
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.world.level.block.state.BlockState
 import sereneseasons.api.season.Season
 import sereneseasons.api.season.SeasonHelper
+import sereneseasons.init.ModFertility
+import sereneseasons.init.ModTags
 import java.util.EnumSet
 import java.util.Locale
 
@@ -33,6 +37,12 @@ object SereneSeasonsIntegration {
 
     fun usesTropicalSeasons(level: Level, pos: BlockPos): Boolean =
         SeasonHelper.usesTropicalSeasons(level.getBiome(pos))
+
+    fun isFruitInSeason(level: Level, pos: BlockPos, state: BlockState): Boolean {
+        if (!ModFertility.isCrop(state)) return true
+        if (ModFertility.isCropFertile(BuiltInRegistries.BLOCK.getKey(state.block).toString(), level, pos)) return true
+        return (1..16).any { level.getBlockState(pos.above(it)).`is`(ModTags.Blocks.GREENHOUSE_GLASS) }
+    }
 
     /** Snapshot both calendars once when a storm starts; never use a player's location. */
     fun rainSeasonBoosts(level: Level): Pair<Boolean, Boolean> {
